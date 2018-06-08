@@ -1,0 +1,30 @@
+{
+  "name": "yelp-optimizer",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.17.1",
+    "bootstrap": "^4.0.0",
+    "dotenv": "^4.0.0",
+    "geocoder": "^0.2.3",
+    "google-maps-react": "^1.1.2",
+    "idb": "^2.0.4",
+    "idb-keyval": "^2.3.0",
+    "jquery": "^3.0.0",
+    "moment": "^2.20.1",
+    "react": "^16.1.1",
+    "react-datepicker": "^1.0.4",
+    "react-dom": "^16.1.1",
+    "react-loading": "^1.0.4",
+    "react-render-html": "^0.6.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.0.17",
+    "webpack": "^3.11.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

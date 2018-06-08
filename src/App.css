@@ -1,0 +1,419 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.create-inline {
+    display: inline;
+}
+
+.slot {
+    border: none;
+    background: white;
+}
+
+.textInput {
+    background-color: white;
+    border: none;
+    transition: .2s;
+    margin: 0;
+    font-size: 16px;
+    padding: 0.8rem 1rem;
+    outline: none;
+    line-height: 0.8;
+    -webkit-font-smoothing: antialiased;
+    width: 100%;
+    border-radius: 2px;
+}
+
+.submitButton {
+    background-color: #5fcf80;
+    border: solid 2px #5fcf80;
+}
+
+.datePickerWrapper {
+    text-align: center;
+}
+
+.form-card {
+    text-align: left;
+}
+
+.form-header {
+    background: url('./images/banner.jpg') no-repeat center center fixed;
+    background-size: cover;
+    background-color: white;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 20px 0 20px 0;
+    margin: 0 -15px;
+    color: black;
+    min-height: 42vh;
+    position: relative;
+    z-index: 9999;
+}
+
+.form-body {
+    padding: 3em;
+    background-color: rgba(255,255,255,0.9);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
+}
+
+
+
+.events-half {
+    margin: 10px;
+}
+
+.go-btn {
+    background-color: #2CC185!important;
+    color: white;
+    font-weight: bold!important;
+    border-radius: 0px!important;
+    padding: 10px!important;
+}
+
+.search-btn {
+    text-align: center;
+    margin-top: 2px;
+}
+
+.search-btn input {
+    width: 100%;
+    padding: 0.4rem 1rem;
+}
+
+.options{
+    width: 100%;
+    margin-top: 20px;
+    display: grid!important;
+    grid-template-columns: 1fr 2fr;
+    /* grid-gap: 20px; */
+    text-align: left;
+}
+
+.filter {
+    text-align: right;
+}
+
+.results {
+    text-align: center;
+    width: 100%;
+}
+
+.results p {
+    margin-bottom: 0;
+}
+
+.results a {
+    font-weight: normal;
+    color: white;
+}
+.results a:hover {
+    color: white;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.options {
+    padding: 0;
+}
+.options li {
+    list-style-type: none;
+    display: inline-block;
+    margin: 10px;
+}
+
+.itinContainer {
+    font-size: 1.2rem;
+}
+
+td {
+    padding: 10px 8px;
+    font-size: 0.9em;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.mapsfix {
+    padding: 0px!important;
+}
+table {
+    margin-top: 25px;
+    /* word-break: break-all; */
+    margin: auto;
+    width: 95%;
+}
+th {
+    padding: 25px 10px 10px 10px;
+}
+tbody {
+    transition: background-color 0.3s ease;
+}
+
+tbody:hover {
+    background-color: rgba(247, 247, 247, 0.95);
+}
+.totalCost {
+    font-size: 1.4rem;
+}
+
+.plane-icon {
+    margin-right: 8px;
+}
+
+.inputsRow {
+    padding: 0.1em 0.5em;
+    margin: auto!important;
+
+}
+
+input[name="location"] {
+    padding-left: 20px;
+}
+
+.loader {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 45vh;
+    background-color: rgba(255,255,255, 0.55);
+    z-index: 9999;
+}
+
+.loader div:first-child {
+    position: absolute;
+    top: calc(47% - 50px);
+    left: calc(51% - 50px);
+}
+.loader h5 {
+    margin-top: 50px;
+}
+
+#nav-tab {
+    width: 90%;
+    text-transform: uppercase;
+    margin: auto;
+    max-width: 1300px;
+}
+
+#nav-tabContent {
+    width: 90%;
+    margin: auto;
+    max-width: 1300px;
+}
+
+.nav-tabs .nav-link {
+    border: none!important;
+    border-top-left-radius: 0!important;
+    border-top-right-radius: 0!important;
+    padding: 25px;
+    background-color: rgba(255, 255, 255, 0.9)!important;
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    background-color: white!important;
+    border-bottom: 5px solid #2CC185!important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23)
+}
+
+.nav-tabs .nav-link {
+    color: #495057!important;
+}
+
+.origin-logo {
+    width: 100%;
+    max-width: 60px;
+    min-width: 50px;
+}
+
+.optionInputs {
+    display: inherit;
+    width: 50%;
+    margin: auto;
+}
+
+.optionSelect {
+    background-color: white;
+    border: none;
+    -webkit-transition: .2s;
+    -o-transition: .2s;
+    transition: .2s;
+    margin: 0;
+    padding: 0.6em;
+    outline: none;
+    -webkit-font-smoothing: antialiased;
+    border-radius: 2px;
+    width: 60px;
+    justify-self: end;
+}
+
+.addIcon {
+    font-size: 26px;
+    justify-self: start;
+}
+
+.addIcon button {
+    border: none;
+    width: 60px;
+    color: #878787;
+    background-color: white;
+    cursor: pointer;
+}
+
+.addIcon button:focus, input:focus {
+    outline: none!important;
+}
+
+.eventName {
+    padding-right: 0px!important;
+}
+
+.addEventForm {
+    margin-bottom: 1rem;
+    display: grid!important;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 20px;
+}
+
+.block {
+    display: block!important;
+    margin: auto;
+}
+.moreInfoButton {
+    margin-top: 12px;
+    padding: .2rem .5rem!important;
+    font-size: .65rem!important;
+}
+*:focus {
+    outline: none!important;
+}
+.moreInfoRow {
+    border-bottom: 1px solid #f3f1f1;
+}
+
+.resultsName {
+    max-width: 325px;
+    white-space: pre-wrap;
+}
+
+.greeting {
+    margin-top: 60px;
+    color: #cbcbcb;
+    font-size: 3em;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.greeting img {
+    width: 40%;
+    opacity: 0.2;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.moreInfoTable {
+    text-align: left;
+}
+
+.moreInfoThumbnail {
+    width: 100%;
+}
+
+img{
+    max-width: 100%;
+}
+
+.costStr {
+    text-align: left;
+}
+
+.cost  {
+    text-align: right;
+}
+
+.lock_checkbox, .elim_checkbox {
+    display: none;
+    cursor: pointer;
+}
+
+.lock {
+    max-width: 25px;
+    cursor: pointer;
+}
+
+.elim {
+    max-width: 15px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.filterDesc  {
+    font-size: .75rem;
+}
+
+.itinGoBtn {
+    float: right;
+    /* width: 100%; */
+}
+.timeInput {
+    background-color: white;
+    border: none;
+    transition: .2s;
+    margin: 0;
+    font-size: 16px;
+    padding: 0.5rem;
+    outline: none;
+    line-height: 0.8;
+    -webkit-font-smoothing: antialiased;
+    width: 100%;
+    border-radius: 2px;
+}
+
+.message {
+    font-size: .5em;
+    text-align: right;
+}
+
+.edit-cost-cont {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+}
+
+.edit-cost-cont span {
+    margin-top: calc(25px/4);
+}
+
+.edit-cost {
+    width: 20%;
+}
+
+.edit-cost-cont input {
+    font-size: 1em;
+}
