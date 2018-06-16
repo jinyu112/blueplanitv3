@@ -13,6 +13,7 @@ import AddUserEvent from './addUserEvent.js';
 import MoreInfoButton from './moreInfoButton.js';
 import MoreInfoView from './moreInfoView.js';
 import EditCostComponent from './editCostComponent.js';
+import SingleResult from './singleResult.js';
 import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -83,6 +84,7 @@ class Userinput extends Component {
       loading: false,
       showMoreInfo: [false, false, false, false, false, false, false],
       message: '',
+      allApiData: {}, //this state holds all of the returned api data and is populated from the browser persistent data OR directly from the api calls
     };
     this.apiService = new ApiService();
     this.handleChange = this.handleChange.bind(this);
@@ -425,7 +427,9 @@ class Userinput extends Component {
           if (apiDataCostUpdated !== -1) {
             idb_keyval.set('apiData', apiDataCostUpdated)
               .then(function (e) {
-                // do nothing
+                this.setState({
+                  allApiData: apiDataCostUpdated,
+                })
               })
               .catch(err => console.log('It failed!', err));
           }
@@ -594,6 +598,7 @@ class Userinput extends Component {
                             loading: false,
                             showMoreInfo: [false, false, false, false, false, false, false],
                             message: '',
+                            allApiData: data.data,
                           });
                         }
                         else { // GA produced an optimal itinerary. Display results
@@ -621,6 +626,7 @@ class Userinput extends Component {
                             loading: false,
                             showMoreInfo: [false, false, false, false, false, false, false],
                             message: optimItinerary.maxCost,
+                            allApiData: data.data,
                           });
 
                           this.setState(prevState => ({
@@ -726,6 +732,7 @@ class Userinput extends Component {
                               loading: false,
                               showMoreInfo: [false, false, false, false, false, false, false],
                               message: '',
+                              allApiData: val,
                             });
                           }
                           else { // GA produced an optimal itinerary. Display results
@@ -763,6 +770,7 @@ class Userinput extends Component {
                               loading: false,
                               showMoreInfo: [false, false, false, false, false, false, false],
                               message: optimItinerary.maxCost,
+                              allApiData: val,
                             });
                           }
 
@@ -909,6 +917,21 @@ class Userinput extends Component {
             </tbody>
           </table>
         );
+
+
+        console.log("basdun")
+        console.log("data length: " + this.state.allApiData.length)    
+          console.log("in here")
+          var allApiDataShownToUser = [];
+          console.log("length :" + this.state.allApiData[apiKeys[0]][eventKeys[0]].length)
+          for (i = 0; i < this.state.allApiData[apiKeys[0]][eventKeys[0]].length; i++) {
+            var imgUrlStr = this.state.allApiData[apiKeys[0]][eventKeys[0]][i].thumbnail;
+            var nameStr = this.state.allApiData[apiKeys[0]][eventKeys[0]][i].name;
+            allApiDataShownToUser.push(<SingleResult imgurl={imgUrlStr} title={nameStr} />);
+          }
+        
+          console.log(allApiDataShownToUser)
+
       }
     }
 
@@ -939,8 +962,10 @@ class Userinput extends Component {
 
     var userevents = [];
     for (i = 0; i < this.state.userAddedEvents.length; i++) {
-        userevents.unshift(<DeleteUserEvent key={key} userevent={this.state.userAddedEvents[i]} handleDelete={this.handleDeleteUserEvent}/> );
+      userevents.unshift(<DeleteUserEvent key={key} userevent={this.state.userAddedEvents[i]} handleDelete={this.handleDeleteUserEvent} />);
     }
+
+
 
 
     return (
@@ -1021,6 +1046,7 @@ class Userinput extends Component {
                   {goAgainButton}</div>
                 : ''}
 
+{allApiDataShownToUser}
             </div>
 
             <div className="mapsfix col-md-6">
