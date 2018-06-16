@@ -18,6 +18,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import '../maps.css';
+import emailService from './emailService.js'
 
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
@@ -85,7 +86,9 @@ class Userinput extends Component {
       message: '',
     };
     this.apiService = new ApiService();
+    this.emailService = new emailService();
     this.handleChange = this.handleChange.bind(this);
+    this.handleEmail = this.handleEmail.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleCheckbox = this.handleCheckbox.bind(this);
@@ -435,6 +438,12 @@ class Userinput extends Component {
         }).catch(err => console.log('Error setting the new api data with updated cost in handleEventCostChange!', err));
 
     }
+  }
+
+  handleEmail(e) {
+      e.preventDefault();
+
+      this.emailService.sendEmail('hi');
   }
 
   handleSubmit(e) {
@@ -1006,6 +1015,9 @@ class Userinput extends Component {
         </div>
         <div className="row eventsCont">
             <div className="col-md-6 itinerary">
+            <div className="sendEmail">
+                <input className="block btn btn-sm btn-primary moreInfoButton" type="button" value="Send Me the Itinerary" onClick={this.handleEmail}/>
+            </div>
             {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
             {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
 
