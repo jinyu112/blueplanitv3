@@ -62,6 +62,8 @@ const apiKeys = [
   'yelpEventsGlobal',
 ]
 
+var geocoder = require('geocoder');
+
 class Userinput extends Component {
   constructor(props) {
     super(props)
@@ -446,8 +448,33 @@ class Userinput extends Component {
 
   handleEmail(e) {
       e.preventDefault();
+      var loc = this.state.location;
+      var totalCost = this.state.totalCost;
+      function getLocation() {
+          return new Promise(function (resolve, reject) {
+          geocoder.geocode(loc, function(err, lat_lon) {
+              if (err) {
+                console.log(err);
+                reject(false);
+              } else {
+                resolve(lat_lon);
+              }
+          });
+        });
+        }
 
-      this.emailService.sendEmail('hi');
+     let locate = getLocation();
+     locate.then((located) => {
+         var data = {
+             message: this.state.resultsArray,
+             email: 'aliguan726@gmail.com',
+             location: located.results[0].formatted_address,
+             total: totalCost,
+         }
+
+         this.emailService.sendEmail(data);
+     });
+
   }
 
   handleSubmit(e) {
@@ -501,7 +528,7 @@ class Userinput extends Component {
       // It is fixed to the timestamp at the first time the date is selected in the UI.
       var today = moment();
 
-      var geocoder = require('geocoder');
+
       if (isDate(date)) {
         //console.log(date)
 
@@ -855,7 +882,6 @@ class Userinput extends Component {
           indents.push(
             <tbody key={key}>
               <tr>
-
                 <td><a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a></td>
                 <td><strong>{this.state.itinTimes[i] ? this.state.itinTimes[i] : ''}</strong></td>
                 <td className="resultsName">
@@ -896,10 +922,10 @@ class Userinput extends Component {
             <tbody>
               <tr>
                 <td className="costStr">
-                  <b>Approx. Total Cost:</b>
+                  <strong>Approx. Total Cost:</strong>
                 </td>
                 <td className="cost">
-                  <b>${this.state.totalCost}</b>
+                  <strong>${this.state.totalCost}</strong>
                 </td>
               </tr>
 
