@@ -417,3 +417,12 @@ img{
 .edit-cost-cont input {
     font-size: 1em;
 }
+
+.singleApiResult {
+    width: 95%;
+}
+
+.ApiDataDisplay {
+   display: grid;
+   grid-template-columns: repeat(2, 1fr); 
+}

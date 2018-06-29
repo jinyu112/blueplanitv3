@@ -13,6 +13,10 @@ module.exports = {
         else return -1;        
     },
 
+    isObjEmpty: function(obj) {
+        return (Object.keys(obj).length===0 && obj.constructor === Object) // empty returns 1
+    },
+
     convertMilTime: function (milTime) {
         if (milTime.localeCompare("9999")===0){ //None item is populated with 999 military time
             return "";

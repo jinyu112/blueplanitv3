@@ -14,6 +14,9 @@ import MoreInfoButton from './moreInfoButton.js';
 import MoreInfoView from './moreInfoView.js';
 import EditCostComponent from './editCostComponent.js';
 import SingleResult from './singleResult.js';
+import PaginationLink from './paginationLink.js'
+import MultiResultDisplay from './multiResultDisplay.js';
+import Message from './message.js';
 import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -32,6 +35,7 @@ import unlock from '../images/unlock.png';
 import dark from '../images/dark.png';
 import light from '../images/light.png';
 
+import CONSTANTS from '../constants.js'
 
 const ORIGINS_YELP = 'yelp';
 const ORIGINS_EB = 'eventbrite';
@@ -84,8 +88,9 @@ class Userinput extends Component {
       center: {},
       loading: false,
       showMoreInfo: [false, false, false, false, false, false, false],
-      message: '',
+      message: {},
       allApiData: {}, //this state holds all of the returned api data and is populated from the browser persistent data OR directly from the api calls
+      pageNumber: 1,
     };
     this.apiService = new ApiService();
     this.emailService = new emailService();
@@ -104,6 +109,8 @@ class Userinput extends Component {
     this.handleClearUserEvents = this.handleClearUserEvents.bind(this);
     this.handleMoreInfo = this.handleMoreInfo.bind(this);
     this.handleEventCostChange = this.handleEventCostChange.bind(this);
+    this.handlePageClick = this.handlePageClick.bind(this);
+    this.handleUserSelectedEventFromDisplayedResults = this.handleUserSelectedEventFromDisplayedResults.bind(this);
   }
 
   handleChange(e) {
@@ -304,6 +311,56 @@ class Userinput extends Component {
     console.log("All user added events cleared.")
   }
 
+handlePageClick(pageNumber_in) {
+  this.setState({
+    pageNumber: pageNumber_in,
+  })
+}
+
+// handles what happens when user selects a event/itinerary item from the comprehensive displayed results
+// to add to the itinerary
+handleUserSelectedEventFromDisplayedResults(itinObj_in) {
+
+  // Update the total cost displayed
+  var i_resultsArray = parseInt(itinObj_in.other); // i_resultsArray is the index position in the itinerary results
+  var tempTotalCost = this.state.totalCost - this.state.resultsArray[i_resultsArray].cost;
+  tempTotalCost = misc.round2NearestHundredth(tempTotalCost + itinObj_in.cost);
+
+  // Update the results array state and the itinTimes state
+  this.state.resultsArray[i_resultsArray] = itinObj_in;
+  this.state.itinTimes[i_resultsArray] = misc.convertMilTime(itinObj_in.time);  
+
+  // If the user selects an event/itinerary item from the results, lock it in the itinerary
+  let checked = this.state.checked.slice();
+  if (checked[i_resultsArray] !== 1) {
+    checked[i_resultsArray] = 1;
+    if (!misc.include(this.state.savedEvents,i_resultsArray)) { // if i_resultsArray is not already in the savedEvents array
+      this.state.savedEvents.push(i_resultsArray);
+    }
+  }
+
+  // Update persistent data in browser for GA
+  var myStorage = window.localStorage;
+  var prevBestItineraryObjs = JSON.stringify({
+    Event1: this.state.resultsArray[0],
+    Breakfast: this.state.resultsArray[1],
+    Event2: this.state.resultsArray[2],
+    Lunch: this.state.resultsArray[3],
+    Event3: this.state.resultsArray[4],
+    Dinner: this.state.resultsArray[5],
+    Event4: this.state.resultsArray[6],
+  });
+  myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
+
+  // Update states and rerender
+  this.setState({
+    resultsArray: this.state.resultsArray,
+    totalCost: tempTotalCost,
+    itinTimes: this.state.itinTimes,
+    checked: checked,
+    savedEvents: this.state.savedEvents,
+  });
+}
   handleMoreInfo(e) {
     var tempShowMoreInfo = (this.state.showMoreInfo).slice();
     tempShowMoreInfo[e] = !tempShowMoreInfo[e];
@@ -358,6 +415,7 @@ class Userinput extends Component {
 
       // Update persistent api data in browser
       idb_keyval.get('apiData').then(apiData_in => {
+        
         if (apiData_in !== null || apiData_in !== undefined) {
 
           var apiKey = 'none'; // field/key in the apiData object (ie meetupItemsGlobal,...,yelpDinnerItemsGlobal )
@@ -417,6 +475,7 @@ class Userinput extends Component {
               }
             }
           }
+          
           return apiData_in;
         }
         else {
@@ -425,21 +484,23 @@ class Userinput extends Component {
       }, function (err) {
         return err;
       }).catch(err => console.log('Error updating the cost handleEventCostChange!', err))
-        .then(function (apiDataCostUpdated) {
+        .then(apiDataCostUpdated => {
+          
           // Everything is good and updated, now restore the api data in the browser
           if (apiDataCostUpdated !== -1) {
             idb_keyval.set('apiData', apiDataCostUpdated)
-              .then(function (e) {
+              .then(function (e) {                
                 this.setState({
                   allApiData: apiDataCostUpdated,
                 })
-              })
+              }.bind(this))
               .catch(err => console.log('It failed!', err));
           }
 
         }, function (err) {
           return err;
         }).catch(err => console.log('Error setting the new api data with updated cost in handleEventCostChange!', err));
+      // updatePersistentAPIData(idb_keyval,i_resultsArray,edittedEventOrigin,edittedEventCost,edittedEventName);
 
     }
   }
@@ -595,6 +656,10 @@ class Userinput extends Component {
                           resultsArrayOutput[5] = EMPTY_ITINERARY_NONAME;
                           resultsArrayOutput[6] = EMPTY_ITINERARY_NONAME;
 
+                          var messageStrObj = {
+                            textArray: ["Oops! No itinerary was found with these inputs."],
+                            boldIndex: -1};
+
                           this.setState({
                             resultsArray: resultsArrayOutput,
                             checked: [0, 0, 0, 0, 0, 0, 0], //reset the checkboxes to being unchecked
@@ -606,7 +671,7 @@ class Userinput extends Component {
                             totalCost: 0,
                             loading: false,
                             showMoreInfo: [false, false, false, false, false, false, false],
-                            message: '',
+                            message: messageStrObj,
                             allApiData: data.data,
                           });
                         }
@@ -623,6 +688,12 @@ class Userinput extends Component {
                           // Output data to map
                           this.handleData(optimItinerary.bestLocations, optimItinerary.bestUrls, mapCenter);
 
+                          var messageStrObj = {
+                            textArray: ["The max event cost is "
+                            , "$" + optimItinerary.maxCost.toString(),
+                            ". Increase your budget to include more events!"],
+                            boldIndex: 1};
+
                           // Set the state in this component and re-render
                           this.setState({
                             resultsArray: resultsArrayOutput,
@@ -634,7 +705,7 @@ class Userinput extends Component {
                             totalCost: optimItinerary.totalCost,
                             loading: false,
                             showMoreInfo: [false, false, false, false, false, false, false],
-                            message: optimItinerary.maxCost,
+                            message: messageStrObj,
                             allApiData: data.data,
                           });
 
@@ -652,11 +723,10 @@ class Userinput extends Component {
                             Dinner: dataForGA[5].Dinner[optimItinerary.bestItineraryIndices[5]],
                             Event4: dataForGA[6].Event4[optimItinerary.bestItineraryIndices[6]],
                           });
-
-                          var prevBestItineraryStr = JSON.stringify(optimItinerary.bestItineraryIndices);
-                          myStorage.setItem("prevBestItinerarySavedIndices", prevBestItineraryStr);
+                        
                           myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
                         }
+
                         // Put the data returned from API calls (yelp, meetup, etc) into the client's browser
                         // for persistent storage
                         if (indexDBcompat) {
@@ -689,8 +759,7 @@ class Userinput extends Component {
                           // Save the previously saved events by the user as persistent data in
                           // client side as a string
                           var savedEvents = [];
-                          if (this.state.savedEvents.length > 0 && null !== myStorage.getItem('prevBestItinerarySavedIndices') && null !== myStorage.getItem('prevBestItinerarySavedObjects')) {
-                            var bestItineraryIndicesParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedIndices"));
+                          if (this.state.savedEvents.length > 0 && null !== myStorage.getItem('prevBestItinerarySavedObjects')) {
                             var bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
                             savedEvents = this.state.savedEvents.map(Number);
                           }
@@ -729,6 +798,10 @@ class Userinput extends Component {
                             resultsArrayOutput[5] = EMPTY_ITINERARY_NONAME;
                             resultsArrayOutput[6] = EMPTY_ITINERARY_NONAME;
 
+                            var messageStrObj = {
+                              textArray: ["Oops! No itinerary was found with these inputs."],
+                              boldIndex: -1};
+
                             this.setState({
                               resultsArray: resultsArrayOutput,
                               checked: [0, 0, 0, 0, 0, 0, 0], //reset the checkboxes to being unchecked
@@ -740,7 +813,7 @@ class Userinput extends Component {
                               totalCost: 0,
                               loading: false,
                               showMoreInfo: [false, false, false, false, false, false, false],
-                              message: '',
+                              message: messageStrObj,
                               allApiData: val,
                             });
                           }
@@ -765,11 +838,15 @@ class Userinput extends Component {
                             misc.convertMilTime(resultsArrayOutput[5].time),
                             misc.convertMilTime(resultsArrayOutput[6].time)];
 
-                            var prevBestItineraryStr = JSON.stringify(optimItinerary.bestItineraryIndices);
-                            myStorage.setItem("prevBestItinerarySavedIndices", prevBestItineraryStr);
                             myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
 
                             this.handleData(optimItinerary.bestLocations, optimItinerary.bestUrls, mapCenter);
+                            var messageStrObj = {
+                              textArray: ["The max event cost is "
+                              , "$" + optimItinerary.maxCost.toString(),
+                              ". Increase your budget to include more events!"],
+                              boldIndex: 1};
+
 
                             // Set the state in this component and re-render
                             this.setState({
@@ -778,7 +855,7 @@ class Userinput extends Component {
                               totalCost: optimItinerary.totalCost,
                               loading: false,
                               showMoreInfo: [false, false, false, false, false, false, false],
-                              message: optimItinerary.maxCost,
+                              message: messageStrObj,
                               allApiData: val,
                             });
                           }
@@ -889,6 +966,19 @@ class Userinput extends Component {
       }
 
       // The Total cost display
+      var messageObject;
+      var totalCostDisplayed;
+      if (this.state.totalCost > this.state.budgetmax) {
+        messageObject= {
+          textArray: ["The total cost exceeds your max budget!"],
+          boldIndex: 0,
+        }
+        totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
+      }
+      else {
+        messageObject = this.state.message;
+        totalCostDisplayed = <b>${this.state.totalCost}</b>;
+      }
       if (this.state.resultsArray.length > 0) {
         var total = [];
         total.push(<div key="totalCostDiv">
@@ -899,14 +989,14 @@ class Userinput extends Component {
                   <b>Approx. Total Cost:</b>
                 </td>
                 <td className="cost">
-                  <b>${this.state.totalCost}</b>
+                  {totalCostDisplayed}
                 </td>
               </tr>
 
 
                   {this.state.message === -1 ? '' :
                     <tr><td colSpan="2">
-                    <div className="message"><i className="text-warning fas fa-exclamation-triangle"></i> The max event cost is <b>${this.state.message}</b>. Increase your budget to include more events!</div>
+                    <Message key={"messageComponent"} messageObj={messageObject}/>
                     </td></tr>
                     }
             </tbody>
@@ -916,7 +1006,7 @@ class Userinput extends Component {
         var goAgainButton = [];
 
         goAgainButton.push(
-          <table>
+          <table key={"go-button-table"}>
             <tbody>
               <tr>
                 <td className="itinGoBtn">
@@ -926,25 +1016,8 @@ class Userinput extends Component {
             </tbody>
           </table>
         );
-
-
-        console.log("basdun")
-        console.log("data length: " + this.state.allApiData.length)    
-          console.log("in here")
-          var allApiDataShownToUser = [];
-          console.log("length :" + this.state.allApiData[apiKeys[0]][eventKeys[0]].length)
-          for (i = 0; i < this.state.allApiData[apiKeys[0]][eventKeys[0]].length; i++) {
-            var imgUrlStr = this.state.allApiData[apiKeys[0]][eventKeys[0]][i].thumbnail;
-            var nameStr = this.state.allApiData[apiKeys[0]][eventKeys[0]][i].name;
-            allApiDataShownToUser.push(<SingleResult imgurl={imgUrlStr} title={nameStr} />);
-          }
-        
-          console.log(allApiDataShownToUser)
-
       }
     }
-
-
 
     // More options display
     var options = [];
@@ -974,72 +1047,98 @@ class Userinput extends Component {
       userevents.unshift(<DeleteUserEvent key={key} userevent={this.state.userAddedEvents[i]} handleDelete={this.handleDeleteUserEvent} />);
     }
 
-
+    
+// Pagination
+var pages = [];
+if (!misc.isObjEmpty(this.state.allApiData)) {
+  var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;  
+  pages.push("<");
+  var pageNumber;
+  for (i = 0; i < numPages; i++) {
+    pageNumber = i + 1;
+    if (this.state.pageNumber !== pageNumber) {
+      pages.push(<PaginationLink key={"pg" + pageNumber} pageNumber={pageNumber} onPageLinkClick={this.handlePageClick}/>);
+    }
+    else {
+      pages.push(pageNumber);
+    }
+  }
+  pages.push(">");
+}
 
 
     return (
       <div className="Userinput">
         <div className="form-header">
-                <nav>
-                  <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                    <a className="nav-item nav-link active" id="nav-plan-tab" data-toggle="tab" href="#nav-plan" role="tab" aria-controls="nav-plan" aria-selected="true"><i className="plane-icon fas fa-map-marker-alt"></i>Plan Your Day</a>
-                    <a className="nav-item nav-link" id="nav-add-tab" data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"><i className="fas fa-list-ul"></i> Add Event</a>
-                    <a className="nav-item nav-link" id="nav-options-tab" data-toggle="tab" href="#nav-options" role="tab" aria-controls="nav-options" aria-selected="false">More Options</a>
-                  </div>
-                </nav>
-                <div className="tab-content" id="nav-tabContent">
-                  <div className="tab-pane fade show active" id="nav-plan" role="tabpanel" aria-labelledby="nav-plan-tab">
-                      <form className="form-card" onSubmit={this.handleSubmit}>
-                        <div className={formStyles.join(' ')}>
-                          <div className="row inputsRow">
-                                  <div className="col-md-4 form-group mb-2">
-                                    <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" placeholder="Where are you going?" />
-                                  </div>
+          <nav>
+            <div className="nav nav-tabs" id="nav-tab" role="tablist">
+              <a className="nav-item nav-link active" id="nav-plan-tab" data-toggle="tab" href="#nav-plan" role="tab" aria-controls="nav-plan" aria-selected="true"><i className="plane-icon fas fa-map-marker-alt"></i>Plan Your Day</a>
+              <a className="nav-item nav-link" id="nav-add-tab" data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"><i className="fas fa-list-ul"></i> Add Event</a>
+              <a className="nav-item nav-link" id="nav-options-tab" data-toggle="tab" href="#nav-options" role="tab" aria-controls="nav-options" aria-selected="false">More Options</a>
+            </div>
+          </nav>
+          <div className="tab-content" id="nav-tabContent">
+            <div className="tab-pane fade show active" id="nav-plan" role="tabpanel" aria-labelledby="nav-plan-tab">
+              <form className="form-card" onSubmit={this.handleSubmit}>
+                <div className={formStyles.join(' ')}>
+                  <div className="row inputsRow">
+                    <div className="col-md-4 form-group mb-2">
+                      <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" placeholder="Where are you going?" />
+                    </div>
 
-                                  <div className="col-md-2 form-group mb-2 datePickerWrapper">
-                                    <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} />
-                                  </div>
-                                  {/*<input type="text" name="term" style={{ width: 90 }} value={term} onChange={this.handleChange} />*/}
-                                  <div className="col-md-2 form-group mb-2">
-                                    <input required className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
-                                  </div>
-                                  <div className="col-md-2 form-group mb-2">
-                                    <input required className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
-                                  </div>
-                                  <div className="col-md-2 search-btn">
-                                      <input className="btn btn-sm go-btn" type="submit" value="GO!" />
-                                  </div>
-                              </div>
-                          </div>
-                      </form>
-                  </div>
-                  <div className="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="nav-add-tab">
-                      <div className={optionStyles.join(' ')}>
-                           <h5>Add Your Own Event:</h5>
-                           <p>Generate an optimized itinerary including events you've added!</p>
-                           <AddUserEvent handleAdd={this.handleAddUserEvent}/>
-                           {userevents}
-
-                          {/* clear all user added events*/}
-                          <a href="javascript:void(0)" onClick={this.handleClearUserEvents}> Clear All Added Events
-                          </a>
-
-                      </div>
-                  </div>
-                  <div className="tab-pane fade" id="nav-options" role="tabpanel" aria-labelledby="nav-options-tab">
-                      <div className={optionStyles.join(' ')}>
-                          <h5>Include results from: </h5>
-                          <ul className="options">
-                              {options}
-                          </ul>
-                      </div>
+                    <div className="col-md-2 form-group mb-2 datePickerWrapper">
+                      <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} />
+                    </div>
+                    <div className="col-md-2 form-group mb-2">
+                      <input required className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                    </div>
+                    <div className="col-md-2 form-group mb-2">
+                      <input required className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
+                    </div>
+                    <div className="col-md-2 search-btn">
+                      <input className="btn btn-sm go-btn" type="submit" value="GO!" />
+                    </div>
                   </div>
                 </div>
+              </form>
+            </div>
+            <div className="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="nav-add-tab">
+              <div className={optionStyles.join(' ')}>
+                <h5>Add Your Own Event:</h5>
+                <p>Generate an optimized itinerary including events you've added!</p>
+                <AddUserEvent handleAdd={this.handleAddUserEvent} />
+                {userevents}
+
+                {/* clear all user added events*/}
+                <a href="javascript:void(0)" onClick={this.handleClearUserEvents}> Clear All Added Events
+                          </a>
+
+              </div>
+            </div>
+            <div className="tab-pane fade" id="nav-options" role="tabpanel" aria-labelledby="nav-options-tab">
+              <div className={optionStyles.join(' ')}>
+                <h5>Include results from: </h5>
+                <ul className="options">
+                  {options}
+                </ul>
+              </div>
+            </div>
+          </div>
 
 
         </div>
         <div className="row eventsCont">
-            <div className="col-md-6 itinerary">
+          <div className="col-md-6 itinerary">
+
+            {<MultiResultDisplay allApiData={this.state.allApiData} 
+              displayCategory={1} 
+              pageNumber={this.state.pageNumber} 
+              AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults}/>}
+              {pages}
+
+          </div>
+
+          <div className="mapsfix itinerary col-md-6">
             <div className="sendEmail">
                 <input className="block btn btn-sm btn-primary moreInfoButton" type="button" value="Send Me the Itinerary" onClick={this.handleEmail}/>
             </div>
@@ -1058,10 +1157,6 @@ class Userinput extends Component {
                   {goAgainButton}</div>
                 : ''}
 
-{allApiDataShownToUser}
-            </div>
-
-            <div className="mapsfix col-md-6">
               <GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />
             </div>
           </div>
@@ -1219,30 +1314,12 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
     var yelpDinnerItemsGlobal = events_in.yelpDinnerItemsGlobal;
 
     // Determine how many data points there are
-    var numMeetupEvents = meetupItemsGlobal.Event1.length +
-      meetupItemsGlobal.Event2.length +
-      meetupItemsGlobal.Event3.length +
-      meetupItemsGlobal.Event4.length;
-
-    var numYelpEvents = yelpEventsGlobal.Event1.length +
-      yelpEventsGlobal.Event2.length +
-      yelpEventsGlobal.Event3.length +
-      yelpEventsGlobal.Event4.length;
-
-    var numEventbriteEvents = eventbriteGlobal.Event1.length +
-      eventbriteGlobal.Event2.length +
-      eventbriteGlobal.Event3.length +
-      eventbriteGlobal.Event4.length;
-
-    var numSeatgeekEvents = seatgeekItemsGlobal.Event1.length +
-      seatgeekItemsGlobal.Event2.length +
-      seatgeekItemsGlobal.Event3.length +
-      seatgeekItemsGlobal.Event4.length;
-
-    var numGooglePlaces = googlePlacesGlobal.Event1.length +
-      googlePlacesGlobal.Event2.length +
-      googlePlacesGlobal.Event3.length +
-      googlePlacesGlobal.Event4.length;
+    var numDataPointsObj = events_in.numDataPoints;
+    var numMeetupEvents = numDataPointsObj.numMeetupEvents;
+    var numYelpEvents = numDataPointsObj.numYelpEvents;
+    var numEventbriteEvents = numDataPointsObj.numEventbriteEvents;
+    var numSeatgeekEvents = numDataPointsObj.numSeatgeekEvents;
+    var numGooglePlaces = numDataPointsObj.numGooglePlaces;
 
     console.log("num meetup events: " + numMeetupEvents);
     console.log("num yelp events: " + numYelpEvents);
@@ -1469,6 +1546,7 @@ function resetAPIDataTimeStampToNow(myStorage_in) {
   var currentTimeStampStr = currentTimeStamp.getTime().toString(); // ms
   myStorage_in.setItem('timestamp', currentTimeStampStr);
 }
+
 
 Userinput.propTypes = {}
 
