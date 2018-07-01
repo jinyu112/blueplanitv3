@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { Component } from 'react';
+import CONSTANTS from '../constants.js'
 
 export class AddUserEvent extends Component {
     constructor(props) {
@@ -18,16 +19,8 @@ export class AddUserEvent extends Component {
         this.refs.userEventName.value = '';
         this.refs.userEventCost.value = '';
         this.refs.userItinSlot.value = 1;
-        this.refs.userEventTime.value = "09:00";
+        this.refs.userEventTime.value = CONSTANTS.DEFAULT_USER_EVENT_TIME; //09:00 am
     }
-
-    // handleDelete() {
-    //     var userEventName = this.refs.userEventName.value;
-    //     var userEventCost = this.refs.userEventCost.value;
-    //     var userItinSlot = this.refs.userItinSlot.value;
-    //
-    //     this.props.handleDelete(userItinSlot, userEventCost, userEventName);
-    // }
 
     render() {
         var action = [];
