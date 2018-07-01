@@ -70,7 +70,7 @@
     color: black;
     min-height: 42vh;
     position: relative;
-    z-index: 9999;
+    z-index: 200;
 }
 
 .form-body {
@@ -200,7 +200,7 @@ input[name="location"] {
     left: 0;
     height: 45vh;
     background-color: rgba(255,255,255, 0.55);
-    z-index: 9999;
+    z-index: 200;
 }
 
 .loader div:first-child {
@@ -424,5 +424,5 @@ img{
 
 .ApiDataDisplay {
    display: grid;
-   grid-template-columns: repeat(2, 1fr); 
+   grid-template-columns: repeat(2, 1fr);
 }
