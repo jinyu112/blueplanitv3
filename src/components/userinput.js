@@ -299,7 +299,7 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
 
   // Update the results array state and the itinTimes state
   this.state.resultsArray[i_resultsArray] = itinObj_in;
-  this.state.itinTimes[i_resultsArray] = misc.convertMilTime(itinObj_in.time);  
+  this.state.itinTimes[i_resultsArray] = misc.convertMilTime(itinObj_in.time);
 
   // If the user selects an event/itinerary item from the results, lock it in the itinerary
   let checked = this.state.checked.slice();
@@ -383,7 +383,7 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
 
       // Update persistent api data in browser
       idb_keyval.get('apiData').then(apiData_in => {
-        
+
         if (apiData_in !== null || apiData_in !== undefined) {
 
           var apiKey = 'none'; // field/key in the apiData object (ie meetupItemsGlobal,...,yelpDinnerItemsGlobal )
@@ -443,7 +443,7 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
               }
             }
           }
-          
+
           return apiData_in;
         }
         else {
@@ -453,11 +453,11 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
         return err;
       }).catch(err => console.log('Error updating the cost handleEventCostChange!', err))
         .then(apiDataCostUpdated => {
-          
+
           // Everything is good and updated, now restore the api data in the browser
           if (apiDataCostUpdated !== -1) {
             idb_keyval.set('apiData', apiDataCostUpdated)
-              .then(function (e) {                
+              .then(function (e) {
                 this.setState({
                   allApiData: apiDataCostUpdated,
                 })
@@ -469,6 +469,10 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
           return err;
         }).catch(err => console.log('Error setting the new api data with updated cost in handleEventCostChange!', err));
     }
+  }
+
+  openModal() {
+
   }
 
   handleEmail(e) {
@@ -697,7 +701,7 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
                             Dinner: dataForGA[5].Dinner[optimItinerary.bestItineraryIndices[5]],
                             Event4: dataForGA[6].Event4[optimItinerary.bestItineraryIndices[6]],
                           });
-                        
+
                           myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
                         }
 
@@ -1014,11 +1018,11 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
       userevents.unshift(<DeleteUserEvent key={key} userevent={this.state.userAddedEvents[i]} handleDelete={this.handleDeleteUserEvent} />);
     }
 
-    
+
 // Pagination
 var pages = [];
 if (!misc.isObjEmpty(this.state.allApiData)) {
-  var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;  
+  var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
   pages.push("<");
   var pageNumber;
   for (i = 0; i < numPages; i++) {
@@ -1097,9 +1101,9 @@ if (!misc.isObjEmpty(this.state.allApiData)) {
         <div className="row eventsCont">
           <div className="col-md-6 itinerary">
 
-            {<MultiResultDisplay allApiData={this.state.allApiData} 
-              displayCategory={1} 
-              pageNumber={this.state.pageNumber} 
+            {<MultiResultDisplay allApiData={this.state.allApiData}
+              displayCategory={1}
+              pageNumber={this.state.pageNumber}
               AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults}/>}
               {pages}
 
@@ -1107,7 +1111,7 @@ if (!misc.isObjEmpty(this.state.allApiData)) {
 
           <div className="mapsfix itinerary col-md-6">
             <div className="sendEmail">
-                <input className="block btn btn-sm btn-primary moreInfoButton" type="button" value="Send Me the Itinerary" onClick={this.handleEmail}/>
+                <input className="block btn btn-sm btn-primary moreInfoButton" type="button" value="Send Me the Itinerary" onClick={this.openEmailModal}/>
             </div>
             {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
             {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
