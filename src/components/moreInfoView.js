@@ -49,7 +49,7 @@ class MoreInfoView extends Component {
                 </td>
             );
         }
-        else {
+        else if (this.props.origin !== CONSTANTS.ORIGINS_MU) {
             return (
                 <td>
                     <p><b>Description: </b></p>                    
@@ -59,6 +59,14 @@ class MoreInfoView extends Component {
                     {renderHTML(desc)}
                 </td>
             );
+        }
+        else { // if it is from meetup, don't show the img thumbnail since it will likely show up in desc
+            return (
+                <td>
+                    <p><b>Description: </b></p>
+                    {renderHTML(desc)}
+                </td>
+            );    
         }
 
     }

@@ -17,6 +17,7 @@ import SingleResult from './singleResult.js';
 import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
 import Message from './message.js';
+import Filters from './filters.js';
 import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -1098,8 +1099,9 @@ if (!misc.isObjEmpty(this.state.allApiData)) {
 
 
         </div>
+        
         <div className="row eventsCont">
-          <div className="col-md-6 itinerary">
+          <div className="col-md-7 itinerary">
 
             {<MultiResultDisplay allApiData={this.state.allApiData}
               displayCategory={1}
@@ -1109,7 +1111,7 @@ if (!misc.isObjEmpty(this.state.allApiData)) {
 
           </div>
 
-          <div className="mapsfix itinerary col-md-6">
+          <div className="mapsfix itinerary col-md-5">
             <div className="sendEmail">
                 <input className="block btn btn-sm btn-primary moreInfoButton" type="button" value="Send Me the Itinerary" onClick={this.openEmailModal}/>
             </div>
@@ -1128,7 +1130,7 @@ if (!misc.isObjEmpty(this.state.allApiData)) {
                   {goAgainButton}</div>
                 : ''}
 
-              <GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />
+              {/*<GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />*/}
             </div>
           </div>
         </div>
