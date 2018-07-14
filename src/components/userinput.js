@@ -17,6 +17,7 @@ import SingleResult from './singleResult.js';
 import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
 import Message from './message.js';
+import Filters from './filters.js';
 import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -37,35 +38,6 @@ import dark from '../images/dark.png';
 import light from '../images/light.png';
 
 import CONSTANTS from '../constants.js'
-
-const ORIGINS_YELP = 'yelp';
-const ORIGINS_EB = 'eventbrite';
-const ORIGINS_GP = 'places';
-const ORIGINS_MU = 'meetup';
-const ORIGINS_SG = 'seatgeek';
-const ORIGINS_NONE = 'noneitem';
-const ORIGINS_USER = 'useradded';
-// keys/fields in the itinerary object
-const eventKeys = [
-  'Event1',
-  'Breakfast',
-  'Event2',
-  'Lunch',
-  'Event3',
-  'Dinner',
-  'Event4',
-];
-// api keys are the keys/fields in the apiData object
-const apiKeys = [
-  'eventbriteGlobal',
-  'googlePlacesGlobal',
-  'meetupItemsGlobal',
-  'seatgeekItemsGlobal',
-  'yelpBreakfastItemsGlobal',
-  'yelpLunchItemsGlobal',
-  'yelpDinnerItemsGlobal',
-  'yelpEventsGlobal',
-]
 
 var geocoder = require('geocoder');
 
@@ -231,8 +203,6 @@ class Userinput extends Component {
 
   handleAddUserEvent(userItinSlot, userEventCost, userEventName, userEventTime) {
     // Note: userItinSlot is the string from the dropdown menu in the add user events tab (ie 1-7 only)
-    const EVENT_TIMES = ["0900","","1200","","1800","","2200"]
-    const USERADDED_EVENT_RATING = 1000.0; // arbitrarily high
     var itinSlot = 1;
     if (userItinSlot){
       itinSlot = parseInt(userItinSlot,10); // 1- 7 only
@@ -245,18 +215,18 @@ class Userinput extends Component {
     var time = userEventTime;
     time = time.replace(":","");
     if (time.localeCompare("") === 0) {
-      time = EVENT_TIMES[0];
+      time = CONSTANTS.EVENT_TIMES[0];
     }
     var userAddedEventObj = {
       name: userEventName,
       url: "",
-      rating: USERADDED_EVENT_RATING,
+      rating: CONSTANTS.USERADDED_EVENT_RATING,
       time: time,
       location: {},
       cost: cost,
       slot: itinSlot, // this is very important! the slot needs to be 1-7 integer
       description: "",
-      origin: 'userevent',
+      origin: CONSTANTS.ORIGINS_USER,
     }
 
     this.state.userAddedEvents.push(userAddedEventObj);
@@ -375,9 +345,6 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
   }
 
   handleEventCostChange(edittedEventCost, edittedEventName, i_resultsArray, edittedEventOrigin) {
-    // If you want to lock the event if the user updates the cost, set this flag to true
-    const AUTO_LOCK_UPDATED_EVENT = true;
-
     var indexDBcompat = window.indexedDB;
     var myStorage = window.localStorage;
 
@@ -390,7 +357,7 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
       i_resultsArray = parseInt(i_resultsArray,10);
       let checked = this.state.checked.slice();
 
-      if (AUTO_LOCK_UPDATED_EVENT) {
+      if (CONSTANTS.AUTO_LOCK_UPDATED_EVENT) {
         // Auto check the event in the results if the user has updated/editted the cost (as it is assumed they will be interested in that event)
         if (checked[i_resultsArray] !== 1) {
           checked[i_resultsArray] = 1;
@@ -403,7 +370,7 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
 
         // save the change in the user-saved objects persistent data
         var bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
-        bestItineraryObjsParsed[eventKeys[i_resultsArray]].cost = edittedEventCost;
+        bestItineraryObjsParsed[CONSTANTS.EVENTKEYS[i_resultsArray]].cost = edittedEventCost;
         myStorage.setItem("prevBestItinerarySavedObjects", JSON.stringify(bestItineraryObjsParsed));
       }
 
@@ -435,36 +402,36 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
           // .
           // .
           // { yelpDinnerItemsGlobal:[{Obj1}, ..., {Objn}]
-          if (edittedEventOrigin.localeCompare(ORIGINS_EB) === 0) {
-            apiKey = apiKeys[0];
+          if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_EB) === 0) {
+            apiKey = CONSTANTS.APIKEYS[0];
           }
-          else if (edittedEventOrigin.localeCompare(ORIGINS_GP) === 0) {
-            apiKey = apiKeys[1];
+          else if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_GP) === 0) {
+            apiKey = CONSTANTS.APIKEYS[1];
           }
-          else if (edittedEventOrigin.localeCompare(ORIGINS_MU) === 0) {
-            apiKey = apiKeys[2];
+          else if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_MU) === 0) {
+            apiKey = CONSTANTS.APIKEYS[2];
           }
-          else if (edittedEventOrigin.localeCompare(ORIGINS_SG) === 0) {
-            apiKey = apiKeys[3];
+          else if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_SG) === 0) {
+            apiKey = CONSTANTS.APIKEYS[3];
           }
-          else if (edittedEventOrigin.localeCompare(ORIGINS_YELP) === 0) {
+          else if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_YELP) === 0) {
             if (i_resultsArray === 1) {
-              apiKey = apiKeys[4];
+              apiKey = CONSTANTS.APIKEYS[4];
             }
             else if (i_resultsArray === 3) {
-              apiKey = apiKeys[5];
+              apiKey = CONSTANTS.APIKEYS[5];
             }
             else if (i_resultsArray === 5) {
-              apiKey = apiKeys[6];
+              apiKey = CONSTANTS.APIKEYS[6];
             }
           }
 
           if (apiKey.localeCompare('none') !== 0) {
-            if (edittedEventOrigin.localeCompare(ORIGINS_YELP) === 0) {
+            if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_YELP) === 0) {
               arr = apiData_in[apiKey];
             }
             else {
-              arr = apiData_in[apiKey][eventKeys[i_resultsArray]];
+              arr = apiData_in[apiKey][CONSTANTS.EVENTKEYS[i_resultsArray]];
             }
 
             // Find the index within the proper array of event objects that has an event name that matches with
@@ -472,11 +439,11 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
             elementPos = misc.findEventObjectByName(arr, edittedEventName);
             // If match is found, update the cost to whatever the user set
             if (elementPos !== -1) {
-              if (edittedEventOrigin.localeCompare(ORIGINS_YELP) === 0) {
+              if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_YELP) === 0) {
                 apiData_in[apiKey][elementPos].cost = edittedEventCost;
               }
               else {
-                apiData_in[apiKey][eventKeys[i_resultsArray]][elementPos].cost = edittedEventCost;
+                apiData_in[apiKey][CONSTANTS.EVENTKEYS[i_resultsArray]][elementPos].cost = edittedEventCost;
               }
             }
           }
@@ -505,8 +472,6 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
         }, function (err) {
           return err;
         }).catch(err => console.log('Error setting the new api data with updated cost in handleEventCostChange!', err));
-      // updatePersistentAPIData(idb_keyval,i_resultsArray,edittedEventOrigin,edittedEventCost,edittedEventName);
-
     }
   }
 
@@ -571,22 +536,6 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
     //   });
     //   return;
     // }
-    const EMPTY_ITINERARY = {
-      name: "No itinerary found. Try changing the inputs.",
-      url: "",
-      rating: 0,
-      time: "",
-      location: {},
-      cost: 0,
-    }
-    const EMPTY_ITINERARY_NONAME = {
-      name: "",
-      url: "",
-      rating: 0,
-      time: "",
-      location: {},
-      cost: 0,
-    }
 
     // Check if state startDate is defined
     if (this.state.startDate) {
@@ -636,7 +585,6 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
                       }
                     }
 
-
                     // Determine whether or not API calls need to be made
                     doAPICallsFlag = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, indexDBcompat);
 
@@ -682,16 +630,16 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
                         if (optimItinerary.bestItineraryIndices[0] === -1) { // No itinerary was found/ error occurred
 
                           // reset stuff
-                          resultsArrayOutput[0] = EMPTY_ITINERARY;
-                          resultsArrayOutput[1] = EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[2] = EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[3] = EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[4] = EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[5] = EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[6] = EMPTY_ITINERARY_NONAME;
+                          resultsArrayOutput[0] = CONSTANTS.EMPTY_ITINERARY;
+                          resultsArrayOutput[1] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                          resultsArrayOutput[2] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                          resultsArrayOutput[3] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                          resultsArrayOutput[4] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                          resultsArrayOutput[5] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                          resultsArrayOutput[6] = CONSTANTS.EMPTY_ITINERARY_NONAME;
 
                           var messageStrObj = {
-                            textArray: ["Oops! No itinerary was found with these inputs."],
+                            textArray: CONSTANTS.NO_ITINERARIES_FOUND_TEXT,
                             boldIndex: -1};
 
                           this.setState({
@@ -824,16 +772,16 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
                           if (optimItinerary.bestItineraryIndices[0] === -1) { // No itinerary was found/ error occurred
 
                             // reset stuff
-                            resultsArrayOutput[0] = EMPTY_ITINERARY;
-                            resultsArrayOutput[1] = EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[2] = EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[3] = EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[4] = EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[5] = EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[6] = EMPTY_ITINERARY_NONAME;
+                            resultsArrayOutput[0] = CONSTANTS.EMPTY_ITINERARY;
+                            resultsArrayOutput[1] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                            resultsArrayOutput[2] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                            resultsArrayOutput[3] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                            resultsArrayOutput[4] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                            resultsArrayOutput[5] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                            resultsArrayOutput[6] = CONSTANTS.EMPTY_ITINERARY_NONAME;
 
                             var messageStrObj = {
-                              textArray: ["Oops! No itinerary was found with these inputs."],
+                              textArray: CONSTANTS.NO_ITINERARIES_FOUND_TEXT,
                               boldIndex: -1};
 
                             this.setState({
@@ -971,7 +919,7 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
                 <td className="resultsName">
                 {this.state.resultsArray[i].url==="" ? this.state.resultsArray[i].name :
                     <a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a>}
-                    {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === 'userevent' ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />}
+                    {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />}
                 </td>
                 <td className="edit-cost text-success"><EditCostComponent
                   name={this.state.resultsArray[i].name}
@@ -1003,7 +951,7 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
       var totalCostDisplayed;
       if (this.state.totalCost > this.state.budgetmax) {
         messageObject= {
-          textArray: ["The total cost exceeds your max budget!"],
+          textArray: CONSTANTS.EXCEEDED_BUDGET_TEXT,
           boldIndex: 0,
         }
         totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
@@ -1054,19 +1002,13 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
 
     // More options display
     var options = [];
-    const NUM_EVENT_APIS = 4;
     var filters = [];
-    var filterNames = ["Meetup", "Eventbrite", "Seatgeek", "Local Parks"];
-    var filterDesc = [
-            "Meetup brings people together to create thriving communities.",
-            "Eventbrite brings people together through live experiences. Discover events that match your passions, or create your own with online ticketing tools.",
-            "SeatGeek is the Web's largest event ticket search engine. Discover events you love, search all ticket sites, see seat locations and get the best deals on tickets.",
-            "Local Parks and Places are grabbed from Google Places API, a service to  connect people to places with the power of location awareness."
-        ]
+    var filterNames = CONSTANTS.FILTER_NAMES;
+    var filterDesc = CONSTANTS.FILTER_DESC;
     options.push(<li className="filter" key="eventFilterFlags">
-      <input checked={this.state.eventFilterFlags[NUM_EVENT_APIS]} onChange={this.handleFilter} type='checkbox' value='selectAllOption'/> Select All</li>)
+      <input checked={this.state.eventFilterFlags[CONSTANTS.NUM_EVENT_APIS]} onChange={this.handleFilter} type='checkbox' value='selectAllOption'/> Select All</li>)
     options.push(<li key="alleventsdesc" className="filterDesc">Use events from all services.</li>);
-    for (i = 0; i < NUM_EVENT_APIS; i++) {
+    for (i = 0; i < CONSTANTS.NUM_EVENT_APIS; i++) {
         var event = 'event-' + i;
         var desc = 'desc-' + i;
       options.push(<li className="filter" key={event}>
@@ -1158,8 +1100,9 @@ if (!misc.isObjEmpty(this.state.allApiData)) {
             </div>
           </div>
         </div>
+        
         <div className="row eventsCont">
-          <div className="col-md-6 itinerary">
+          <div className="col-md-7 itinerary">
 
             {<MultiResultDisplay allApiData={this.state.allApiData}
               displayCategory={1}
@@ -1169,7 +1112,7 @@ if (!misc.isObjEmpty(this.state.allApiData)) {
 
           </div>
 
-          <div className="mapsfix itinerary col-md-6">
+          <div className="mapsfix itinerary col-md-5">
             <div className="sendEmail">
                 <EmailModal onRef={ref => (this.emailModal = ref)}/>
                 <input className="block btn btn-sm btn-primary moreInfoButton" type="button" value="Send Me the Itinerary" onClick={this.openModal}/>
@@ -1189,7 +1132,7 @@ if (!misc.isObjEmpty(this.state.allApiData)) {
                   {goAgainButton}</div>
                 : ''}
 
-              <GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />
+              {/*<GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />*/}
             </div>
           </div>
 
@@ -1368,24 +1311,6 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
     var includeSeatgeekEvents = eventFilterFlags_in[2];
     var includeGooglePlaces = eventFilterFlags_in[3];
 
-    // Constants. These are filler itinerary items
-    const NONE_ITEM = {
-      name: "None/Free Itinerary Slot",
-      cost: 0,
-      rating: 4.0,
-      time: "9999",
-      location: {},
-      origin: 'noneitem',
-    }
-    const NONE_ITEM_EVENT = {
-      name: "None/Free Itinerary Slot",
-      cost: 0,
-      rating: 10.4,
-      time: "9999",
-      location: {},
-      origin: 'noneitem',
-    }
-
     // Initialize array that will be returned and formatted for the GA
     var itineraries = [ //array of objects with one key per object. the key holds another array of objects
       { Event1: [] }, // 0
@@ -1485,14 +1410,14 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
     }
 
     // Append a "none" itinerary item at the end of each key array
-    itineraries[1].Breakfast.push(NONE_ITEM);
-    itineraries[3].Lunch.push(NONE_ITEM);
-    itineraries[5].Dinner.push(NONE_ITEM);
+    itineraries[1].Breakfast.push(CONSTANTS.NONE_ITEM);
+    itineraries[3].Lunch.push(CONSTANTS.NONE_ITEM);
+    itineraries[5].Dinner.push(CONSTANTS.NONE_ITEM);
 
-    itineraries[0].Event1.push(NONE_ITEM_EVENT);
-    itineraries[2].Event2.push(NONE_ITEM_EVENT);
-    itineraries[4].Event3.push(NONE_ITEM_EVENT);
-    itineraries[6].Event4.push(NONE_ITEM_EVENT);
+    itineraries[0].Event1.push(CONSTANTS.NONE_ITEM_EVENT);
+    itineraries[2].Event2.push(CONSTANTS.NONE_ITEM_EVENT);
+    itineraries[4].Event3.push(CONSTANTS.NONE_ITEM_EVENT);
+    itineraries[6].Event4.push(CONSTANTS.NONE_ITEM_EVENT);
 
     // Save user added event by overwriting previous assignments
     console.log("user added events array:")
@@ -1506,12 +1431,12 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
         itinSlot = itinSlot - 1; // shift down one for indexing
         if (doOnce[itinSlot]) {
           // if user has added an event in a particular itinerary slot, delete all data in that slot
-          delete itineraries[itinSlot][eventKeys[itinSlot]]; // (ie if itinSlot = 0 -> itineraries[0].Event1)
-          itineraries[itinSlot][eventKeys[itinSlot]] = [];  // (ie if itinslot = 1 -> itineraries[1].Breakfast = [];)
+          delete itineraries[itinSlot][CONSTANTS.EVENTKEYS[itinSlot]]; // (ie if itinSlot = 0 -> itineraries[0].Event1)
+          itineraries[itinSlot][CONSTANTS.EVENTKEYS[itinSlot]] = [];  // (ie if itinslot = 1 -> itineraries[1].Breakfast = [];)
           doOnce[itinSlot] = false;
         }
         // after the previous api data was deleted, push all the user added events in a particular slot
-        itineraries[itinSlot][eventKeys[itinSlot]].push(userAddedEventsObjs_in[iadded]); // (ie if itinSlot = 2 -> itineraries[2].Event2.push(userAddedEventsObjs_in[iadded]);)
+        itineraries[itinSlot][CONSTANTS.EVENTKEYS[itinSlot]].push(userAddedEventsObjs_in[iadded]); // (ie if itinSlot = 2 -> itineraries[2].Event2.push(userAddedEventsObjs_in[iadded]);)
       }
     }
 
@@ -1522,9 +1447,9 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
       var itinSlot = 1;
       for (var isaved = 0; isaved < savedEvents_in.length; isaved++) {
         itinSlot = savedEvents_in[isaved]; // indices 0-6
-        delete itineraries[itinSlot][eventKeys[itinSlot]]; // (ie if itinslot = 0 -> delete itineraries[0].Event1;)
-        itineraries[itinSlot][eventKeys[itinSlot]] = []; // (ie if itinslot = 1 -> itineraries[1].Breakfast =[];)
-        itineraries[itinSlot][eventKeys[itinSlot]][0] = savedEventsObjs_in[eventKeys[itinSlot]]; // (ie if itinslot = 3 -> itineraries[3].Lunch[0] = savedEventsObjs_in.Lunch;)
+        delete itineraries[itinSlot][CONSTANTS.EVENTKEYS[itinSlot]]; // (ie if itinslot = 0 -> delete itineraries[0].Event1;)
+        itineraries[itinSlot][CONSTANTS.EVENTKEYS[itinSlot]] = []; // (ie if itinslot = 1 -> itineraries[1].Breakfast =[];)
+        itineraries[itinSlot][CONSTANTS.EVENTKEYS[itinSlot]][0] = savedEventsObjs_in[CONSTANTS.EVENTKEYS[itinSlot]]; // (ie if itinslot = 3 -> itineraries[3].Lunch[0] = savedEventsObjs_in.Lunch;)
       }
     }
 
@@ -1549,7 +1474,6 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
 // stored for 24 hours or not. This is for API terms and conditions compliance to ensure data is not cached longer
 // than 24 hours.
 function clearLocallyStoredAPIData(myStorage_in) {
-  const TWENTYFOUR_HOURS = 24 * 60 * 60 * 1000; /* ms */
   var currentTimeStamp = new Date();
   var currentTimeStampStr = currentTimeStamp.getTime().toString(); // ms
   var currentTimeStampMilSec = currentTimeStamp.getTime();
@@ -1565,7 +1489,7 @@ function clearLocallyStoredAPIData(myStorage_in) {
     // if the difference is greater than 24 hours ago
     else {
       var prevTimeStamp = parseInt(lastLocalTimeStampForAPIDataDeletion,10);
-      if (currentTimeStampMilSec - prevTimeStamp >= TWENTYFOUR_HOURS) {
+      if (currentTimeStampMilSec - prevTimeStamp >= CONSTANTS.TWENTYFOUR_HOURS) {
         clearApiData = true;
         myStorage_in.setItem('timestamp', currentTimeStampStr);
       }

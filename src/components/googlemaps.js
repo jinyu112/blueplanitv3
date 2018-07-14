@@ -2,6 +2,7 @@ import '../maps.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Map, InfoWindow, Marker, GoogleApiWrapper, google} from 'google-maps-react';
 import React, { Component } from 'react';
+import CONSTANTS from '../constants.js'
 
 export class MapContainer extends Component {
     constructor(props) {
@@ -70,7 +71,7 @@ export class MapContainer extends Component {
         }
         return (
           <Map google={this.props.google}
-               zoom={12}
+               zoom={CONSTANTS.GMAPS_DEFAULT_ZOOM}
                center={this.props.center}
                className="maps"
                style={maps}
