@@ -885,7 +885,11 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
     var indents = [];
 
     if(this.state.resultsArray.length > 0) {
-        indents.push(<thead key="tablehead"><tr><th colSpan="7"><h4>Your Itinerary</h4></th></tr></thead>);
+        indents.push(<thead key="tablehead">
+        <tr>
+            <th colSpan="7"><h4>Your Itinerary</h4></th>
+        </tr>
+    </thead>);
         // Form the itinerary results display
         for (var i = 0; i < ITINERARY_LENGTH; i++) {
           var origin = this.state.resultsArray[i].origin;
@@ -987,6 +991,10 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
           <table key={"go-button-table"}>
             <tbody>
               <tr>
+              <td className="sendEmail">
+                  <EmailModal location={this.state.location} totalCost={this.state.totalCost} resultsArray={this.state.resultsArray} onRef={ref => (this.emailModal = ref)}/>
+                  <input className="block btn btn-sm btn-primary go-btn" type="button" value="Send Me the Itinerary" onClick={this.openModal}/>
+              </td>
                 <td className="itinGoBtn">
                   <input className="btn btn-sm go-btn" type="submit" onClick={this.handleSubmit} value="Search Again!" />
                 </td>
@@ -1110,10 +1118,6 @@ if (!misc.isObjEmpty(this.state.allApiData)) {
           </div>
 
           <div className="mapsfix itinerary col-md-5">
-            <div className="sendEmail">
-                <EmailModal location={this.state.location} totalCost={this.state.totalCost} resultsArray={this.state.resultsArray} onRef={ref => (this.emailModal = ref)}/>
-                <input className="block btn btn-sm btn-primary moreInfoButton" type="button" value="Send Me the Itinerary" onClick={this.openModal}/>
-            </div>
             {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
             {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
 

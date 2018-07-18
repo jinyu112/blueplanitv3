@@ -459,3 +459,12 @@ button.close {
     text-shadow: 0 1px 0 #fff;
     opacity: .2;
 }
+
+.sendEmail {
+    float: left;
+}
+
+.sendEmail input {
+    background-color: #551A8B!important;
+    border: none;
+}

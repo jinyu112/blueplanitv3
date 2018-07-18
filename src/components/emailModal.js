@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Modal, Button} from 'react-bootstrap';
+import {Modal, Button, FormControl} from 'react-bootstrap';
 import emailService from './emailService.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
@@ -12,12 +12,14 @@ class EmailModal extends Component {
         super();
 
         this.state = {
-            modalIsOpen: false
+            modalIsOpen: false,
+            email: '',
         };
         this.emailService = new emailService();
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.handleEmail = this.handleEmail.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount() {
@@ -34,6 +36,11 @@ class EmailModal extends Component {
 
     closeModal() {
         this.setState({modalIsOpen: false});
+    }
+
+
+    handleChange(e) {
+        this.setState({ email: e.target.value });
     }
 
     handleEmail(e) {
@@ -58,7 +65,7 @@ class EmailModal extends Component {
        locate.then((located) => {
            var data = {
                message: this.props.resultsArray,
-               email: 'aliguan726@gmail.com',
+               email: this.state.email,
                location: located.results[0].formatted_address,
                total: totalCost,
            }
@@ -73,10 +80,16 @@ class EmailModal extends Component {
           <Modal show={this.state.modalIsOpen} onHide={this.closeModal}>
 
            <Modal.Header closeButton>
-               <Modal.Title>Modal heading</Modal.Title>
+               <Modal.Title>Send My Itinerary</Modal.Title>
            </Modal.Header>
            <Modal.Body>
-                <Button onClick={this.handleEmail}>Send Email</Button>
+               <FormControl
+                   type="text"
+                   value={this.state.email}
+                   placeholder="Please enter your e-mail"
+                   onChange={this.handleChange}
+                />
+            <Button className="btn btn-info" onClick={this.handleEmail}>Send Email</Button>
            </Modal.Body>
            <Modal.Footer>
              <Button onClick={this.closeModal}>Close</Button>
