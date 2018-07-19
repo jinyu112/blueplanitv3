@@ -23,7 +23,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import '../maps.css';
-import emailService from './emailService.js'
+import EmailModal from './emailModal.js';
 
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
@@ -66,11 +66,11 @@ class Userinput extends Component {
       allApiData: {}, //this state holds all of the returned api data and is populated from the browser persistent data OR directly from the api calls
       pageNumber: 1,
       foodPageNumber: 1,
+      showModal: false,
     };
     this.apiService = new ApiService();
-    this.emailService = new emailService();
     this.handleChange = this.handleChange.bind(this);
-    this.handleEmail = this.handleEmail.bind(this);
+    this.openModal = this.openModal.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleCheckbox = this.handleCheckbox.bind(this);
@@ -481,7 +481,7 @@ class Userinput extends Component {
   }
 
   openModal() {
-
+    this.emailModal.openModal();
   }
 
   handleEmail(e) {
@@ -896,13 +896,17 @@ class Userinput extends Component {
     const { term, budgetmax, budgetmin, location } = this.state;
     var indents = [];
 
-    if (this.state.resultsArray.length > 0) {
-      indents.push(<thead key="tablehead"><tr><th colSpan="7"><h4>Your Itinerary</h4></th></tr></thead>);
-      // Form the itinerary results display
-      for (var i = 0; i < ITINERARY_LENGTH; i++) {
-        var origin = this.state.resultsArray[i].origin;
-        var moreInfoStyles = [];
-        moreInfoStyles.push(ITINCONTAINER_STYLE);
+    if(this.state.resultsArray.length > 0) {
+        indents.push(<thead key="tablehead">
+        <tr>
+            <th colSpan="7"><h4>Your Itinerary</h4></th>
+        </tr>
+    </thead>);
+        // Form the itinerary results display
+        for (var i = 0; i < ITINERARY_LENGTH; i++) {
+          var origin = this.state.resultsArray[i].origin;
+          var moreInfoStyles = [];
+          moreInfoStyles.push(ITINCONTAINER_STYLE);
 
         if (!this.state.showMoreInfo[i]) {
           moreInfoStyles.push(HIDDEN);
@@ -999,6 +1003,10 @@ class Userinput extends Component {
           <table key={"go-button-table"}>
             <tbody>
               <tr>
+              <td className="sendEmail">
+                  <EmailModal location={this.state.location} totalCost={this.state.totalCost} resultsArray={this.state.resultsArray} onRef={ref => (this.emailModal = ref)}/>
+                  <input className="block btn btn-sm btn-primary go-btn" type="button" value="Send Me the Itinerary" onClick={this.openModal}/>
+              </td>
                 <td className="itinGoBtn">
                   <input className="btn btn-sm go-btn" type="submit" onClick={this.handleSubmit} value="Search Again!" />
                 </td>
@@ -1143,8 +1151,6 @@ class Userinput extends Component {
               </div>
             </div>
           </div>
-
-
         </div>
         {/* <Filters/> */}
 
@@ -1152,6 +1158,7 @@ class Userinput extends Component {
           <a className="nav-item nav-link active" id="nav-events-tab" data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
           <a className="nav-item nav-link" id="nav-food-tab" data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
         </div>
+
         <div className="row eventsCont">
           <div className="tab-content col-md-7 itinerary">
             <div className="itinerary tab-pane" id="nav-events">
@@ -1193,6 +1200,7 @@ class Userinput extends Component {
 
             {/*<GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />*/}
           </div>
+
         </div>
       </div>
     )
