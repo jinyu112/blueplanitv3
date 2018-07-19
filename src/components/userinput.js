@@ -65,6 +65,7 @@ class Userinput extends Component {
       message: {},
       allApiData: {}, //this state holds all of the returned api data and is populated from the browser persistent data OR directly from the api calls
       pageNumber: 1,
+      foodPageNumber: 1,
     };
     this.apiService = new ApiService();
     this.emailService = new emailService();
@@ -83,7 +84,8 @@ class Userinput extends Component {
     this.handleClearUserEvents = this.handleClearUserEvents.bind(this);
     this.handleMoreInfo = this.handleMoreInfo.bind(this);
     this.handleEventCostChange = this.handleEventCostChange.bind(this);
-    this.handlePageClick = this.handlePageClick.bind(this);
+    this.handleEventPageClick = this.handleEventPageClick.bind(this);
+    this.handleFoodPageClick = this.handleFoodPageClick.bind(this);
     this.handleUserSelectedEventFromDisplayedResults = this.handleUserSelectedEventFromDisplayedResults.bind(this);
   }
 
@@ -102,10 +104,10 @@ class Userinput extends Component {
   handleFilter(e) {
     if (e.target.value === "selectAllOption") {
       if (e.target.checked) {
-        this.setState({ eventFilterFlags: [1,1,1,1,1] });
+        this.setState({ eventFilterFlags: [1, 1, 1, 1, 1] });
       }
       else {
-        this.setState({ eventFilterFlags: [0,0,0,0,0] });
+        this.setState({ eventFilterFlags: [0, 0, 0, 0, 0] });
       }
     }
     else {
@@ -128,12 +130,12 @@ class Userinput extends Component {
   handleCheckbox(e) {
     // i_checkbox is the checkbox value and should only have integer values from 0-6 (e.target.value is a string type though)
     // each checkbox corresponds to an item in the itinerary
-    var i_checkbox = parseInt(e.target.value,10);
+    var i_checkbox = parseInt(e.target.value, 10);
 
     // If the checkbox is checked, add the checkbox index to the states
     let checked = this.state.checked.slice();
     if (e.target.checked) {
-      if (!misc.include(this.state.savedEvents,i_checkbox)) { // if i_checkbox is not already in the savedEvents array
+      if (!misc.include(this.state.savedEvents, i_checkbox)) { // if i_checkbox is not already in the savedEvents array
         this.state.savedEvents.push(i_checkbox);
       }
       checked[i_checkbox] = 1;
@@ -155,12 +157,12 @@ class Userinput extends Component {
   handleEliminate(e) {
     // i_checkbox is the checkbox value and should only have integer values from 0-6 (e.target.value is a string type though)
     // each checkbox corresponds to an item in the itinerary
-    var i_checkbox = parseInt(e.target.value,10);
+    var i_checkbox = parseInt(e.target.value, 10);
 
     // If the checkbox is checked, add the checkbox index to the states
     let eliminated = this.state.eliminated.slice();
     if (e.target.checked) {
-      if (!misc.include(this.state.eliminatedEvents,i_checkbox)) { // if i_checkbox is not already in the eliminatedEvents array
+      if (!misc.include(this.state.eliminatedEvents, i_checkbox)) { // if i_checkbox is not already in the eliminatedEvents array
         this.state.eliminatedEvents.push(i_checkbox);
       }
       eliminated[i_checkbox] = 1;
@@ -201,8 +203,8 @@ class Userinput extends Component {
   handleAddUserEvent(userItinSlot, userEventCost, userEventName, userEventTime) {
     // Note: userItinSlot is the string from the dropdown menu in the add user events tab (ie 1-7 only)
     var itinSlot = 1;
-    if (userItinSlot){
-      itinSlot = parseInt(userItinSlot,10); // 1- 7 only
+    if (userItinSlot) {
+      itinSlot = parseInt(userItinSlot, 10); // 1- 7 only
     }
     var cost = 0.0;
     if (userEventCost) {
@@ -210,7 +212,7 @@ class Userinput extends Component {
     }
 
     var time = userEventTime;
-    time = time.replace(":","");
+    time = time.replace(":", "");
     if (time.localeCompare("") === 0) {
       time = CONSTANTS.EVENT_TIMES[0];
     }
@@ -239,19 +241,19 @@ class Userinput extends Component {
   }
 
   handleDeleteUserEvent(userItinSlot, userEventCost, userEventName) {
-      var userAddedEvents = this.state.userAddedEvents;
-      var userAddedEventsArray = this.state.userAddedEvents.slice();
-      userAddedEvents.find( (event, i) => {
-          if(event.name === userEventName) {
-              userAddedEventsArray.splice(i, 1);
-              this.setState({
-                  userAddedEvents: userAddedEventsArray
-             })
-          }
-      });
+    var userAddedEvents = this.state.userAddedEvents;
+    var userAddedEventsArray = this.state.userAddedEvents.slice();
+    userAddedEvents.find((event, i) => {
+      if (event.name === userEventName) {
+        userAddedEventsArray.splice(i, 1);
+        this.setState({
+          userAddedEvents: userAddedEventsArray
+        })
+      }
+    });
 
-      console.log('user state (delete) ---->');
-      console.log(this.state.userAddedEvents);
+    console.log('user state (delete) ---->');
+    console.log(this.state.userAddedEvents);
   }
 
   handleClearUserEvents(e) {
@@ -261,7 +263,7 @@ class Userinput extends Component {
     var index;
     var savedEventsState = this.state.savedEvents.slice();
     var checkedState = this.state.checked.slice();
-    if (savedEventsState.length>0) {
+    if (savedEventsState.length > 0) {
       for (var i = 0; i < this.state.userAddedEvents.length; i++) {
         itinSlotIndex = this.state.userAddedEvents[i].slot - 1; // 0-6
         index = savedEventsState.indexOf(itinSlotIndex);
@@ -283,56 +285,62 @@ class Userinput extends Component {
     console.log("All user added events cleared.")
   }
 
-handlePageClick(pageNumber_in) {
-  this.setState({
-    pageNumber: pageNumber_in,
-  })
-}
-
-// handles what happens when user selects a event/itinerary item from the comprehensive displayed results
-// to add to the itinerary
-handleUserSelectedEventFromDisplayedResults(itinObj_in) {
-
-  // Update the total cost displayed
-  var i_resultsArray = parseInt(itinObj_in.other); // i_resultsArray is the index position in the itinerary results
-  var tempTotalCost = this.state.totalCost - this.state.resultsArray[i_resultsArray].cost;
-  tempTotalCost = misc.round2NearestHundredth(tempTotalCost + itinObj_in.cost);
-
-  // Update the results array state and the itinTimes state
-  this.state.resultsArray[i_resultsArray] = itinObj_in;
-  this.state.itinTimes[i_resultsArray] = misc.convertMilTime(itinObj_in.time);
-
-  // If the user selects an event/itinerary item from the results, lock it in the itinerary
-  let checked = this.state.checked.slice();
-  if (checked[i_resultsArray] !== 1) {
-    checked[i_resultsArray] = 1;
-    if (!misc.include(this.state.savedEvents,i_resultsArray)) { // if i_resultsArray is not already in the savedEvents array
-      this.state.savedEvents.push(i_resultsArray);
-    }
+  handleEventPageClick(pageNumber_in) {
+    this.setState({
+      pageNumber: pageNumber_in,
+    })
   }
 
-  // Update persistent data in browser for GA
-  var myStorage = window.localStorage;
-  var prevBestItineraryObjs = JSON.stringify({
-    Event1: this.state.resultsArray[0],
-    Breakfast: this.state.resultsArray[1],
-    Event2: this.state.resultsArray[2],
-    Lunch: this.state.resultsArray[3],
-    Event3: this.state.resultsArray[4],
-    Dinner: this.state.resultsArray[5],
-    Event4: this.state.resultsArray[6],
-  });
-  myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
+  handleFoodPageClick(pageNumber_in) {
+    this.setState({
+      foodPageNumber: pageNumber_in,
+    })
+  }
 
-  // Update states and rerender
-  this.setState({
-    resultsArray: this.state.resultsArray,
-    totalCost: tempTotalCost,
-    itinTimes: this.state.itinTimes,
-    checked: checked,
-    savedEvents: this.state.savedEvents,
-  });
-}
+  // handles what happens when user selects a event/itinerary item from the comprehensive displayed results
+  // to add to the itinerary
+  handleUserSelectedEventFromDisplayedResults(itinObj_in) {
+
+    // Update the total cost displayed
+    var i_resultsArray = parseInt(itinObj_in.other); // i_resu+ltsArray is the index position in the itinerary results
+    var tempTotalCost = this.state.totalCost - this.state.resultsArray[i_resultsArray].cost;
+    tempTotalCost = misc.round2NearestHundredth(tempTotalCost + itinObj_in.cost);
+
+    // Update the results array state and the itinTimes state
+    this.state.resultsArray[i_resultsArray] = itinObj_in;
+    this.state.itinTimes[i_resultsArray] = misc.convertMilTime(itinObj_in.time);
+
+    // If the user selects an event/itinerary item from the results, lock it in the itinerary
+    let checked = this.state.checked.slice();
+    if (checked[i_resultsArray] !== 1) {
+      checked[i_resultsArray] = 1;
+      if (!misc.include(this.state.savedEvents, i_resultsArray)) { // if i_resultsArray is not already in the savedEvents array
+        this.state.savedEvents.push(i_resultsArray);
+      }
+    }
+
+    // Update persistent data in browser for GA
+    var myStorage = window.localStorage;
+    var prevBestItineraryObjs = JSON.stringify({
+      Event1: this.state.resultsArray[0],
+      Breakfast: this.state.resultsArray[1],
+      Event2: this.state.resultsArray[2],
+      Lunch: this.state.resultsArray[3],
+      Event3: this.state.resultsArray[4],
+      Dinner: this.state.resultsArray[5],
+      Event4: this.state.resultsArray[6],
+    });
+    myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
+
+    // Update states and rerender
+    this.setState({
+      resultsArray: this.state.resultsArray,
+      totalCost: tempTotalCost,
+      itinTimes: this.state.itinTimes,
+      checked: checked,
+      savedEvents: this.state.savedEvents,
+    });
+  }
   handleMoreInfo(e) {
     var tempShowMoreInfo = (this.state.showMoreInfo).slice();
     tempShowMoreInfo[e] = !tempShowMoreInfo[e];
@@ -351,7 +359,7 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
       !isNaN(edittedEventCost) &&
       indexDBcompat && myStorage) {
 
-      i_resultsArray = parseInt(i_resultsArray,10);
+      i_resultsArray = parseInt(i_resultsArray, 10);
       let checked = this.state.checked.slice();
 
       if (CONSTANTS.AUTO_LOCK_UPDATED_EVENT) {
@@ -477,33 +485,33 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
   }
 
   handleEmail(e) {
-      e.preventDefault();
-      var loc = this.state.location;
-      var totalCost = this.state.totalCost;
-      function getLocation() {
-          return new Promise(function (resolve, reject) {
-          geocoder.geocode(loc, function(err, lat_lon) {
-              if (err) {
-                console.log(err);
-                reject(false);
-              } else {
-                resolve(lat_lon);
-              }
-          });
+    e.preventDefault();
+    var loc = this.state.location;
+    var totalCost = this.state.totalCost;
+    function getLocation() {
+      return new Promise(function (resolve, reject) {
+        geocoder.geocode(loc, function (err, lat_lon) {
+          if (err) {
+            console.log(err);
+            reject(false);
+          } else {
+            resolve(lat_lon);
+          }
         });
-        }
+      });
+    }
 
-     let locate = getLocation();
-     locate.then((located) => {
-         var data = {
-             message: this.state.resultsArray,
-             email: 'aliguan726@gmail.com',
-             location: located.results[0].formatted_address,
-             total: totalCost,
-         }
+    let locate = getLocation();
+    locate.then((located) => {
+      var data = {
+        message: this.state.resultsArray,
+        email: 'aliguan726@gmail.com',
+        location: located.results[0].formatted_address,
+        total: totalCost,
+      }
 
-         this.emailService.sendEmail(data);
-     });
+      this.emailService.sendEmail(data);
+    });
 
   }
 
@@ -512,7 +520,7 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
 
     console.clear();
     this.setState({
-        loading: true
+      loading: true
     });
     var myStorage = window.localStorage;
     var doAPICallsFlag = true;
@@ -637,7 +645,8 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
 
                           var messageStrObj = {
                             textArray: CONSTANTS.NO_ITINERARIES_FOUND_TEXT,
-                            boldIndex: -1};
+                            boldIndex: -1
+                          };
 
                           this.setState({
                             resultsArray: resultsArrayOutput,
@@ -669,9 +678,10 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
 
                           var messageStrObj = {
                             textArray: ["The max event cost is "
-                            , "$" + optimItinerary.maxCost.toString(),
-                            ". Increase your budget to include more events!"],
-                            boldIndex: 1};
+                              , "$" + optimItinerary.maxCost.toString(),
+                              ". Increase your budget to include more events!"],
+                            boldIndex: 1
+                          };
 
                           // Set the state in this component and re-render
                           this.setState({
@@ -779,7 +789,8 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
 
                             var messageStrObj = {
                               textArray: CONSTANTS.NO_ITINERARIES_FOUND_TEXT,
-                              boldIndex: -1};
+                              boldIndex: -1
+                            };
 
                             this.setState({
                               resultsArray: resultsArrayOutput,
@@ -822,9 +833,10 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
                             this.handleData(optimItinerary.bestLocations, optimItinerary.bestUrls, mapCenter);
                             var messageStrObj = {
                               textArray: ["The max event cost is "
-                              , "$" + optimItinerary.maxCost.toString(),
-                              ". Increase your budget to include more events!"],
-                              boldIndex: 1};
+                                , "$" + optimItinerary.maxCost.toString(),
+                                ". Increase your budget to include more events!"],
+                              boldIndex: 1
+                            };
 
 
                             // Set the state in this component and re-render
@@ -843,8 +855,8 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
                         );
                       }
                     }
-                   }
-                 }
+                  }
+                }
               }.bind(this))
 
             }
@@ -874,61 +886,61 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
     const OPEN = 'open';
 
     var origins = {
-         yelp: yelp_logo,
-         places: google_logo,
-         meetup: meetup_logo,
-         eventbrite: eventbrite_logo,
-         seatgeek: seatgeek_logo
+      yelp: yelp_logo,
+      places: google_logo,
+      meetup: meetup_logo,
+      eventbrite: eventbrite_logo,
+      seatgeek: seatgeek_logo
     }
     var ITINERARY_LENGTH = this.state.resultsArray.length;
     const { term, budgetmax, budgetmin, location } = this.state;
     var indents = [];
 
-    if(this.state.resultsArray.length > 0) {
-        indents.push(<thead key="tablehead"><tr><th colSpan="7"><h4>Your Itinerary</h4></th></tr></thead>);
-        // Form the itinerary results display
-        for (var i = 0; i < ITINERARY_LENGTH; i++) {
-          var origin = this.state.resultsArray[i].origin;
-          var moreInfoStyles = [];
-          moreInfoStyles.push(ITINCONTAINER_STYLE);
+    if (this.state.resultsArray.length > 0) {
+      indents.push(<thead key="tablehead"><tr><th colSpan="7"><h4>Your Itinerary</h4></th></tr></thead>);
+      // Form the itinerary results display
+      for (var i = 0; i < ITINERARY_LENGTH; i++) {
+        var origin = this.state.resultsArray[i].origin;
+        var moreInfoStyles = [];
+        moreInfoStyles.push(ITINCONTAINER_STYLE);
 
-          if (!this.state.showMoreInfo[i]) {
-            moreInfoStyles.push(HIDDEN);
-          }
-          var lock_icon = lock
-          if(!this.state.checked[i]) {
-              lock_icon = unlock;
-          }
+        if (!this.state.showMoreInfo[i]) {
+          moreInfoStyles.push(HIDDEN);
+        }
+        var lock_icon = lock
+        if (!this.state.checked[i]) {
+          lock_icon = unlock;
+        }
 
-          var elim_icon = light
-          if(!this.state.eliminated[i]) {
-              elim_icon = dark;
-          }
+        var elim_icon = light
+        if (!this.state.eliminated[i]) {
+          elim_icon = dark;
+        }
 
-          var key = 'tbody-' + i;
-          var id = 'checkbox-' + i;
-          var elim_id = 'elim-' + i;
-          indents.push(
-            <tbody key={key}>
-              <tr>
-                <td><a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a></td>
-                <td><strong>{this.state.itinTimes[i] ? this.state.itinTimes[i] : ''}</strong></td>
-                <td className="resultsName">
-                {this.state.resultsArray[i].url==="" ? this.state.resultsArray[i].name :
-                    <a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a>}
-                    {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />}
-                </td>
-                <td className="edit-cost text-success"><EditCostComponent
-                  name={this.state.resultsArray[i].name}
-                  cost={this.state.resultsArray[i].cost}
-                  handleCostChange={this.handleEventCostChange}
-                  i_resultsArray={i}
-                  origin={this.state.resultsArray[i].origin} /> </td>
-                <td><label htmlFor={id}><img alt="lock icon" className="lock" src={lock_icon} /></label><input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} /></td>
-                <td><label htmlFor={elim_id}><img alt="eliminate icon" className="elim" src={elim_icon} /></label><input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} /></td>
-              </tr>
-              <tr className={moreInfoStyles.join(' ')}>
-                <td colSpan="7"><MoreInfoView desc={this.state.resultsArray[i].description}
+        var key = 'tbody-' + i;
+        var id = 'checkbox-' + i;
+        var elim_id = 'elim-' + i;
+        indents.push(
+          <tbody key={key}>
+            <tr>
+              <td><a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a></td>
+              <td><strong>{this.state.itinTimes[i] ? this.state.itinTimes[i] : ''}</strong></td>
+              <td className="resultsName">
+                {this.state.resultsArray[i].url === "" ? this.state.resultsArray[i].name :
+                  <a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a>}
+                {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />}
+              </td>
+              <td className="edit-cost text-success"><EditCostComponent
+                name={this.state.resultsArray[i].name}
+                cost={this.state.resultsArray[i].cost}
+                handleCostChange={this.handleEventCostChange}
+                i_resultsArray={i}
+                origin={this.state.resultsArray[i].origin} /> </td>
+              <td><label htmlFor={id}><img alt="lock icon" className="lock" src={lock_icon} /></label><input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} /></td>
+              <td><label htmlFor={elim_id}><img alt="eliminate icon" className="elim" src={elim_icon} /></label><input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} /></td>
+            </tr>
+            <tr className={moreInfoStyles.join(' ')}>
+              <td colSpan="7"><MoreInfoView desc={this.state.resultsArray[i].description}
                 phone={this.state.resultsArray[i].phone}
                 address={this.state.resultsArray[i].address}
                 duration={this.state.resultsArray[i].duration}
@@ -937,17 +949,17 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
                 thumbnail={this.state.resultsArray[i].thumbnail}
                 url={this.state.resultsArray[i].url}
                 approxFeeFlag={this.state.resultsArray[i].approximateFee}
-                defaultDurationFlag={this.state.resultsArray[i].defaultDuration}/></td>
-              </tr>
-            </tbody>
-          );
+                defaultDurationFlag={this.state.resultsArray[i].defaultDuration} /></td>
+            </tr>
+          </tbody>
+        );
       }
 
       // The Total cost display
       var messageObject;
       var totalCostDisplayed;
       if (this.state.totalCost > this.state.budgetmax) {
-        messageObject= {
+        messageObject = {
           textArray: CONSTANTS.EXCEEDED_BUDGET_TEXT,
           boldIndex: 0,
         }
@@ -972,11 +984,11 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
               </tr>
 
 
-                  {this.state.message === -1 ? '' :
-                    <tr><td colSpan="2">
-                    <Message key={"messageComponent"} messageObj={messageObject}/>
-                    </td></tr>
-                    }
+              {this.state.message === -1 ? '' :
+                <tr><td colSpan="2">
+                  <Message key={"messageComponent"} messageObj={messageObject} />
+                </td></tr>
+              }
             </tbody>
           </table>
         </div>)
@@ -1003,16 +1015,16 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
     var filterNames = CONSTANTS.FILTER_NAMES;
     var filterDesc = CONSTANTS.FILTER_DESC;
     options.push(<li className="filter" key="eventFilterFlags">
-      <input checked={this.state.eventFilterFlags[CONSTANTS.NUM_EVENT_APIS]} onChange={this.handleFilter} type='checkbox' value='selectAllOption'/> Select All</li>)
+      <input checked={this.state.eventFilterFlags[CONSTANTS.NUM_EVENT_APIS]} onChange={this.handleFilter} type='checkbox' value='selectAllOption' /> Select All</li>)
     options.push(<li key="alleventsdesc" className="filterDesc">Use events from all services.</li>);
     for (i = 0; i < CONSTANTS.NUM_EVENT_APIS; i++) {
-        var event = 'event-' + i;
-        var desc = 'desc-' + i;
+      var event = 'event-' + i;
+      var desc = 'desc-' + i;
       options.push(<li className="filter" key={event}>
-          <input checked={this.state.eventFilterFlags[i]} onChange={this.handleFilter} type='checkbox' value={i} /> {filterNames[i]}</li>
-        );
-        options.push(<li key={desc}><p className="filterDesc">{filterDesc[i]}</p></li>);
-     }
+        <input checked={this.state.eventFilterFlags[i]} onChange={this.handleFilter} type='checkbox' value={i} /> {filterNames[i]}</li>
+      );
+      options.push(<li key={desc}><p className="filterDesc">{filterDesc[i]}</p></li>);
+    }
 
     var userevents = [];
     for (i = 0; i < this.state.userAddedEvents.length; i++) {
@@ -1020,23 +1032,58 @@ handleUserSelectedEventFromDisplayedResults(itinObj_in) {
     }
 
 
-// Pagination
-var pages = [];
-if (!misc.isObjEmpty(this.state.allApiData)) {
-  var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
-  pages.push("<");
-  var pageNumber;
-  for (i = 0; i < numPages; i++) {
-    pageNumber = i + 1;
-    if (this.state.pageNumber !== pageNumber) {
-      pages.push(<PaginationLink key={"pg" + pageNumber} pageNumber={pageNumber} onPageLinkClick={this.handlePageClick}/>);
+    // Event Pagination
+    var pages = [];
+    var pageNumber;
+    if (!misc.isObjEmpty(this.state.allApiData)) {
+      var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
+      pages.push("<");
+
+      for (i = 0; i < numPages; i++) {
+        pageNumber = i + 1;
+        if (this.state.pageNumber !== pageNumber) {
+          pages.push(<PaginationLink key={"pg" + pageNumber} pageNumber={pageNumber} onPageLinkClick={this.handleEventPageClick} />);
+        }
+        else {
+          pages.push(pageNumber);
+        }
+      }
+      pages.push(">");
     }
-    else {
-      pages.push(pageNumber);
+
+    var eventsMultiResults = [];
+    if (!misc.isObjEmpty(this.state.allApiData)) {
+      eventsMultiResults = [this.state.allApiData.eventbriteGlobal,
+      this.state.allApiData.googlePlacesGlobal,
+      this.state.allApiData.meetupItemsGlobal,
+      this.state.allApiData.seatgeekItemsGlobal];
     }
-  }
-  pages.push(">");
-}
+
+    // Food Pagination
+    var foodPages = [];
+    var foodPageNumber;
+    if (!misc.isObjEmpty(this.state.allApiData)) {
+      var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfFoodPlaces / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
+      foodPages.push("<");
+
+      for (i = 0; i < numPages; i++) {
+        foodPageNumber = i + 1;
+        if (this.state.foodPageNumber !== foodPageNumber) {
+          foodPages.push(<PaginationLink key={"pg" + foodPageNumber} pageNumber={foodPageNumber} onPageLinkClick={this.handleFoodPageClick} />);
+        }
+        else {
+          foodPages.push(foodPageNumber);
+        }
+      }
+      foodPages.push(">");
+    }
+
+    var foodMultiResults = [];
+    if (!misc.isObjEmpty(this.state.allApiData)) {
+      foodMultiResults = [this.state.allApiData.yelpBreakfastItemsGlobal,
+      this.state.allApiData.yelpLunchItemsGlobal,
+      this.state.allApiData.yelpDinnerItemsGlobal];
+    }
 
 
     return (
@@ -1099,41 +1146,55 @@ if (!misc.isObjEmpty(this.state.allApiData)) {
 
 
         </div>
-        
-        <div className="row eventsCont">
-          <div className="col-md-7 itinerary">
+        {/* <Filters/> */}
 
-            {<MultiResultDisplay allApiData={this.state.allApiData}
-              displayCategory={1}
-              pageNumber={this.state.pageNumber}
-              AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults}/>}
+        <div className="nav nav-tabs" id="nav-tab" role="tablist">
+          <a className="nav-item nav-link active" id="nav-events-tab" data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
+          <a className="nav-item nav-link" id="nav-food-tab" data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
+        </div>
+        <div className="row eventsCont">
+          <div className="tab-content col-md-7 itinerary">
+            <div className="itinerary tab-pane" id="nav-events">
+
+              {<MultiResultDisplay apiData={eventsMultiResults}
+                displayCategory={1}
+                pageNumber={this.state.pageNumber}
+                AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults} />}
               {pages}
 
-          </div>
+            </div>
 
+            <div className="itinerary tab-pane" id="nav-food">
+              {<MultiResultDisplay apiData={foodMultiResults}
+                displayCategory={0}
+                pageNumber={this.state.foodPageNumber}
+                AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults} />}
+            {foodPages}
+            </div>
+          </div>
           <div className="mapsfix itinerary col-md-5">
             <div className="sendEmail">
-                <input className="block btn btn-sm btn-primary moreInfoButton" type="button" value="Send Me the Itinerary" onClick={this.openEmailModal}/>
+              <input className="block btn btn-sm btn-primary moreInfoButton" type="button" value="Send Me the Itinerary" onClick={this.openEmailModal} />
             </div>
             {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
             {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
 
-                <table>
-                  {indents}
-                </table>}
+              <table>
+                {indents}
+              </table>}
 
-                {this.state.loading === false ? <div className="totalCost">
-                    {total}
-                </div> : ''}
+            {this.state.loading === false ? <div className="totalCost">
+              {total}
+            </div> : ''}
 
-                {this.state.loading === false ? <div>
-                  {goAgainButton}</div>
-                : ''}
+            {this.state.loading === false ? <div>
+              {goAgainButton}</div>
+              : ''}
 
-              {/*<GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />*/}
-            </div>
+            {/*<GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />*/}
           </div>
         </div>
+      </div>
     )
   }
 }
@@ -1261,7 +1322,7 @@ function xHoursPassed(currentDateTimeMoment, locallyStoredDateTimeStr, elapsedHo
 
 
 function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
-                             savedEventsObjs_in, userAddedEventsObjs_in) {
+  savedEventsObjs_in, userAddedEventsObjs_in) {
   try {
     // Define whether or not user choose to save an event or restaurant to eat at
     // savedEvents_in is the indices of the saved events [0-6]
@@ -1272,7 +1333,7 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
     }
 
     var userAddedEventsFlag = false;
-    if (userAddedEventsObjs_in.length>0 && userAddedEventsObjs_in) {
+    if (userAddedEventsObjs_in.length > 0 && userAddedEventsObjs_in) {
       userAddedEventsFlag = true;
     }
 
@@ -1421,7 +1482,7 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
     console.log(userAddedEventsObjs_in)
     if (userAddedEventsFlag) {
 
-      var doOnce = [true,true,true,true,true,true,true];
+      var doOnce = [true, true, true, true, true, true, true];
       var itinSlot = 1;
       for (var iadded = 0; iadded < userAddedEventsObjs_in.length; iadded++) {
         itinSlot = userAddedEventsObjs_in[iadded].slot; // should be 1-7 from dropdown menu in "add event" tab
@@ -1485,7 +1546,7 @@ function clearLocallyStoredAPIData(myStorage_in) {
     // If there is the timestamp key in local storage, compare it to the current time and calculate
     // if the difference is greater than 24 hours ago
     else {
-      var prevTimeStamp = parseInt(lastLocalTimeStampForAPIDataDeletion,10);
+      var prevTimeStamp = parseInt(lastLocalTimeStampForAPIDataDeletion, 10);
       if (currentTimeStampMilSec - prevTimeStamp >= CONSTANTS.TWENTYFOUR_HOURS) {
         clearApiData = true;
         myStorage_in.setItem('timestamp', currentTimeStampStr);

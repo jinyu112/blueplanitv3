@@ -426,3 +426,18 @@ img{
    display: grid;
    grid-template-columns: repeat(2, 1fr); 
 }
+
+/* for react-simple-dropdown package*/
+.dropdown {
+    display: inline-block;
+}
+
+.dropdown__content {
+    display: none;
+    position: absolute;
+}
+
+.dropdown--active .dropdown__content {
+    display: block;
+}
+/*  end for react-simple-dropdown package*/
