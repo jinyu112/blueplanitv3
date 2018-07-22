@@ -559,7 +559,7 @@ class Userinput extends Component {
 
     console.clear();
     var insideBudget = true;
-    if (this.state.resultsArray.length > 0) {
+    if (this.state.resultsArray.length > 1) {
       var arrayOfCosts = [this.state.resultsArray[0].cost,
                           this.state.resultsArray[1].cost,
                           this.state.resultsArray[2].cost,
@@ -686,12 +686,7 @@ class Userinput extends Component {
 
                           // reset stuff
                           resultsArrayOutput[0] = CONSTANTS.EMPTY_ITINERARY;
-                          resultsArrayOutput[1] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[2] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[3] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[4] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[5] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[6] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                          resultsArrayOutput.splice(1,6);
 
                           var messageStrObj = {
                             textArray: CONSTANTS.NO_ITINERARIES_FOUND_TEXT,
@@ -831,12 +826,7 @@ class Userinput extends Component {
 
                             // reset stuff
                             resultsArrayOutput[0] = CONSTANTS.EMPTY_ITINERARY;
-                            resultsArrayOutput[1] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[2] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[3] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[4] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[5] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[6] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                            resultsArrayOutput.splice(1,6);
 
                             var messageStrObj = {
                               textArray: CONSTANTS.NO_ITINERARIES_FOUND_TEXT,
