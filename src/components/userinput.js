@@ -519,37 +519,6 @@ class Userinput extends Component {
     this.emailModal.openModal();
   }
 
-  handleEmail(e) {
-    e.preventDefault();
-    var loc = this.state.location;
-    var totalCost = this.state.totalCost;
-    function getLocation() {
-      return new Promise(function (resolve, reject) {
-        geocoder.geocode(loc, function (err, lat_lon) {
-          if (err) {
-            console.log(err);
-            reject(false);
-          } else {
-            resolve(lat_lon);
-          }
-        });
-      });
-    }
-
-    let locate = getLocation();
-    locate.then((located) => {
-      var data = {
-        message: this.state.resultsArray,
-        email: 'aliguan726@gmail.com',
-        location: located.results[0].formatted_address,
-        total: totalCost,
-      }
-
-      this.emailService.sendEmail(data);
-    });
-
-  }
-
   handleSubmit(e) {
     e.preventDefault();
 
