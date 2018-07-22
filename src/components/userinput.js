@@ -86,7 +86,7 @@ class Userinput extends Component {
     this.handleEventCostChange = this.handleEventCostChange.bind(this);
     this.handleEventPageClick = this.handleEventPageClick.bind(this);
     this.handleFoodPageClick = this.handleFoodPageClick.bind(this);
-    this.handleUserSelectedEventFromDisplayedResults = this.handleUserSelectedEventFromDisplayedResults.bind(this);
+    this.handleUpdateItinerary = this.handleUpdateItinerary.bind(this);
   }
 
   handleChange(e) {
@@ -166,6 +166,17 @@ class Userinput extends Component {
         this.state.eliminatedEvents.push(i_checkbox);
       }
       eliminated[i_checkbox] = 1;
+      var tempNoneObj;
+      if (i_checkbox === 1 || i_checkbox === 3 || i_checkbox === 5) {
+        tempNoneObj = CONSTANTS.NONE_ITEM;
+      }
+      else {
+        tempNoneObj = CONSTANTS.NONE_ITEM_EVENT;
+      }
+      tempNoneObj.other = i_checkbox;
+      tempNoneObj.cost = 0.0;
+
+      this.handleUpdateItinerary(tempNoneObj);
       this.setState({ eliminated: eliminated });
     }
     // If the checkbox is unchecked, find and remove the checkbox index from the states
@@ -232,7 +243,7 @@ class Userinput extends Component {
       slot: itinSlot, // this is very important! the slot needs to be 1-7 integer
       description: "",
       origin: CONSTANTS.ORIGINS_USER,
-      other: itineraryIndex, // this is for handleUserSelectedEventFromDisplayedResults function to auto
+      other: itineraryIndex, // this is for handleUpdateItinerary function to auto
                              // put the user added event into the itinerary in the right slot
     }
 
@@ -246,7 +257,7 @@ class Userinput extends Component {
     console.log('user state ---->');
     console.log(this.state.userAddedEvents);
 
-    this.handleUserSelectedEventFromDisplayedResults(userAddedEventObj);
+    this.handleUpdateItinerary(userAddedEventObj);
 
   }
 
@@ -308,8 +319,8 @@ class Userinput extends Component {
   }
 
   // handles what happens when user selects a event/itinerary item from the comprehensive displayed results
-  // to add to the itinerary
-  handleUserSelectedEventFromDisplayedResults(itinObj_in) {
+  // to add to the itinerary, or when "x" is clicked or when user adds an event
+  handleUpdateItinerary(itinObj_in) {
 
     // only go through this logic if the itinerary is populated (thus the if statement to check)
     if (this.state.resultsArray.length > 0 && this.state.resultsArray !== null && this.state.resultsArray !== undefined) {
@@ -979,6 +990,13 @@ class Userinput extends Component {
         }
         totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
       }
+      else if (this.state.totalCost < this.state.budgetmin) {
+        messageObject = {
+          textArray: CONSTANTS.LESS_THAN_MINBUDGET_TEXT,
+          boldIndex: 0,
+        }
+        totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
+      }
       else {
         messageObject = this.state.message;
         totalCostDisplayed = <b>${this.state.totalCost}</b>;
@@ -1165,7 +1183,7 @@ class Userinput extends Component {
               {<MultiResultDisplay apiData={eventsMultiResults}
                 displayCategory={1}
                 pageNumber={this.state.pageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults} />}
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} />}
               {pages}
 
             </div>
@@ -1174,7 +1192,7 @@ class Userinput extends Component {
               {<MultiResultDisplay apiData={foodMultiResults}
                 displayCategory={0}
                 pageNumber={this.state.foodPageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults} />}
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} />}
             {foodPages}
             </div>
 
@@ -1188,7 +1206,7 @@ class Userinput extends Component {
               {<MultiResultDisplay apiData={this.state.userAddedEvents}
                 displayCategory={2}
                 pageNumber={this.state.foodPageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults} />}
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} />}
                 {/* {userevents} */}
             </div>
           </div>

@@ -36,6 +36,7 @@ module.exports = {
         time: "9999",
         location: {},
         origin: 'noneitem',
+        other: 0, //a field for misc info
       },
     NONE_ITEM: {
         name: "None/Free Itinerary Slot",
@@ -44,6 +45,7 @@ module.exports = {
         time: "9999",
         location: {},
         origin: 'noneitem',
+        other: 0,
       },
     EVENT_TIMES: ["0900","","1200","","1800","","2200"],
     USERADDED_EVENT_RATING: 1000, //
@@ -67,6 +69,7 @@ module.exports = {
       },
       NO_ITINERARIES_FOUND_TEXT: ["Oops! No itinerary was found with these inputs."],
       EXCEEDED_BUDGET_TEXT: ["The total cost exceeds your max budget!"],
+      LESS_THAN_MINBUDGET_TEXT: ["The total cost is less than your minimum budget!"],
       NUM_EVENT_APIS: 4, // in userinput for filtering results on event api
       FILTER_NAMES: ["Meetup", "Eventbrite", "Seatgeek", "Local Parks"],
       FILTER_DESC: [
