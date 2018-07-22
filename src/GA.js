@@ -479,9 +479,9 @@ module.exports = {
 
       // Calculate event's maximum cost for displaying to user
       var maxCost = Math.max.apply(Math, breakfastCosts.concat(lunchCosts).concat(dinnerCosts).concat(event1Costs).concat(event2Costs).concat(event3Costs).concat(event4Costs));
-      if (budgetmax_in > maxCost) {
-        maxCost = -1;
-      }
+      // if (budgetmax_in > maxCost) {
+      //   maxCost = -1;
+      // }
       
 
       parsedDataObj = {

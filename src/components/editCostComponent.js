@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import misc from '../miscfuncs/misc.js';
+import CONSTANTS from '../constants.js';
 
 export class EditCostComponent extends Component {
     constructor(props) {
@@ -20,13 +21,19 @@ export class EditCostComponent extends Component {
 
     render() {
         var cost = misc.round2NearestHundredth(parseFloat(this.props.cost));
+        var editCostComponentArray = [];
+
+        if ((this.props.origin).localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) { //if not a "none item" itinerary slot, show the price
+            editCostComponentArray.push(<span key={this.props.name + "editCostSpan"}>$</span>);
+            editCostComponentArray.push(<input type="number" className="text-success form-control editCostStyle" min="0"
+                defaultValue={cost} onBlur={this.handleBlur}
+                ref="edittedEventCost" 
+                key={this.props.name + "editCostInput"}/>);
+        }
         return (
             <form>
-            <div className="edit-cost-cont" key={this.props.name}>
-                <span>$</span>
-                <input type="number" className="text-success form-control editCostStyle" min="0"
-                    defaultValue={cost} onBlur={this.handleBlur}
-                    ref="edittedEventCost"/>
+            <div className="edit-cost-cont" key={this.props.name + "editCostDiv"}>                
+                {editCostComponentArray}
             </div>
             </form>
         );

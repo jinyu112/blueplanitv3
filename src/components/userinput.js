@@ -46,8 +46,8 @@ class Userinput extends Component {
 
     this.state = {
       term: '',
-      budgetmax: 150,
-      budgetmin: 90,
+      budgetmax: CONSTANTS.MAX_BUDGET_DEFAULT, // 9999
+      budgetmin: CONSTANTS.MIN_BUDGET_DEFAULT, //0
       location: 'San Francisco, CA',
       resultsArray: [],
       startDate: moment(),
@@ -86,7 +86,7 @@ class Userinput extends Component {
     this.handleEventCostChange = this.handleEventCostChange.bind(this);
     this.handleEventPageClick = this.handleEventPageClick.bind(this);
     this.handleFoodPageClick = this.handleFoodPageClick.bind(this);
-    this.handleUserSelectedEventFromDisplayedResults = this.handleUserSelectedEventFromDisplayedResults.bind(this);
+    this.handleUpdateItinerary = this.handleUpdateItinerary.bind(this);
   }
 
   handleChange(e) {
@@ -166,6 +166,17 @@ class Userinput extends Component {
         this.state.eliminatedEvents.push(i_checkbox);
       }
       eliminated[i_checkbox] = 1;
+      var tempNoneObj;
+      if (i_checkbox === 1 || i_checkbox === 3 || i_checkbox === 5) {
+        tempNoneObj = CONSTANTS.NONE_ITEM;
+      }
+      else {
+        tempNoneObj = CONSTANTS.NONE_ITEM_EVENT;
+      }
+      tempNoneObj.other = i_checkbox;
+      tempNoneObj.cost = 0.0;
+
+      this.handleUpdateItinerary(tempNoneObj);
       this.setState({ eliminated: eliminated });
     }
     // If the checkbox is unchecked, find and remove the checkbox index from the states
@@ -232,7 +243,7 @@ class Userinput extends Component {
       slot: itinSlot, // this is very important! the slot needs to be 1-7 integer
       description: "",
       origin: CONSTANTS.ORIGINS_USER,
-      other: itineraryIndex, // this is for handleUserSelectedEventFromDisplayedResults function to auto
+      other: itineraryIndex, // this is for handleUpdateItinerary function to auto
                              // put the user added event into the itinerary in the right slot
     }
 
@@ -246,7 +257,7 @@ class Userinput extends Component {
     console.log('user state ---->');
     console.log(this.state.userAddedEvents);
 
-    this.handleUserSelectedEventFromDisplayedResults(userAddedEventObj);
+    this.handleUpdateItinerary(userAddedEventObj);
 
   }
 
@@ -308,8 +319,8 @@ class Userinput extends Component {
   }
 
   // handles what happens when user selects a event/itinerary item from the comprehensive displayed results
-  // to add to the itinerary
-  handleUserSelectedEventFromDisplayedResults(itinObj_in) {
+  // to add to the itinerary, or when "x" is clicked or when user adds an event
+  handleUpdateItinerary(itinObj_in) {
 
     // only go through this logic if the itinerary is populated (thus the if statement to check)
     if (this.state.resultsArray.length > 0 && this.state.resultsArray !== null && this.state.resultsArray !== undefined) {
@@ -527,6 +538,18 @@ class Userinput extends Component {
     e.preventDefault();
 
     console.clear();
+    // Handle empty budget inputs
+    if (!this.state.budgetmax || this.state.budgetmax === NaN || this.state.budgetmax === undefined) {
+      this.setState({
+        budgetmax: CONSTANTS.MAX_BUDGET_DEFAULT,
+      })
+    }
+    if (!this.state.budgetmin || this.state.budgetmin === NaN || this.state.budgetmax === undefined) {
+      this.setState({
+        budgetmin: CONSTANTS.MIN_BUDGET_DEFAULT,
+      })
+    }
+
     var insideBudget = true;
     if (this.state.resultsArray.length > 1) {
       var arrayOfCosts = [this.state.resultsArray[0].cost,
@@ -979,6 +1002,13 @@ class Userinput extends Component {
         }
         totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
       }
+      else if (this.state.totalCost < this.state.budgetmin) {
+        messageObject = {
+          textArray: CONSTANTS.LESS_THAN_MINBUDGET_TEXT,
+          boldIndex: 0,
+        }
+        totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
+      }
       else {
         messageObject = this.state.message;
         totalCostDisplayed = <b>${this.state.totalCost}</b>;
@@ -1126,10 +1156,10 @@ class Userinput extends Component {
                       <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
                     </div>
                     <div className="col-md-2 form-group mb-2">
-                      <input required className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                      <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
                     </div>
                     <div className="col-md-2 form-group mb-2">
-                      <input required className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
+                      <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
                     </div>
                     <div className="col-md-2 search-btn">
                       <input className="btn btn-sm go-btn" type="submit" value="GO!" />
@@ -1165,7 +1195,7 @@ class Userinput extends Component {
               {<MultiResultDisplay apiData={eventsMultiResults}
                 displayCategory={1}
                 pageNumber={this.state.pageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults} />}
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} />}
               {pages}
 
             </div>
@@ -1174,7 +1204,7 @@ class Userinput extends Component {
               {<MultiResultDisplay apiData={foodMultiResults}
                 displayCategory={0}
                 pageNumber={this.state.foodPageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults} />}
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} />}
             {foodPages}
             </div>
 
@@ -1188,7 +1218,7 @@ class Userinput extends Component {
               {<MultiResultDisplay apiData={this.state.userAddedEvents}
                 displayCategory={2}
                 pageNumber={this.state.foodPageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults} />}
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} />}
                 {/* {userevents} */}
             </div>
           </div>
