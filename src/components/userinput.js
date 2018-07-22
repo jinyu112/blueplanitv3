@@ -218,7 +218,7 @@ class Userinput extends Component {
     }
 
     var userEventRating = CONSTANTS.USERADDED_EVENT_RATING;
-    if (itinSlot === 1 || itinSlot === 3 || itinSlot === 5) { 
+    if (itinSlot === 1 || itinSlot === 3 || itinSlot === 5) {
       userEventRating = CONSTANTS.USERADDED_MEAL_RATING;
     }
     var userAddedEventObj = {
@@ -363,7 +363,7 @@ class Userinput extends Component {
 
   handleEventCostChange(edittedEventCost, edittedEventName, i_resultsArray, edittedEventOrigin) {
     var indexDBcompat = window.indexedDB;
-    var myStorage = window.localStorage;    
+    var myStorage = window.localStorage;
 
     // edittedEventCost is a float
     if (edittedEventCost !== null &&
@@ -394,7 +394,7 @@ class Userinput extends Component {
               totalCost: tempTotalCost,
             });
         }
-        return; // if the editted event is from the user, no need to do the rest of the function, so return        
+        return; // if the editted event is from the user, no need to do the rest of the function, so return
       }
 
       if (CONSTANTS.AUTO_LOCK_UPDATED_EVENT) {
@@ -919,6 +919,7 @@ class Userinput extends Component {
     const ITINCONTAINER_STYLE = 'itinContainer';
     const HIDDEN = 'hidden';
     const OPEN = 'open';
+    const minDate = new Date(Date.now());
 
     var origins = {
       yelp: yelp_logo,
@@ -1134,7 +1135,7 @@ class Userinput extends Component {
         <div className="form-header">
           <nav>
             <div className="nav nav-tabs" id="nav-tab" role="tablist">
-              <a className="nav-item nav-link active" id="nav-plan-tab" data-toggle="tab" href="#nav-plan" role="tab" aria-controls="nav-plan" aria-selected="true"><i className="plane-icon fas fa-map-marker-alt"></i>Plan Your Day</a>              
+              <a className="nav-item nav-link active" id="nav-plan-tab" data-toggle="tab" href="#nav-plan" role="tab" aria-controls="nav-plan" aria-selected="true"><i className="plane-icon fas fa-map-marker-alt"></i>Plan Your Day</a>
               <a className="nav-item nav-link" id="nav-options-tab" data-toggle="tab" href="#nav-options" role="tab" aria-controls="nav-options" aria-selected="false">More Options</a>
             </div>
           </nav>
@@ -1148,7 +1149,7 @@ class Userinput extends Component {
                     </div>
 
                     <div className="col-md-2 form-group mb-2 datePickerWrapper">
-                      <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} />
+                      <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={minDate}  />
                     </div>
                     <div className="col-md-2 form-group mb-2">
                       <input required className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
@@ -1163,7 +1164,7 @@ class Userinput extends Component {
                 </div>
               </form>
             </div>
-            
+
             <div className="tab-pane fade" id="nav-options" role="tabpanel" aria-labelledby="nav-options-tab">
               <div className={optionStyles.join(' ')}>
                 <h5>Include results from: </h5>
