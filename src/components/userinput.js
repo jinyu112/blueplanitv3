@@ -46,8 +46,8 @@ class Userinput extends Component {
 
     this.state = {
       term: '',
-      budgetmax: 150,
-      budgetmin: 90,
+      budgetmax: CONSTANTS.MAX_BUDGET_DEFAULT, // 9999
+      budgetmin: CONSTANTS.MIN_BUDGET_DEFAULT, //0
       location: 'San Francisco, CA',
       resultsArray: [],
       startDate: moment(),
@@ -538,6 +538,18 @@ class Userinput extends Component {
     e.preventDefault();
 
     console.clear();
+    // Handle empty budget inputs
+    if (!this.state.budgetmax || this.state.budgetmax === NaN || this.state.budgetmax === undefined) {
+      this.setState({
+        budgetmax: CONSTANTS.MAX_BUDGET_DEFAULT,
+      })
+    }
+    if (!this.state.budgetmin || this.state.budgetmin === NaN || this.state.budgetmax === undefined) {
+      this.setState({
+        budgetmin: CONSTANTS.MIN_BUDGET_DEFAULT,
+      })
+    }
+
     var insideBudget = true;
     if (this.state.resultsArray.length > 1) {
       var arrayOfCosts = [this.state.resultsArray[0].cost,
@@ -1144,10 +1156,10 @@ class Userinput extends Component {
                       <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
                     </div>
                     <div className="col-md-2 form-group mb-2">
-                      <input required className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                      <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
                     </div>
                     <div className="col-md-2 form-group mb-2">
-                      <input required className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
+                      <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
                     </div>
                     <div className="col-md-2 search-btn">
                       <input className="btn btn-sm go-btn" type="submit" value="GO!" />

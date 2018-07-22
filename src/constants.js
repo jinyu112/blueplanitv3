@@ -94,4 +94,6 @@ module.exports = {
     GP_LINK_TEXT: "More information!",
     SG_LINK_TEXT: "Buy Tickets Now!",
     TODAYDATE: new Date(Date.now()),
+    MAX_BUDGET_DEFAULT: 9999.0,
+    MIN_BUDGET_DEFAULT: 0.0,
 }
