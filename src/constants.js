@@ -46,8 +46,8 @@ module.exports = {
         origin: 'noneitem',
       },
     EVENT_TIMES: ["0900","","1200","","1800","","2200"],
-    USERADDED_EVENT_RATING: 12.5, // 
-    USERADDED_MEAL_RATING: 5.0, //
+    USERADDED_EVENT_RATING: 1000, // 
+    USERADDED_MEAL_RATING: 1000, //
     AUTO_LOCK_UPDATED_EVENT: true,  // If you want to lock the event if the user updates the cost, set this flag to true
     EMPTY_ITINERARY: {
         name: "No itinerary found. Try changing the inputs.",

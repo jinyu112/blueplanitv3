@@ -1185,7 +1185,7 @@ class Userinput extends Component {
 
         <div className="row eventsCont">
           <div className="tab-content col-md-7 itinerary">
-            <div className="itinerary tab-pane fade" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
+            <div className="itinerary tab-pane fade showactive" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
 
               {<MultiResultDisplay apiData={eventsMultiResults}
                 displayCategory={1}
