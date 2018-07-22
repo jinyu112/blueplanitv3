@@ -221,6 +221,7 @@ class Userinput extends Component {
     if (itinSlot === 1 || itinSlot === 3 || itinSlot === 5) {
       userEventRating = CONSTANTS.USERADDED_MEAL_RATING;
     }
+    var itineraryIndex = itinSlot - 1;
     var userAddedEventObj = {
       name: userEventName,
       url: "",
@@ -231,7 +232,8 @@ class Userinput extends Component {
       slot: itinSlot, // this is very important! the slot needs to be 1-7 integer
       description: "",
       origin: CONSTANTS.ORIGINS_USER,
-      other:[],
+      other: itineraryIndex, // this is for handleUserSelectedEventFromDisplayedResults function to auto
+                             // put the user added event into the itinerary in the right slot
     }
 
     this.state.userAddedEvents.push(userAddedEventObj);
@@ -243,6 +245,8 @@ class Userinput extends Component {
     console.log("User Added: " + userAddedEventObj.name);
     console.log('user state ---->');
     console.log(this.state.userAddedEvents);
+
+    this.handleUserSelectedEventFromDisplayedResults(userAddedEventObj);
 
   }
 
@@ -523,6 +527,25 @@ class Userinput extends Component {
     e.preventDefault();
 
     console.clear();
+    var insideBudget = true;
+    if (this.state.resultsArray.length > 1) {
+      var arrayOfCosts = [this.state.resultsArray[0].cost,
+                          this.state.resultsArray[1].cost,
+                          this.state.resultsArray[2].cost,
+                          this.state.resultsArray[3].cost,
+                          this.state.resultsArray[4].cost,
+                          this.state.resultsArray[5].cost,
+                          this.state.resultsArray[6].cost]
+      var maxCostIndex = misc.findMaxValueInArray(arrayOfCosts);
+
+      if (this.state.checked[maxCostIndex] === 1) {
+        if (arrayOfCosts[maxCostIndex] > this.state.budgetmax) {
+          insideBudget = false;
+          return;
+        }
+      }
+    }
+
     this.setState({
       loading: true
     });
@@ -537,14 +560,6 @@ class Userinput extends Component {
       console.log('Clearing API Data!!')
     }
 
-    // if (this.state.budgetmax <= this.state.budgetmin) {
-    //   console.log("max budget is less than min budget.")
-    //   this.setState({
-    //     loading: false,
-    //     resultsArray: [],
-    //   });
-    //   return;
-    // }
 
     // Check if state startDate is defined
     if (this.state.startDate) {
@@ -562,7 +577,7 @@ class Userinput extends Component {
         geocoder.geocode(this.state.location, function (err, data_latlon) {
 
           if (data_latlon) {
-            if (data_latlon.results && data_latlon.results.length > 0) {
+            if (data_latlon.results && data_latlon.results.length > 0 && insideBudget) {
 
               // Construct lat/long string from geocoder from user input
               var lat = data_latlon.results[0].geometry.location.lat;
@@ -640,12 +655,7 @@ class Userinput extends Component {
 
                           // reset stuff
                           resultsArrayOutput[0] = CONSTANTS.EMPTY_ITINERARY;
-                          resultsArrayOutput[1] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[2] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[3] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[4] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[5] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                          resultsArrayOutput[6] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                          resultsArrayOutput.splice(1,6);
 
                           var messageStrObj = {
                             textArray: CONSTANTS.NO_ITINERARIES_FOUND_TEXT,
@@ -746,7 +756,8 @@ class Userinput extends Component {
                     // have not changed.
                     else {
                       console.log("No need to do API calls!!!")
-                      if (indexDBcompat) {
+
+                      if (indexDBcompat && insideBudget) {
                         idb_keyval.get('apiData').then(val => {
 
                           // Save the previously saved events by the user as persistent data in
@@ -784,12 +795,7 @@ class Userinput extends Component {
 
                             // reset stuff
                             resultsArrayOutput[0] = CONSTANTS.EMPTY_ITINERARY;
-                            resultsArrayOutput[1] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[2] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[3] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[4] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[5] = CONSTANTS.EMPTY_ITINERARY_NONAME;
-                            resultsArrayOutput[6] = CONSTANTS.EMPTY_ITINERARY_NONAME;
+                            resultsArrayOutput.splice(1,6);
 
                             var messageStrObj = {
                               textArray: CONSTANTS.NO_ITINERARIES_FOUND_TEXT,
@@ -1154,7 +1160,7 @@ class Userinput extends Component {
 
         <div className="row eventsCont">
           <div className="tab-content col-md-7 itinerary">
-            <div className="itinerary tab-pane fade showactive" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
+            <div className="itinerary tab-pane fade show active" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
 
               {<MultiResultDisplay apiData={eventsMultiResults}
                 displayCategory={1}

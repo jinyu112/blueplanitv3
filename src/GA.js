@@ -37,6 +37,9 @@ module.exports = {
       iBestItinerary[4] = -1;
       iBestItinerary[5] = -1;
       iBestItinerary[6] = -1;
+
+      bestItinerary.splice(1,6);
+      iBestItinerary.splice(1,6);
       
       return {
         bestItinerary: bestItinerary,
@@ -294,6 +297,8 @@ module.exports = {
       iBestItinerary[5] = -1;
       iBestItinerary[6] = -1;
       totalCost = 0;
+      bestItinerary.splice(1,7);
+      iBestItinerary.splice(1,7);
     }
 
     return {
