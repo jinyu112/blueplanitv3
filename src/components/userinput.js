@@ -216,16 +216,22 @@ class Userinput extends Component {
     if (time.localeCompare("") === 0) {
       time = CONSTANTS.EVENT_TIMES[0];
     }
+
+    var userEventRating = CONSTANTS.USERADDED_EVENT_RATING;
+    if (itinSlot === 1 || itinSlot === 3 || itinSlot === 5) { 
+      userEventRating = CONSTANTS.USERADDED_MEAL_RATING;
+    }
     var userAddedEventObj = {
       name: userEventName,
       url: "",
-      rating: CONSTANTS.USERADDED_EVENT_RATING,
+      rating: userEventRating,
       time: time,
       location: {},
       cost: cost,
       slot: itinSlot, // this is very important! the slot needs to be 1-7 integer
       description: "",
       origin: CONSTANTS.ORIGINS_USER,
+      other:[],
     }
 
     this.state.userAddedEvents.push(userAddedEventObj);
@@ -278,7 +284,7 @@ class Userinput extends Component {
     }
 
     this.setState({
-      userAddedEvents: [],
+      userAddedEvents: [], // clear all the user added events
       savedEvents: savedEventsState,
       checked: checkedState,
     })
@@ -301,46 +307,52 @@ class Userinput extends Component {
   // to add to the itinerary
   handleUserSelectedEventFromDisplayedResults(itinObj_in) {
 
-    // Update the total cost displayed
-    var i_resultsArray = parseInt(itinObj_in.other); // i_resu+ltsArray is the index position in the itinerary results
-    var tempTotalCost = this.state.totalCost - this.state.resultsArray[i_resultsArray].cost;
-    tempTotalCost = misc.round2NearestHundredth(tempTotalCost + itinObj_in.cost);
+    // only go through this logic if the itinerary is populated (thus the if statement to check)
+    if (this.state.resultsArray.length > 0 && this.state.resultsArray !== null && this.state.resultsArray !== undefined) {
+      // Update the total cost displayed
+      var i_resultsArray = parseInt(itinObj_in.other); // i_resultsArray is the index position in the itinerary results
+                                                       // here, the other field in the other is set by the singleresult component
+      var tempTotalCost = this.state.totalCost - this.state.resultsArray[i_resultsArray].cost;
+      tempTotalCost = misc.round2NearestHundredth(tempTotalCost + itinObj_in.cost);
 
-    // Update the results array state and the itinTimes state
-    this.state.resultsArray[i_resultsArray] = itinObj_in;
-    this.state.itinTimes[i_resultsArray] = misc.convertMilTime(itinObj_in.time);
+      // Update the results array state and the itinTimes state
+      this.state.resultsArray[i_resultsArray] = itinObj_in;
+      this.state.itinTimes[i_resultsArray] = misc.convertMilTime(itinObj_in.time);
 
-    // If the user selects an event/itinerary item from the results, lock it in the itinerary
-    let checked = this.state.checked.slice();
-    if (checked[i_resultsArray] !== 1) {
-      checked[i_resultsArray] = 1;
-      if (!misc.include(this.state.savedEvents, i_resultsArray)) { // if i_resultsArray is not already in the savedEvents array
-        this.state.savedEvents.push(i_resultsArray);
+      // If the user selects an event/itinerary item from the results, lock it in the itinerary
+      let checked = this.state.checked.slice();
+      if (checked[i_resultsArray] !== 1) {
+        checked[i_resultsArray] = 1;
+        if (!misc.include(this.state.savedEvents, i_resultsArray)) { // if i_resultsArray is not already in the savedEvents array
+          this.state.savedEvents.push(i_resultsArray);
+        }
       }
+
+      // Update persistent data in browser for GA
+      var myStorage = window.localStorage;
+      var prevBestItineraryObjs = JSON.stringify({
+        Event1: this.state.resultsArray[0],
+        Breakfast: this.state.resultsArray[1],
+        Event2: this.state.resultsArray[2],
+        Lunch: this.state.resultsArray[3],
+        Event3: this.state.resultsArray[4],
+        Dinner: this.state.resultsArray[5],
+        Event4: this.state.resultsArray[6],
+      });
+      myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
+
+      // Update states and rerender
+      this.setState({
+        resultsArray: this.state.resultsArray,
+        totalCost: tempTotalCost,
+        itinTimes: this.state.itinTimes,
+        checked: checked,
+        savedEvents: this.state.savedEvents,
+      });
     }
-
-    // Update persistent data in browser for GA
-    var myStorage = window.localStorage;
-    var prevBestItineraryObjs = JSON.stringify({
-      Event1: this.state.resultsArray[0],
-      Breakfast: this.state.resultsArray[1],
-      Event2: this.state.resultsArray[2],
-      Lunch: this.state.resultsArray[3],
-      Event3: this.state.resultsArray[4],
-      Dinner: this.state.resultsArray[5],
-      Event4: this.state.resultsArray[6],
-    });
-    myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
-
-    // Update states and rerender
-    this.setState({
-      resultsArray: this.state.resultsArray,
-      totalCost: tempTotalCost,
-      itinTimes: this.state.itinTimes,
-      checked: checked,
-      savedEvents: this.state.savedEvents,
-    });
   }
+
+
   handleMoreInfo(e) {
     var tempShowMoreInfo = (this.state.showMoreInfo).slice();
     tempShowMoreInfo[e] = !tempShowMoreInfo[e];
@@ -351,7 +363,7 @@ class Userinput extends Component {
 
   handleEventCostChange(edittedEventCost, edittedEventName, i_resultsArray, edittedEventOrigin) {
     var indexDBcompat = window.indexedDB;
-    var myStorage = window.localStorage;
+    var myStorage = window.localStorage;    
 
     // edittedEventCost is a float
     if (edittedEventCost !== null &&
@@ -361,6 +373,29 @@ class Userinput extends Component {
 
       i_resultsArray = parseInt(i_resultsArray, 10);
       let checked = this.state.checked.slice();
+
+      // Update the cost of the userAddedEvent in the states if user changes the cost in the itinerary
+      if (edittedEventOrigin === CONSTANTS.ORIGINS_USER) {
+        var arr = this.state.userAddedEvents;
+        var elementPos = misc.findEventObjectByName(arr, edittedEventName); //find match by name
+        var tempTotalCost = 0;
+        // If match is found, update the cost to whatever the user set
+        if (elementPos !== -1) {
+            this.state.userAddedEvents[elementPos].cost = edittedEventCost;
+            this.setState ({
+              userAddedEvents: this.state.userAddedEvents,
+            });
+            //Update the totalcost for display
+            for (var i = 0; i < CONSTANTS.ITINERARY_SIZE; i++) {
+              tempTotalCost = tempTotalCost + parseFloat(this.state.resultsArray[i].cost);
+            }
+            tempTotalCost = misc.round2NearestHundredth(tempTotalCost);
+            this.setState({
+              totalCost: tempTotalCost,
+            });
+        }
+        return; // if the editted event is from the user, no need to do the rest of the function, so return        
+      }
 
       if (CONSTANTS.AUTO_LOCK_UPDATED_EVENT) {
         // Auto check the event in the results if the user has updated/editted the cost (as it is assumed they will be interested in that event)
@@ -1099,8 +1134,7 @@ class Userinput extends Component {
         <div className="form-header">
           <nav>
             <div className="nav nav-tabs" id="nav-tab" role="tablist">
-              <a className="nav-item nav-link active" id="nav-plan-tab" data-toggle="tab" href="#nav-plan" role="tab" aria-controls="nav-plan" aria-selected="true"><i className="plane-icon fas fa-map-marker-alt"></i>Plan Your Day</a>
-              <a className="nav-item nav-link" id="nav-add-tab" data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"><i className="fas fa-list-ul"></i> Add Event</a>
+              <a className="nav-item nav-link active" id="nav-plan-tab" data-toggle="tab" href="#nav-plan" role="tab" aria-controls="nav-plan" aria-selected="true"><i className="plane-icon fas fa-map-marker-alt"></i>Plan Your Day</a>              
               <a className="nav-item nav-link" id="nav-options-tab" data-toggle="tab" href="#nav-options" role="tab" aria-controls="nav-options" aria-selected="false">More Options</a>
             </div>
           </nav>
@@ -1129,19 +1163,7 @@ class Userinput extends Component {
                 </div>
               </form>
             </div>
-            <div className="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="nav-add-tab">
-              <div className={optionStyles.join(' ')}>
-                <h5>Add Your Own Event:</h5>
-                <p>Generate an optimized itinerary including events you've added!</p>
-                <AddUserEvent handleAdd={this.handleAddUserEvent} />
-                {userevents}
-
-                {/* clear all user added events*/}
-                <a href="javascript:void(0)" onClick={this.handleClearUserEvents}> Clear All Added Events
-                          </a>
-
-              </div>
-            </div>
+            
             <div className="tab-pane fade" id="nav-options" role="tabpanel" aria-labelledby="nav-options-tab">
               <div className={optionStyles.join(' ')}>
                 <h5>Include results from: </h5>
@@ -1154,14 +1176,16 @@ class Userinput extends Component {
         </div>
         {/* <Filters/> */}
 
+        {/* All data gets shown here (api data, and user added data) */}
         <div className="nav nav-tabs" id="nav-tab" role="tablist">
           <a className="nav-item nav-link active" id="nav-events-tab" data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
           <a className="nav-item nav-link" id="nav-food-tab" data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
+          <a className="nav-item nav-link" id="nav-add-tab" data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> Add Event</a>
         </div>
 
         <div className="row eventsCont">
           <div className="tab-content col-md-7 itinerary">
-            <div className="itinerary tab-pane" id="nav-events">
+            <div className="itinerary tab-pane fade" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
 
               {<MultiResultDisplay apiData={eventsMultiResults}
                 displayCategory={1}
@@ -1171,12 +1195,26 @@ class Userinput extends Component {
 
             </div>
 
-            <div className="itinerary tab-pane" id="nav-food">
+            <div className="itinerary tab-pane fade" id="nav-food" role="tabpanel" aria-labelledby="nav-options-tab">
               {<MultiResultDisplay apiData={foodMultiResults}
                 displayCategory={0}
                 pageNumber={this.state.foodPageNumber}
                 AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults} />}
             {foodPages}
+            </div>
+
+
+            <div className="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="nav-add-tab">
+                <h5>Add Your Own Event:</h5>
+                <AddUserEvent handleAdd={this.handleAddUserEvent} />
+              {/* clear all user added events*/}
+              <a href="javascript:void(0)" onClick={this.handleClearUserEvents}> Clear All Added Events
+                          </a>
+              {<MultiResultDisplay apiData={this.state.userAddedEvents}
+                displayCategory={2}
+                pageNumber={this.state.foodPageNumber}
+                AddUserSelectedEventFromDisplayedResults={this.handleUserSelectedEventFromDisplayedResults} />}
+                {/* {userevents} */}
             </div>
           </div>
           <div className="mapsfix itinerary col-md-5">
@@ -1497,8 +1535,8 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
         itinSlot = itinSlot - 1; // shift down one for indexing
         if (doOnce[itinSlot]) {
           // if user has added an event in a particular itinerary slot, delete all data in that slot
-          delete itineraries[itinSlot][CONSTANTS.EVENTKEYS[itinSlot]]; // (ie if itinSlot = 0 -> itineraries[0].Event1)
-          itineraries[itinSlot][CONSTANTS.EVENTKEYS[itinSlot]] = [];  // (ie if itinslot = 1 -> itineraries[1].Breakfast = [];)
+          // delete itineraries[itinSlot][CONSTANTS.EVENTKEYS[itinSlot]]; // (ie if itinSlot = 0 -> itineraries[0].Event1)
+          // itineraries[itinSlot][CONSTANTS.EVENTKEYS[itinSlot]] = [];  // (ie if itinslot = 1 -> itineraries[1].Breakfast = [];)
           doOnce[itinSlot] = false;
         }
         // after the previous api data was deleted, push all the user added events in a particular slot

@@ -1,4 +1,5 @@
 module.exports = {
+    ITINERARY_SIZE: 7,
     ORIGINS_YELP: 'yelp',
     ORIGINS_EB: 'eventbrite',
     ORIGINS_GP: 'places',
@@ -45,7 +46,8 @@ module.exports = {
         origin: 'noneitem',
       },
     EVENT_TIMES: ["0900","","1200","","1800","","2200"],
-    USERADDED_EVENT_RATING: 1000.0, // arbitrarily high
+    USERADDED_EVENT_RATING: 12.5, // 
+    USERADDED_MEAL_RATING: 5.0, //
     AUTO_LOCK_UPDATED_EVENT: true,  // If you want to lock the event if the user updates the cost, set this flag to true
     EMPTY_ITINERARY: {
         name: "No itinerary found. Try changing the inputs.",
