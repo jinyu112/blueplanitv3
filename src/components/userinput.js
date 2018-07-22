@@ -1180,9 +1180,6 @@ class Userinput extends Component {
             </div>
           </div>
           <div className="mapsfix itinerary col-md-5">
-            <div className="sendEmail">
-              <input className="block btn btn-sm btn-primary moreInfoButton" type="button" value="Send Me the Itinerary" onClick={this.openEmailModal} />
-            </div>
             {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
             {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
 
