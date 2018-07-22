@@ -46,7 +46,7 @@ module.exports = {
         origin: 'noneitem',
       },
     EVENT_TIMES: ["0900","","1200","","1800","","2200"],
-    USERADDED_EVENT_RATING: 1000, // 
+    USERADDED_EVENT_RATING: 1000, //
     USERADDED_MEAL_RATING: 1000, //
     AUTO_LOCK_UPDATED_EVENT: true,  // If you want to lock the event if the user updates the cost, set this flag to true
     EMPTY_ITINERARY: {
@@ -90,5 +90,5 @@ module.exports = {
     MU_LINK_TEXT: "Check out the Meetup page!",
     GP_LINK_TEXT: "More information!",
     SG_LINK_TEXT: "Buy Tickets Now!",
-
+    TODAYDATE: new Date(Date.now()),
 }

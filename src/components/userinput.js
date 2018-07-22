@@ -919,7 +919,6 @@ class Userinput extends Component {
     const ITINCONTAINER_STYLE = 'itinContainer';
     const HIDDEN = 'hidden';
     const OPEN = 'open';
-    const minDate = new Date(Date.now());
 
     var origins = {
       yelp: yelp_logo,
@@ -1149,7 +1148,7 @@ class Userinput extends Component {
                     </div>
 
                     <div className="col-md-2 form-group mb-2 datePickerWrapper">
-                      <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={minDate}  />
+                      <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
                     </div>
                     <div className="col-md-2 form-group mb-2">
                       <input required className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
