@@ -4,7 +4,7 @@ import axios from 'axios';
 
 class emailService extends Component {
   sendEmail(data) {
-      return axios.post('http://localhost:4200/email', {
+      return axios.post(process.env.BACKEND_API + '/email', {
           message: data.message,
           email: data.email,
           location: data.location,
