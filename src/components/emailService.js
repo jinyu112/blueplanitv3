@@ -9,8 +9,9 @@ class emailService extends Component {
           email: data.email,
           location: data.location,
           total: data.total,
+      }).then((response) => {
+          console.log(response);
       })
-      .catch(err => console.log(err));
   };
 }
 
