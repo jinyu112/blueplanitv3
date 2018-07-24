@@ -484,3 +484,19 @@ button.close {
     background-color: #551A8B!important;
     border: none;
 }
+
+
+.footer {
+    border: 10px;
+    padding-top: 10%;
+    padding-bottom: 5%;
+    padding-left: 5%;
+    padding-right: 5%;
+    font-size: 12px;
+    /* border-top: solid #222;
+    border-top-width: 1px; */
+}
+
+.apidata {
+    padding-bottom: 5%;
+}

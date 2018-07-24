@@ -24,6 +24,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import '../maps.css';
 import EmailModal from './emailModal.js';
+import Footer from './footer.js';
 
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
@@ -1188,7 +1189,7 @@ class Userinput extends Component {
           <a className="nav-item nav-link" id="nav-add-tab" data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> Add Event</a>
         </div>
 
-        <div className="row eventsCont">
+        <div className="row eventsCont apidata">
           <div className="tab-content col-md-7 itinerary">
             <div className="itinerary tab-pane fade show active" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
 
@@ -1242,7 +1243,11 @@ class Userinput extends Component {
           </div>
 
         </div>
+        <div >
+        {<Footer/>}
+          </div>
       </div>
+      
     )
   }
 }
