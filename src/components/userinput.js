@@ -397,18 +397,26 @@ class Userinput extends Component {
         var tempTotalCost = 0;
         // If match is found, update the cost to whatever the user set
         if (elementPos !== -1) {
-            this.state.userAddedEvents[elementPos].cost = edittedEventCost;
-            this.setState ({
-              userAddedEvents: this.state.userAddedEvents,
-            });
-            //Update the totalcost for display
-            for (var i = 0; i < CONSTANTS.ITINERARY_SIZE; i++) {
-              tempTotalCost = tempTotalCost + parseFloat(this.state.resultsArray[i].cost);
-            }
-            tempTotalCost = misc.round2NearestHundredth(tempTotalCost);
-            this.setState({
-              totalCost: tempTotalCost,
-            });
+          this.state.userAddedEvents[elementPos].cost = edittedEventCost;
+          this.state.resultsArray[i_resultsArray].cost = edittedEventCost;
+
+          // save the change in the user-saved objects persistent data
+          var bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
+          bestItineraryObjsParsed[CONSTANTS.EVENTKEYS[i_resultsArray]].cost = edittedEventCost;
+          myStorage.setItem("prevBestItinerarySavedObjects", JSON.stringify(bestItineraryObjsParsed));
+
+          //Update the totalcost for display
+          for (var i = 0; i < CONSTANTS.ITINERARY_SIZE; i++) {
+            tempTotalCost = tempTotalCost + parseFloat(this.state.resultsArray[i].cost);
+          }
+          tempTotalCost = misc.round2NearestHundredth(tempTotalCost);
+          
+          this.setState({
+            userAddedEvents: this.state.userAddedEvents,
+            totalCost: tempTotalCost,
+            resultsArray: this.state.resultsArray,
+          });
+
         }
         return; // if the editted event is from the user, no need to do the rest of the function, so return
       }
@@ -564,6 +572,14 @@ class Userinput extends Component {
 
       if (this.state.checked[maxCostIndex] === 1) {
         if (arrayOfCosts[maxCostIndex] > this.state.budgetmax) {
+          
+          var messageStrObj = {
+            textArray: CONSTANTS.LOCKED_EVENT_EXCEEDS_BUDGET,
+            boldIndex: -1
+          };
+          this.setState({
+            message: messageStrObj,
+          });
           insideBudget = false;
           return;
         }
@@ -699,6 +715,8 @@ class Userinput extends Component {
                             showMoreInfo: [false, false, false, false, false, false, false],
                             message: messageStrObj,
                             allApiData: data.data,
+                            pageNumber: 1,
+                            foodPageNumber: 1,
                           });
                         }
                         else { // GA produced an optimal itinerary. Display results
@@ -734,6 +752,8 @@ class Userinput extends Component {
                             showMoreInfo: [false, false, false, false, false, false, false],
                             message: messageStrObj,
                             allApiData: data.data,
+                            pageNumber: 1,
+                            foodPageNumber: 1,
                           });
 
                           this.setState(prevState => ({

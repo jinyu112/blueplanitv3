@@ -70,6 +70,7 @@ module.exports = {
       NO_ITINERARIES_FOUND_TEXT: ["Oops! No itinerary was found with these inputs."],
       EXCEEDED_BUDGET_TEXT: ["The total cost exceeds your max budget!"],
       LESS_THAN_MINBUDGET_TEXT: ["The total cost is less than your minimum budget!"],
+      LOCKED_EVENT_EXCEEDS_BUDGET: ["At least one of your locked events exceeds your max budget!"],
       NUM_EVENT_APIS: 4, // in userinput for filtering results on event api
       FILTER_NAMES: ["Meetup", "Eventbrite", "Seatgeek", "Local Parks"],
       FILTER_DESC: [

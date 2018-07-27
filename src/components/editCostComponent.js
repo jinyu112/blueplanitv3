@@ -22,8 +22,11 @@ export class EditCostComponent extends Component {
     render() {
         var cost = misc.round2NearestHundredth(parseFloat(this.props.cost));
         var editCostComponentArray = [];
-
-        if ((this.props.origin).localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) { //if not a "none item" itinerary slot, show the price
+        var eventOrigin = this.props.origin;
+        if (!eventOrigin || eventOrigin === null || eventOrigin === undefined) {
+            eventOrigin = CONSTANTS.ORIGINS_NONE;
+        }
+        if (eventOrigin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) { //if not a "none item" itinerary slot, show the price
             editCostComponentArray.push(<span key={this.props.name + "editCostSpan"}>$</span>);
             editCostComponentArray.push(<input type="number" className="text-success form-control editCostStyle" min="0"
                 defaultValue={cost} onBlur={this.handleBlur}
