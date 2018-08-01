@@ -85,8 +85,9 @@ class EmailModal extends Component {
       return (
           <Modal show={this.state.modalIsOpen} onHide={this.closeModal}>
 
-           <Modal.Header closeButton>
+           <Modal.Header >
                <Modal.Title>Send My Itinerary</Modal.Title>
+               <Button onClick={this.closeModal}>x</Button>
            </Modal.Header>
            <Modal.Body>
                <FormControl

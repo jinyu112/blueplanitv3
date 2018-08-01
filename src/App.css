@@ -433,7 +433,7 @@ img{
 
 .ApiDataDisplay {
    display: grid;
-   grid-template-columns: repeat(2, 1fr); 
+   grid-template-columns: repeat(2, 1fr);
 }
 
 /* for react-simple-dropdown package*/
@@ -499,4 +499,13 @@ button.close {
 
 .apidata {
     padding-bottom: 5%;
+}
+
+.modal-body {
+    display: grid;
+    grid-gap: 0.5em;
+}
+
+.modal-body input {
+    text-align: center;
 }
