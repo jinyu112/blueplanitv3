@@ -10,7 +10,7 @@ class emailService extends Component {
           location: data.location,
           total: data.total,
       }).then((response) => {
-          console.log(response);
+          return response;
       })
   };
 }

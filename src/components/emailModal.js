@@ -68,8 +68,16 @@ class EmailModal extends Component {
                total: totalCost,
            }
 
-           this.emailService.sendEmail(data);
+            this.emailService.sendEmail(data).then((sent) => {
+                if(sent.status == 200) {
+                    alert('email sent');
+                } else {
+                    alert('email could not be sent');
+                };
+            });
+
        });
+
 
     }
 
