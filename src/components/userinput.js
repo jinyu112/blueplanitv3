@@ -37,6 +37,7 @@ import unlock from '../images/unlock.png';
 import dark from '../images/dark.png';
 import light from '../images/light.png';
 
+
 import CONSTANTS from '../constants.js'
 
 var geocoder = require('geocoder');
@@ -410,7 +411,7 @@ class Userinput extends Component {
             tempTotalCost = tempTotalCost + parseFloat(this.state.resultsArray[i].cost);
           }
           tempTotalCost = misc.round2NearestHundredth(tempTotalCost);
-          
+
           this.setState({
             userAddedEvents: this.state.userAddedEvents,
             totalCost: tempTotalCost,
@@ -572,7 +573,7 @@ class Userinput extends Component {
 
       if (this.state.checked[maxCostIndex] === 1) {
         if (arrayOfCosts[maxCostIndex] > this.state.budgetmax) {
-          
+
           var messageStrObj = {
             textArray: CONSTANTS.LOCKED_EVENT_EXCEEDS_BUDGET,
             boldIndex: -1
@@ -1267,7 +1268,7 @@ class Userinput extends Component {
         {<Footer/>}
           </div>
       </div>
-      
+
     )
   }
 }
