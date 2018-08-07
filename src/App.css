@@ -509,3 +509,16 @@ button.close {
 .modal-body input {
     text-align: center;
 }
+
+.email-loader {
+    text-align: center;
+}
+
+.email-loader > div {
+    margin: auto;
+    margin-top: 20px;
+}
+
+.email-loader h6 {
+    margin-top: 20px;
+}

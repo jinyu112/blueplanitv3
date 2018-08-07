@@ -3,6 +3,7 @@ import {Modal, Button, FormControl} from 'react-bootstrap';
 import emailService from './emailService.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
+import Loader from './reactloading.js';
 
 class EmailModal extends Component {
 
@@ -12,6 +13,7 @@ class EmailModal extends Component {
         this.state = {
             modalIsOpen: false,
             email: '',
+            loading:  false,
         };
         this.emailService = new emailService();
         this.openModal = this.openModal.bind(this);
@@ -42,6 +44,7 @@ class EmailModal extends Component {
     }
 
     handleEmail(e) {
+        this.setState({ loading: true });
         var geocoder = require('geocoder');
         e.preventDefault();
         var loc = this.props.location;
@@ -50,8 +53,8 @@ class EmailModal extends Component {
             return new Promise(function (resolve, reject) {
             geocoder.geocode(loc, function(err, lat_lon) {
                 if (err) {
-                  console.log(err);
                   reject(false);
+                  this.setState({ loading: false });
                 } else {
                   resolve(lat_lon);
                 }
@@ -69,19 +72,20 @@ class EmailModal extends Component {
            }
 
             this.emailService.sendEmail(data).then((sent) => {
+                this.setState({ loading: false });
                 if(sent.status == 200) {
                     alert('email sent');
                 } else {
                     alert('email could not be sent');
                 };
             });
-
        });
 
 
     }
 
     render() {
+
       return (
           <Modal show={this.state.modalIsOpen} onHide={this.closeModal}>
 
@@ -89,15 +93,24 @@ class EmailModal extends Component {
                <Modal.Title>Send My Itinerary</Modal.Title>
                <Button onClick={this.closeModal}>x</Button>
            </Modal.Header>
-           <Modal.Body>
-               <FormControl
-                   type="text"
-                   value={this.state.email}
-                   placeholder="Please enter your e-mail"
-                   onChange={this.handleChange}
-                />
-            <Button className="btn btn-info" onClick={this.handleEmail}>Send Email</Button>
-           </Modal.Body>
+           { this.state.loading === true ?
+               <div className="email-loader">
+                   <Loader type="spinningBubbles" color="#6c757d">
+                   </Loader>
+                   <h6>Sending...</h6>
+               </div>
+            :
+               <Modal.Body>
+                   <FormControl
+                       type="text"
+                       value={this.state.email}
+                       placeholder="Please enter your e-mail"
+                       onChange={this.handleChange}
+                    />
+                <Button className="btn btn-info" onClick={this.handleEmail}>Send Email</Button>
+               </Modal.Body>
+            }
+
            <Modal.Footer>
              <Button onClick={this.closeModal}>Close</Button>
            </Modal.Footer>
