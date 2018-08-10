@@ -1188,7 +1188,7 @@ class Userinput extends Component {
                       <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
                     </div>
                     <div className="col-md-2 form-group mb-2">
-                      <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleChange} placeholder="miles" />
+                      <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleChange} placeholder="Search Radius (mi)" />
                     </div>
                     <div className="col-md-2 form-group mb-2">
                       <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
@@ -1384,7 +1384,7 @@ function determineAPICallBool(myStorage_in, date_in, today_in, latLon_in, radius
       latLonIsDifferent = true;
     }
 
-    //Check search radius
+    //Check search radius (for different search radii, the api data needs to be retreived again because some apis don't have location data)
     var radiusIsDifferent = false;
     // If the field localStoredRadius is NOT null, check if it's different from the current lat lon input from user
     if (null !== myStorage_in.getItem('localStoredRadius')) {
