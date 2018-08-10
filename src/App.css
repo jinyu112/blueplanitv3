@@ -522,3 +522,7 @@ button.close {
 .email-loader h6 {
     margin-top: 20px;
 }
+
+.singleResultImg {
+    height: 150px;
+}
