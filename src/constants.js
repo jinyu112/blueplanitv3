@@ -97,4 +97,5 @@ module.exports = {
     TODAYDATE: new Date(Date.now()),
     MAX_BUDGET_DEFAULT: 9999.0,
     MIN_BUDGET_DEFAULT: 0.0,
+    DEFAULT_SEARCH_RADIUS_MI: 50, //miles
 }

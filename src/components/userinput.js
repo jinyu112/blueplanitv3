@@ -49,6 +49,7 @@ class Userinput extends Component {
       term: '',
       budgetmax: CONSTANTS.MAX_BUDGET_DEFAULT, // 9999
       budgetmin: CONSTANTS.MIN_BUDGET_DEFAULT, //0
+      searchRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
       location: 'San Francisco, CA',
       resultsArray: [],
       startDate: moment(),
@@ -559,6 +560,13 @@ class Userinput extends Component {
       })
     }
 
+    //Handle empty search radius input
+    if (!this.state.searchRadius || this.state.searchRadius === NaN || this.state.searchRadius === undefined) {
+      this.setState({
+        searchRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
+      })
+    }
+
     var insideBudget = true;
     if (this.state.resultsArray.length > 1) {
       var arrayOfCosts = [this.state.resultsArray[0].cost,
@@ -650,7 +658,8 @@ class Userinput extends Component {
                     }
 
                     // Determine whether or not API calls need to be made
-                    doAPICallsFlag = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, indexDBcompat);
+                    console.log("search radius: " + this.state.searchRadius);
+                    doAPICallsFlag = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, this.state.searchRadius);
 
                     if (doAPICallsFlag || clearApiData || !indexDBcompat) {
                       // Reset API data cached timestamp
@@ -662,7 +671,8 @@ class Userinput extends Component {
                         locationLatLong,
                         city,
                         date,
-                        date.toString());
+                        date.toString(),
+                        this.state.searchRadius);
                       promiseObj.then(function (data) {
 
                         // Set saved events to empty because if an API call is needed, this means
@@ -1177,6 +1187,9 @@ class Userinput extends Component {
                       <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
                     </div>
                     <div className="col-md-2 form-group mb-2">
+                      <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleChange} placeholder="miles" />
+                    </div>
+                    <div className="col-md-2 form-group mb-2">
                       <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
                     </div>
                     <div className="col-md-2 form-group mb-2">
@@ -1293,7 +1306,7 @@ function isDate(d) {
 
 // Returns true if locally stored data is "stale" or user input a different location therefore new API calls
 // need to be made
-function determineAPICallBool(myStorage_in, date_in, today_in, latLon_in, indexDBcompat_in) {
+function determineAPICallBool(myStorage_in, date_in, today_in, latLon_in, radius_in) {
   if (myStorage_in) { //} && indexDBcompat_in) {
 
     var isToday;
@@ -1355,7 +1368,6 @@ function determineAPICallBool(myStorage_in, date_in, today_in, latLon_in, indexD
       }
     }
 
-
     //Check lat lon
     var latLonIsDifferent = false;
     // If the field localStoredLatLon is NOT null, check if it's different from the current lat lon input from user
@@ -1371,8 +1383,24 @@ function determineAPICallBool(myStorage_in, date_in, today_in, latLon_in, indexD
       latLonIsDifferent = true;
     }
 
+    //Check search radius
+    var radiusIsDifferent = false;
+    // If the field localStoredRadius is NOT null, check if it's different from the current lat lon input from user
+    if (null !== myStorage_in.getItem('localStoredRadius')) {
+      if ((myStorage_in.getItem('localStoredRadius')).localeCompare(radius_in) !== 0) { // 0 indicates the strings are exact matches
+        myStorage_in.setItem('localStoredRadius', radius_in);
+        radiusIsDifferent = true;
+      }
+    }
+    // If the field localStoredRadius is null, set it equal to current lat lon location
+    else {
+      myStorage_in.setItem('localStoredRadius', radius_in);
+      radiusIsDifferent = true;
+    }
+
+
     // Return the proper flag
-    if (dateTimeIsStale || latLonIsDifferent) {
+    if (dateTimeIsStale || latLonIsDifferent || radiusIsDifferent) {
       return true; // do the API calls!
     }
     else {
