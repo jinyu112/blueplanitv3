@@ -25,6 +25,7 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 import '../maps.css';
 import EmailModal from './emailModal.js';
 import Footer from './footer.js';
+import ButtonAppBar from './headerBar.js';
 
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
@@ -1168,13 +1169,8 @@ class Userinput extends Component {
 
     return (
       <div className="Userinput">
+      <ButtonAppBar></ButtonAppBar>
         <div className="form-header">
-          <nav>
-            <div className="nav nav-tabs" id="nav-tab" role="tablist">
-              <a className="nav-item nav-link active" id="nav-plan-tab" data-toggle="tab" href="#nav-plan" role="tab" aria-controls="nav-plan" aria-selected="true"><i className="plane-icon fas fa-map-marker-alt"></i>Plan Your Day</a>
-              <a className="nav-item nav-link" id="nav-options-tab" data-toggle="tab" href="#nav-options" role="tab" aria-controls="nav-options" aria-selected="false">More Options</a>
-            </div>
-          </nav>
           <div className="tab-content" id="nav-tabContent">
             <div className="tab-pane fade show active" id="nav-plan" role="tabpanel" aria-labelledby="nav-plan-tab">
               <form className="form-card" onSubmit={this.handleSubmit}>
