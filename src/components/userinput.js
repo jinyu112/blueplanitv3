@@ -347,6 +347,11 @@ class Userinput extends Component {
         }
       }
 
+      // If it's a cleared/x'ed event, unclear/un-x it
+      let eliminated = this.state.eliminated.slice();
+      if (eliminated[i_resultsArray] === 1) {
+        eliminated[i_resultsArray] = 0;
+      }
       // Update persistent data in browser for GA
       var myStorage = window.localStorage;
       var prevBestItineraryObjs = JSON.stringify({
@@ -366,6 +371,7 @@ class Userinput extends Component {
         totalCost: tempTotalCost,
         itinTimes: this.state.itinTimes,
         checked: checked,
+        eliminated: eliminated,
         savedEvents: this.state.savedEvents,
       });
     }
@@ -1112,12 +1118,34 @@ class Userinput extends Component {
       userevents.unshift(<DeleteUserEvent key={key} userevent={this.state.userAddedEvents[i]} handleDelete={this.handleDeleteUserEvent} />);
     }
 
+    var eventsMultiResults = [];
+    var numEventsForPagination = 0;
+    if (!misc.isObjEmpty(this.state.allApiData)) {
+      // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
+      if (this.state.eventFilterFlags[1]===1) {
+        eventsMultiResults.push(this.state.allApiData.eventbriteGlobal);
+        numEventsForPagination = numEventsForPagination + this.state.allApiData.numDataPoints.numEventbriteEvents;      
+      }
+      if (this.state.eventFilterFlags[2]===1) {
+        eventsMultiResults.push(this.state.allApiData.seatgeekItemsGlobal);
+        numEventsForPagination = numEventsForPagination + this.state.allApiData.numDataPoints.numSeatgeekEvents;
+      }
+      if (this.state.eventFilterFlags[0]===1) {
+        eventsMultiResults.push(this.state.allApiData.meetupItemsGlobal);
+        numEventsForPagination = numEventsForPagination + this.state.allApiData.numDataPoints.numMeetupEvents;
+      }
+      if (this.state.eventFilterFlags[3]===1) {
+        eventsMultiResults.push(this.state.allApiData.googlePlacesGlobal);
+        numEventsForPagination = numEventsForPagination + this.state.allApiData.numDataPoints.numGooglePlaces;
+      }
+    }
 
     // Event Pagination
     var pages = [];
     var pageNumber;
     if (!misc.isObjEmpty(this.state.allApiData)) {
-      var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
+      var numPages = Math.floor(numEventsForPagination / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
+      if (numEventsForPagination === 0) numPages = 0;
       pages.push("<");
 
       for (i = 0; i < numPages; i++) {
@@ -1132,19 +1160,12 @@ class Userinput extends Component {
       pages.push(">");
     }
 
-    var eventsMultiResults = [];
-    if (!misc.isObjEmpty(this.state.allApiData)) {
-      eventsMultiResults = [this.state.allApiData.eventbriteGlobal,
-      this.state.allApiData.googlePlacesGlobal,
-      this.state.allApiData.meetupItemsGlobal,
-      this.state.allApiData.seatgeekItemsGlobal];
-    }
-
     // Food Pagination
     var foodPages = [];
     var foodPageNumber;
     if (!misc.isObjEmpty(this.state.allApiData)) {
       var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfFoodPlaces / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
+      if (this.state.allApiData.numDataPoints.numOfFoodPlaces === 0) numPages = 0;
       foodPages.push("<");
 
       for (i = 0; i < numPages; i++) {
