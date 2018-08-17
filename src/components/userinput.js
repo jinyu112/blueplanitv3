@@ -25,7 +25,13 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 import '../maps.css';
 import EmailModal from './emailModal.js';
 import Footer from './footer.js';
-import ButtonAppBar from './headerBar.js';
+import { withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
 
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
@@ -347,11 +353,6 @@ class Userinput extends Component {
         }
       }
 
-      // If it's a cleared/x'ed event, unclear/un-x it
-      let eliminated = this.state.eliminated.slice();
-      if (eliminated[i_resultsArray] === 1) {
-        eliminated[i_resultsArray] = 0;
-      }
       // Update persistent data in browser for GA
       var myStorage = window.localStorage;
       var prevBestItineraryObjs = JSON.stringify({
@@ -371,7 +372,6 @@ class Userinput extends Component {
         totalCost: tempTotalCost,
         itinTimes: this.state.itinTimes,
         checked: checked,
-        eliminated: eliminated,
         savedEvents: this.state.savedEvents,
       });
     }
@@ -1118,34 +1118,12 @@ class Userinput extends Component {
       userevents.unshift(<DeleteUserEvent key={key} userevent={this.state.userAddedEvents[i]} handleDelete={this.handleDeleteUserEvent} />);
     }
 
-    var eventsMultiResults = [];
-    var numEventsForPagination = 0;
-    if (!misc.isObjEmpty(this.state.allApiData)) {
-      // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
-      if (this.state.eventFilterFlags[1]===1) {
-        eventsMultiResults.push(this.state.allApiData.eventbriteGlobal);
-        numEventsForPagination = numEventsForPagination + this.state.allApiData.numDataPoints.numEventbriteEvents;      
-      }
-      if (this.state.eventFilterFlags[2]===1) {
-        eventsMultiResults.push(this.state.allApiData.seatgeekItemsGlobal);
-        numEventsForPagination = numEventsForPagination + this.state.allApiData.numDataPoints.numSeatgeekEvents;
-      }
-      if (this.state.eventFilterFlags[0]===1) {
-        eventsMultiResults.push(this.state.allApiData.meetupItemsGlobal);
-        numEventsForPagination = numEventsForPagination + this.state.allApiData.numDataPoints.numMeetupEvents;
-      }
-      if (this.state.eventFilterFlags[3]===1) {
-        eventsMultiResults.push(this.state.allApiData.googlePlacesGlobal);
-        numEventsForPagination = numEventsForPagination + this.state.allApiData.numDataPoints.numGooglePlaces;
-      }
-    }
 
     // Event Pagination
     var pages = [];
     var pageNumber;
     if (!misc.isObjEmpty(this.state.allApiData)) {
-      var numPages = Math.floor(numEventsForPagination / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
-      if (numEventsForPagination === 0) numPages = 0;
+      var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
       pages.push("<");
 
       for (i = 0; i < numPages; i++) {
@@ -1160,12 +1138,19 @@ class Userinput extends Component {
       pages.push(">");
     }
 
+    var eventsMultiResults = [];
+    if (!misc.isObjEmpty(this.state.allApiData)) {
+      eventsMultiResults = [this.state.allApiData.eventbriteGlobal,
+      this.state.allApiData.googlePlacesGlobal,
+      this.state.allApiData.meetupItemsGlobal,
+      this.state.allApiData.seatgeekItemsGlobal];
+    }
+
     // Food Pagination
     var foodPages = [];
     var foodPageNumber;
     if (!misc.isObjEmpty(this.state.allApiData)) {
       var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfFoodPlaces / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
-      if (this.state.allApiData.numDataPoints.numOfFoodPlaces === 0) numPages = 0;
       foodPages.push("<");
 
       for (i = 0; i < numPages; i++) {
@@ -1187,50 +1172,60 @@ class Userinput extends Component {
       this.state.allApiData.yelpDinnerItemsGlobal];
     }
 
+    const styles = {
+      root: {
+        flexGrow: 1,
+      },
+      flex: {
+        flexGrow: 1,
+      },
+      menuButton: {
+        marginLeft: -12,
+        marginRight: 20,
+      },
+    };
 
     return (
       <div className="Userinput">
-      <ButtonAppBar></ButtonAppBar>
-        <div className="form-header">
-          <div className="tab-content" id="nav-tabContent">
-            <div className="tab-pane fade show active" id="nav-plan" role="tabpanel" aria-labelledby="nav-plan-tab">
-              <form className="form-card" onSubmit={this.handleSubmit}>
-                <div className={formStyles.join(' ')}>
-                  <div className="row inputsRow">
-                    <div className="col-md-4 form-group mb-2">
-                      <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" placeholder="Where are you going?" />
-                    </div>
+          <div className={styles.root}>
+            <AppBar position="static">
+              <Toolbar>
+                <IconButton className={styles.menuButton} color="inherit" aria-label="Menu">
+                  <MenuIcon />
+                </IconButton>
+                <Typography variant="title" color="inherit" className={styles.flex}>
+                  Blue Planit
+                </Typography>
+                <form onSubmit={this.handleSubmit}>
+                  <div>
+                    <div className="row inputsRow">
+                      <div className="col-md-4 form-group mb-2">
+                        <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" placeholder="Where are you going?" />
+                      </div>
+                      <div className="col-md-2 form-group mb-2 datePickerWrapper">
+                        <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
+                      </div>
+                      <div className="col-md-2 form-group mb-2">
+                        <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleChange} placeholder="Search Radius (mi)" />
+                      </div>
+                      <div className="col-md-2 form-group mb-2">
+                        <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                      </div>
+                      <div className="col-md-2 form-group mb-2">
+                        <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
+                      </div>
+                      <div className="col-md-2 search-btn">
 
-                    <div className="col-md-2 form-group mb-2 datePickerWrapper">
-                      <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
-                    </div>
-                    <div className="col-md-2 form-group mb-2">
-                      <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleChange} placeholder="Search Radius (mi)" />
-                    </div>
-                    <div className="col-md-2 form-group mb-2">
-                      <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
-                    </div>
-                    <div className="col-md-2 form-group mb-2">
-                      <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
-                    </div>
-                    <div className="col-md-2 search-btn">
-                      <input className="btn btn-sm go-btn" type="submit" value="GO!" />
+                            <Button variant="contained" color="secondary" type="submit">
+                                    GO!
+                            </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </form>
-            </div>
-
-            <div className="tab-pane fade" id="nav-options" role="tabpanel" aria-labelledby="nav-options-tab">
-              <div className={optionStyles.join(' ')}>
-                <h5>Include results from: </h5>
-                <ul className="options">
-                  {options}
-                </ul>
-              </div>
-            </div>
+                </form>
+              </Toolbar>
+            </AppBar>
           </div>
-        </div>
         {/* <Filters/> */}
 
         {/* All data gets shown here (api data, and user added data) */}
