@@ -98,4 +98,6 @@ module.exports = {
     MAX_BUDGET_DEFAULT: 9999.0,
     MIN_BUDGET_DEFAULT: 0.0,
     DEFAULT_SEARCH_RADIUS_MI: 50, //miles
+    APPROX_EVENT_COST_STR: "Default cost. Check event link for actual cost.",
+    APPROX_YELPRESTAURANT_COST_STR: "Default meal cost. Enter desired price.",
 }

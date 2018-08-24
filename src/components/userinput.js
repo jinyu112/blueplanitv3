@@ -13,11 +13,11 @@ import AddUserEvent from './addUserEvent.js';
 import MoreInfoButton from './moreInfoButton.js';
 import MoreInfoView from './moreInfoView.js';
 import EditCostComponent from './editCostComponent.js';
-import SingleResult from './singleResult.js';
 import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
 import Message from './message.js';
 import Filters from './filters.js';
+import ApproxCostToolTip from './approxCostToolTip.js';
 import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -600,6 +600,11 @@ class Userinput extends Component {
           return;
         }
       }
+      else if (this.state.totalCost > this.state.budgetmax ||
+       this.state.totalCost < this.state.budgetmin) {
+        insideBudget = false;
+        return;
+      }
     }
 
     this.setState({
@@ -1011,12 +1016,17 @@ class Userinput extends Component {
                 cost={this.state.resultsArray[i].cost}
                 handleCostChange={this.handleEventCostChange}
                 i_resultsArray={i}
-                origin={this.state.resultsArray[i].origin} /> </td>
+                origin={this.state.resultsArray[i].origin} />
+                
+                 </td>
+                 <td><ApproxCostToolTip 
+                 approxCostFlag={this.state.resultsArray[i].approximateFee}
+                 origin={this.state.resultsArray[i].origin}/></td>
               <td><label htmlFor={id}><img alt="lock icon" className="lock" src={lock_icon} /></label><input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} /></td>
               <td><label htmlFor={elim_id}><img alt="eliminate icon" className="elim" src={elim_icon} /></label><input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} /></td>
             </tr>
             <tr className={moreInfoStyles.join(' ')}>
-              <td colSpan="7"><MoreInfoView desc={this.state.resultsArray[i].description}
+              <td colSpan="8"><MoreInfoView desc={this.state.resultsArray[i].description}
                 phone={this.state.resultsArray[i].phone}
                 address={this.state.resultsArray[i].address}
                 duration={this.state.resultsArray[i].duration}

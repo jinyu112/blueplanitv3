@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import CONSTANTS from '../constants.js';
 import misc from '../miscfuncs/misc.js';
 import placeholder from '../images/placeholder.png';
+import ApproxCostToolTip from './approxCostToolTip.js';
 
 // This component constructs a single result that is displayed to the user from the api data
 export class SingleResult extends Component {
@@ -35,6 +36,8 @@ export class SingleResult extends Component {
         var imgUrlStr = this.props.itinObj.thumbnail ? this.props.itinObj.thumbnail : placeholder;
         var timeStr = misc.convertMilTime(this.props.itinObj.time);
         var costStr = this.props.itinObj.cost;
+        var approxCostFlag = this.props.itinObj.approximateFee;
+        var origin = this.props.itinObj.origin;
         return (
             <div>
                 <table className="singleApiResult">
@@ -55,8 +58,10 @@ export class SingleResult extends Component {
                     <tbody>
                     <tr>
                         <td><input key={titleStr} type="checkbox" onChange={this.handleAddEvent}/></td>
-                        <td>{timeStr}</td>
-                        <td>${costStr}</td>
+                            <td>{timeStr}</td>
+                            <td>
+                                ${costStr}<ApproxCostToolTip approxCostFlag={approxCostFlag} origin={origin}/>                        
+                            </td>
 
                     </tr>
                     </tbody>
