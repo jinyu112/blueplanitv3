@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import misc from '../miscfuncs/misc.js';
 import CONSTANTS from '../constants.js';
-import { Tooltip } from 'react-bootstrap';
-import { OverlayTrigger } from 'react-bootstrap';
+import TooltipMat from '@material-ui/core/Tooltip';
 
 export class EditCostComponent extends Component {
     constructor(props) {
@@ -35,16 +34,14 @@ export class EditCostComponent extends Component {
                 ref="edittedEventCost" 
                 key={this.props.name + "editCostInput"}/>);
         }
-        const editCostToolTip =(
-            <Tooltip id="ectooltip"><strong>{CONSTANTS.EDITCOST_TOOLTIP_STR}</strong></Tooltip>
-        );
+
         return (
             <form>
-                <OverlayTrigger placement="top" overlay={editCostToolTip}>
+                <TooltipMat placement="top" title={CONSTANTS.EDITCOST_TOOLTIP_STR}>
             <div className="edit-cost-cont" key={this.props.name + "editCostDiv"}>                
                 {editCostComponentArray}
             </div>
-            </OverlayTrigger>
+            </TooltipMat>
             </form>
         );
     }

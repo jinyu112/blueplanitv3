@@ -21,12 +21,10 @@ import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
-import { Tooltip } from 'react-bootstrap';
-import { OverlayTrigger } from 'react-bootstrap';
 import '../maps.css';
 import EmailModal from './emailModal.js';
 import Footer from './footer.js';
-import { withStyles } from '@material-ui/core/styles';
+import TooltipMat from '@material-ui/core/Tooltip';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -1026,17 +1024,17 @@ class Userinput extends Component {
                  origin={this.state.resultsArray[i].origin}/></td>
               <td>              
                 <label htmlFor={id}>
-                <OverlayTrigger placement="top" overlay={<Tooltip id="locktooltip"><strong>{CONSTANTS.LOCK_TOOLTIP_STR}</strong></Tooltip>}>
+                <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
                 <img alt="lock icon" className="lock" src={lock_icon} />
-                </OverlayTrigger>
+                </TooltipMat>
                 </label>                
                 <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />                
                 </td>                
               <td>              
                 <label htmlFor={elim_id}>
-                <OverlayTrigger placement="top" overlay={<Tooltip id="xtooltip"><strong>{CONSTANTS.X_TOOLTIP_STR}</strong></Tooltip>}>
+                <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
                 <img alt="eliminate icon" className="elim" src={elim_icon} />
-                </OverlayTrigger>
+                </TooltipMat>
                 </label>
                 <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
                 
@@ -1111,14 +1109,14 @@ class Userinput extends Component {
               <tr>
               <td className="sendEmail">
                   <EmailModal location={this.state.location} totalCost={this.state.totalCost} resultsArray={this.state.resultsArray} onRef={ref => (this.emailModal = ref)}/>
-                  <OverlayTrigger placement="bottom" overlay={<Tooltip id="emailtooltip"><strong>{CONSTANTS.EMAIL_TOOLTIP_STR}</strong></Tooltip>}>
+                  <TooltipMat placement="top" title={CONSTANTS.EMAIL_TOOLTIP_STR}>
                   <input className="block btn btn-sm btn-primary go-btn" type="button" value="Send Me the Itinerary" onClick={this.openModal}/>
-                  </OverlayTrigger>
+                  </TooltipMat>
               </td>
                 <td className="itinGoBtn">
-                <OverlayTrigger placement="bottom" overlay={<Tooltip id="searchagaintooltip"><strong>{CONSTANTS.SEARCHAGAIN_TOOLTIP_STR}</strong></Tooltip>}>
+                <TooltipMat placement="top" title={CONSTANTS.SEARCHAGAIN_TOOLTIP_STR}>
                   <input className="btn btn-sm go-btn" type="submit" onClick={this.handleSubmit} value="Search Again!" />
-                  </OverlayTrigger>
+                  </TooltipMat>
                 </td>
               </tr>
             </tbody>
@@ -1233,9 +1231,9 @@ class Userinput extends Component {
                   <div>
                     <div className="row inputsRow">
                       <div className="col-md-4 form-group mb-2">
-                      <OverlayTrigger placement="bottom" overlay={<Tooltip id="locationtooltip"><strong>{CONSTANTS.LOCATION_TOOLTIP_STR}</strong></Tooltip>}>
+                      <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
                         <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" placeholder="Where are you going?" />
-                        </OverlayTrigger>
+                        </TooltipMat>
                       </div>
                       <div className="col-md-2 form-group mb-2 datePickerWrapper">
                         <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
@@ -1244,21 +1242,21 @@ class Userinput extends Component {
                         <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleChange} placeholder="Search Radius (mi)" />                        
                       </div>
                       <div className="col-md-2 form-group mb-2">
-                      <OverlayTrigger placement="bottom" overlay={<Tooltip id="mintooltip"><strong>{CONSTANTS.MIN_TOOLTIP_STR}</strong></Tooltip>}>
+                      <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
                         <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
-                        </OverlayTrigger>
+                        </TooltipMat>
                       </div>
                       <div className="col-md-2 form-group mb-2">
-                      <OverlayTrigger placement="bottom" overlay={<Tooltip id="mintooltip"><strong>{CONSTANTS.MAX_TOOLTIP_STR}</strong></Tooltip>}>
+                      <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
                         <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
-                        </OverlayTrigger>
+                        </TooltipMat>
                       </div>
                       <div className="col-md-2 search-btn">
-                      <OverlayTrigger placement="bottom" overlay={<Tooltip id="mintooltip"><strong>{CONSTANTS.GO_TOOLTIP_STR}</strong></Tooltip>}>
+                      <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
                             <Button variant="contained" color="secondary" type="submit">
                                     GO!
                             </Button>
-                            </OverlayTrigger>
+                            </TooltipMat>
                       </div>
                     </div>
                   </div>

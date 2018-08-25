@@ -1,8 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { Component } from 'react';
 import CONSTANTS from '../constants.js';
-import { Tooltip } from 'react-bootstrap';
-import { OverlayTrigger } from 'react-bootstrap';
+import TooltipMat from '@material-ui/core/Tooltip';
 
 // This component shows a tool tip if the price of the event is unknown or inaccurate
 export class ApproxCostToolTip extends Component {
@@ -19,16 +18,12 @@ export class ApproxCostToolTip extends Component {
         else {
             toolTipStr = CONSTANTS.APPROX_EVENT_COST_STR;
         }
-        const tooltip = (
-            <Tooltip id="tooltip">
-              <strong>{toolTipStr}</strong>
-            </Tooltip>
-          );
+
         var approxCostFlag = this.props.approxCostFlag;
         var indicateApproxCost;
         if (approxCostFlag) {
             indicateApproxCost = (
-                <OverlayTrigger placement="top" overlay={tooltip}><span>*</span></OverlayTrigger>
+                <TooltipMat placement="top" title={toolTipStr}><span>*</span></TooltipMat>
             );
         }
         return (
