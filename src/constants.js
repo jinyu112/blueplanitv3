@@ -100,4 +100,14 @@ module.exports = {
     DEFAULT_SEARCH_RADIUS_MI: 50, //miles
     APPROX_EVENT_COST_STR: "Default cost. Check event link for actual cost.",
     APPROX_YELPRESTAURANT_COST_STR: "Default meal cost. Enter desired price.",
+    LOCATION_TOOLTIP_STR: "Enter an city, address, or zip code that you want to explore!",
+    MIN_TOOLTIP_STR: "Enter your minimum budget here or leave it blank.",
+    MAX_TOOLTIP_STR: "Enter your maximum budget here or leave it blank.",
+    GO_TOOLTIP_STR: "Get started planning your day!",
+    EDITCOST_TOOLTIP_STR: "Edit cost.",
+    LOCK_TOOLTIP_STR: "Like this event? Lock it to keep it in your itinerary.",
+    X_TOOLTIP_STR: "Remove this item from your itinerary.",
+    EMAIL_TOOLTIP_STR: "Email this itinerary to yourself.",
+    SEARCHAGAIN_TOOLTIP_STR: "Auto populate unlocked itinerary slots with new events!",
+    ADDTOITIN_TOOLTIP_STR: "Add this event to your itinerary.",
 }
