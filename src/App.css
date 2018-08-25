@@ -526,3 +526,9 @@ button.close {
 .singleResultImg {
     height: 150px;
 }
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-gap: 20px;
+}

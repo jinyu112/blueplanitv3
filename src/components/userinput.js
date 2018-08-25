@@ -16,7 +16,6 @@ import EditCostComponent from './editCostComponent.js';
 import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
 import Message from './message.js';
-import Filters from './filters.js';
 import ApproxCostToolTip from './approxCostToolTip.js';
 import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
@@ -32,6 +31,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import ClickAwayListener from './filters.js';
 
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
@@ -100,7 +100,7 @@ class Userinput extends Component {
   }
 
   handleChange(e) {
-    const state = this.state
+    const state = this.state;
     state[e.target.name] = e.target.value;
     this.setState(state);
   }
@@ -1017,9 +1017,9 @@ class Userinput extends Component {
                 handleCostChange={this.handleEventCostChange}
                 i_resultsArray={i}
                 origin={this.state.resultsArray[i].origin} />
-                
+
                  </td>
-                 <td><ApproxCostToolTip 
+                 <td><ApproxCostToolTip
                  approxCostFlag={this.state.resultsArray[i].approximateFee}
                  origin={this.state.resultsArray[i].origin}/></td>
               <td><label htmlFor={id}><img alt="lock icon" className="lock" src={lock_icon} /></label><input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} /></td>
@@ -1237,6 +1237,7 @@ class Userinput extends Component {
             </AppBar>
           </div>
         {/* <Filters/> */}
+        <ClickAwayListener></ClickAwayListener>
 
         {/* All data gets shown here (api data, and user added data) */}
         <div className="nav nav-tabs" id="nav-tab" role="tablist">
