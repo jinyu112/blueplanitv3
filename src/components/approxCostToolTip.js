@@ -8,8 +8,8 @@ import { OverlayTrigger } from 'react-bootstrap';
 export class ApproxCostToolTip extends Component {
     constructor(props) {
         super(props);
-    }
-
+    } 
+ 
     render() {
         var origin = this.props.origin;
         var toolTipStr = "";

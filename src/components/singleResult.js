@@ -4,6 +4,8 @@ import CONSTANTS from '../constants.js';
 import misc from '../miscfuncs/misc.js';
 import placeholder from '../images/placeholder.png';
 import ApproxCostToolTip from './approxCostToolTip.js';
+import { Tooltip } from 'react-bootstrap';
+import { OverlayTrigger } from 'react-bootstrap';
 
 // This component constructs a single result that is displayed to the user from the api data
 export class SingleResult extends Component {
@@ -57,7 +59,11 @@ export class SingleResult extends Component {
                     </tbody>
                     <tbody>
                     <tr>
-                        <td><input key={titleStr} type="checkbox" onChange={this.handleAddEvent}/></td>
+                        <td>
+                        <OverlayTrigger placement="top" overlay={<Tooltip id="addeventtooltip"><strong>{CONSTANTS.ADDTOITIN_TOOLTIP_STR}</strong></Tooltip>}>
+                            <input key={titleStr} type="checkbox" onChange={this.handleAddEvent}/>
+                            </OverlayTrigger>
+                            </td>
                             <td>{timeStr}</td>
                             <td>
                                 ${costStr}<ApproxCostToolTip approxCostFlag={approxCostFlag} origin={origin}/>                        
