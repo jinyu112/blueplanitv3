@@ -1009,7 +1009,7 @@ class Userinput extends Component {
               <td className="resultsName">
                 {this.state.resultsArray[i].url === "" ? this.state.resultsArray[i].name :
                   <a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a>}
-                {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />}
+                {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
               </td>
               <td className="edit-cost text-success"><EditCostComponent
                 name={this.state.resultsArray[i].name}
