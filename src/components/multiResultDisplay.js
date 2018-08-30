@@ -27,6 +27,12 @@ export class MultiResultDisplay extends Component {
         //               [obj1,...,objn] ]
         var pageNumber = this.props.pageNumber;
         var displayCategory = this.props.displayCategory; // 0 = restaurant data, 1 = event data
+        // filters
+        var apiSource = this.props.eventFilterFlags;
+        var maxTime = this.props.maxTime;
+        var minTime = this.props.minTime;
+        var maxPrice = this.props.maxPrice;
+        var minPrice = this.props.minPrice;
 
         var numArrays = apiData.length;
         var runningEventCnt = 0;
@@ -51,12 +57,16 @@ export class MultiResultDisplay extends Component {
             if (numArrays > 0 && userAddedEvents && userAddedEvents !== undefined) {
                 for (var i = 0; i < userAddedEvents.length; i++) {
                     iItinerary = parseInt(userAddedEvents[i].slot) - 1;
-                    apiDataShownToUser.push(<SingleResult key={"userAddedEvents" + i} itinObj={userAddedEvents[i]}
-                        AddEvent={this.handleAddEvent} eventKey={iItinerary} />);
+                    if (filterForDisplay(userAddedEvents[i],apiSource,
+                        maxTime, minTime,
+                        maxPrice, minPrice, true)) {
+                        apiDataShownToUser.push(<SingleResult key={"userAddedEvents" + i} itinObj={userAddedEvents[i]}
+                            AddEvent={this.handleAddEvent} eventKey={iItinerary} />);
+                    }
                 }
             }
         }
-        else {
+        else { // handle all other event and restaurant data
             // find where to start showing the events based on the pagenumber selected
             if (numArrays > 0 && apiData && apiData !== undefined) {
                 for (var i = 0; i < numArrays; i++) {
@@ -132,9 +142,13 @@ export class MultiResultDisplay extends Component {
                                 }
 
                                 // construct SingleResult component array
-                                apiDataShownToUser.push(<SingleResult key={runningEventCnt} itinObj={tempItineraryObj}
-                                    AddEvent={this.handleAddEvent} eventKey={iItinerary} />);
-                                runningEventCnt = runningEventCnt + 1;
+                                if (filterForDisplay(tempItineraryObj, apiSource,
+                                    maxTime, minTime,
+                                    maxPrice, minPrice, false)) {
+                                    apiDataShownToUser.push(<SingleResult key={runningEventCnt} itinObj={tempItineraryObj}
+                                        AddEvent={this.handleAddEvent} eventKey={iItinerary} />);
+                                    runningEventCnt = runningEventCnt + 1;
+                                }
                                 if (runningEventCnt >= CONSTANTS.NUM_RESULTS_PER_PAGE) {
                                     i = numArrays;
                                     ikey = keys.length;
@@ -155,6 +169,54 @@ export class MultiResultDisplay extends Component {
             </div>
         )
     }
+
+}
+
+// Returns true if within parameters and api source is selected
+function filterForDisplay(itineraryObj, apiSource, maxTime, minTime, maxPrice, minPrice, isUserAddedEventFlag) {
+    // apiSource is an array of 1s or 0s and is from userinput state eventFilterFlags 
+    // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options       
+    const reducer = (accumulator, currentValue) => accumulator + currentValue;
+    var displayToUserFlag = true;
+    var apiSourceLength = apiSource.length;
+    var EVENTS_ORIGINS_ARRAY = [
+        CONSTANTS.ORIGINS_MU,
+        CONSTANTS.ORIGINS_EB,
+        CONSTANTS.ORIGINS_SG,
+        CONSTANTS.ORIGINS_GP
+    ]; // same order as apiSource (order matters)
+
+    // Check if in price range
+    if (parseFloat(itineraryObj.cost) < minPrice || parseFloat(itineraryObj.cost) > maxPrice) {
+        return false;
+    }
+
+    // Check if in time range
+    if (itineraryObj.origin.localeCompare(CONSTANTS.ORIGINS_YELP) !== 0) {
+        if (parseFloat(itineraryObj.time) < minTime || parseFloat(itineraryObj.time) > maxTime) {
+            return false;
+        }
+    }
+
+    // Check if itinerary obj is from a selected api source (ie if meetup is checked, check that this itinerary object is a meetup obj)
+    if (!isUserAddedEventFlag || itineraryObj.origin.localeCompare(CONSTANTS.ORIGINS_YELP) !== 0) {
+        if (apiSource[apiSourceLength - 1] === 0) { // if not all apiSources are selected
+            if (apiSource.reduce(reducer) === 0) { // none of the apiSources are selected
+                return false;
+            }
+            displayToUserFlag = false;
+            for (var i = 0; i < apiSourceLength - 1; i++) {
+                if (apiSource[i] === 1) {
+                    if (EVENTS_ORIGINS_ARRAY[i].localeCompare(itineraryObj.origins) === 0) {
+                        displayToUserFlag = true;
+                        return displayToUserFlag;
+                    }
+                }
+            }
+        }
+    }
+    
+    return displayToUserFlag;
 }
 
 export default MultiResultDisplay;

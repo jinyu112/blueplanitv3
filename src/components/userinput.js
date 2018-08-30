@@ -1279,18 +1279,28 @@ class Userinput extends Component {
             <div className="itinerary tab-pane fade show active" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
 
               {<MultiResultDisplay apiData={eventsMultiResults}
-                displayCategory={1}
+                displayCategory={1} //events
                 pageNumber={this.state.pageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} />}
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} 
+                minPrice={CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY}
+                maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
+                maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
+                minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
+                eventFilterFlags={this.state.eventFilterFlags}/>}
               {pages}
 
             </div>
 
             <div className="itinerary tab-pane fade" id="nav-food" role="tabpanel" aria-labelledby="nav-options-tab">
               {<MultiResultDisplay apiData={foodMultiResults}
-                displayCategory={0}
+                displayCategory={0} //restaurants
                 pageNumber={this.state.foodPageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} />}
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} 
+                minPrice={CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY}
+                maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
+                maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
+                minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
+                eventFilterFlags={this.state.eventFilterFlags}/>}
             {foodPages}
             </div>
 
@@ -1302,9 +1312,14 @@ class Userinput extends Component {
               <a href="javascript:void(0)" onClick={this.handleClearUserEvents}> Clear All Added Events
                           </a>
               {<MultiResultDisplay apiData={this.state.userAddedEvents}
-                displayCategory={2}
+                displayCategory={2} //user added events
                 pageNumber={this.state.foodPageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} />}
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} 
+                minPrice={CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY}
+                maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
+                maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
+                minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
+                eventFilterFlags={this.state.eventFilterFlags}/>}
                 {/* {userevents} */}
             </div>
           </div>

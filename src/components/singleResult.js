@@ -16,11 +16,14 @@ import Typography from '@material-ui/core/Typography';
 import red from '@material-ui/core/colors/red';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import renderHTML from 'react-render-html';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const styles = theme => ({
     card: {
       maxWidth: 400,
+      float: 'left',
     },
     media: {
       height: 0,
@@ -38,6 +41,7 @@ const styles = theme => ({
       [theme.breakpoints.up('sm')]: {
         marginRight: -8,
       },
+      float: 'left',
     },
     expandOpen: {
       transform: 'rotate(180deg)',
@@ -53,9 +57,13 @@ export class SingleResult extends Component {
         super(props);
         this.state ={
             expanded: false,
+            checked: true,
         }
     }
 
+    handleCheckBox = name => event => {
+      this.setState({ [name]: event.target.checked });
+    };
     //
     handleAddEvent = (e) => {
         // if (e.target.checked) {
@@ -104,6 +112,33 @@ export class SingleResult extends Component {
         else if (origin === CONSTANTS.ORIGINS_YELP) {
             subHeaderTxt = "YELP.COM";
         }
+
+      if (!this.state.expanded) {
+        var moreInfoIcon = (
+          <TooltipMat placement="top" title={CONSTANTS.MOREINFO_TOOLTIP_STR}>
+          <IconButton
+            onClick={this.handleExpandClick}
+            aria-expanded={this.state.expanded}
+            aria-label="Show more"
+          >
+            <ExpandMoreIcon/>
+          </IconButton>
+          </TooltipMat>
+        );
+      }
+      else {
+        var moreInfoIcon = (
+          <TooltipMat placement="top" title={CONSTANTS.LESSINFO_TOOLTIP_STR}>
+          <IconButton
+            onClick={this.handleExpandClick}
+            aria-expanded={this.state.expanded}
+            aria-label="Show more"
+          >
+            <ExpandLessIcon/>
+          </IconButton>
+          </TooltipMat>
+        );
+      }
         return (
 
 <Card>
@@ -114,14 +149,7 @@ export class SingleResult extends Component {
         <CardMedia
         className="singleResultImg"
           image={imgUrlStr}
-          title="Contemplative Reptile"
         />
-        {/* <CardContent>
-          <Typography component="p">
-            This impressive paella is a perfect party dish and a fun meal to cook together with your
-            guests. Add 1 cup of frozen peas along with the mussels, if you like.
-          </Typography>
-        </CardContent> */}
         <CardActions  style={{justifyContent: 'center'}}>
         <TooltipMat placement="top" title={CONSTANTS.ADDTOITIN_TOOLTIP_STR}>
           <IconButton aria-label="Add to favorites"  onClick={this.handleAddEvent}>
@@ -135,58 +163,24 @@ export class SingleResult extends Component {
             <Typography>
           ${costStr}<ApproxCostToolTip approxCostFlag={approxCostFlag} origin={origin}/>
             </Typography>
-          <IconButton
-            onClick={this.handleExpandClick}
-            aria-expanded={this.state.expanded}
-            aria-label="Show more"
-          >
-            <ExpandMoreIcon />
-          </IconButton>
+            {moreInfoIcon}
+            <Checkbox
+          checked={this.state.checked}
+          onChange={this.handleCheckBox('checked')}
+          value="checked"
+        />
         </CardActions>
         <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Typography paragraph variant="body2">
               Description:
             </Typography>
-            <Typography >
+            <Typography paragraph>
             {renderHTML(desc)}
             </Typography>
           </CardContent>
         </Collapse>
       </Card>
-
-            // <div>
-            //     <table className="singleApiResult">
-            //         <tbody>
-            //         <tr>
-            //             <td colSpan="3">
-            //                 <a href={urlStr} target='_blank'><img className="singleResultImg" src={imgUrlStr} /></a>
-            //             </td>
-            //         </tr>
-            //         </tbody>
-
-            //         <tbody>
-            //         <tr>
-            //             <td colSpan="3">
-            //             <a href={urlStr} target='_blank'>{titleStr}</a></td>
-            //         </tr>
-            //         </tbody>
-            //         <tbody>
-            //         <tr>
-            //             <td>
-            //             <TooltipMat placement="top" title={CONSTANTS.ADDTOITIN_TOOLTIP_STR}>
-            //                 <input key={titleStr} type="checkbox" onChange={this.handleAddEvent}/>
-            //                 </TooltipMat>
-            //                 </td>
-            //                 <td>{timeStr}</td>
-            //                 <td>
-            //                     ${costStr}<ApproxCostToolTip approxCostFlag={approxCostFlag} origin={origin}/>                        
-            //                 </td>
-
-            //         </tr>
-            //         </tbody>
-            //     </table>
-            // </div>
         )
     }
 }

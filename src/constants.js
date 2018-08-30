@@ -110,4 +110,11 @@ module.exports = {
     EMAIL_TOOLTIP_STR: "Email this itinerary to yourself.",
     SEARCHAGAIN_TOOLTIP_STR: "Auto populate unlocked itinerary slots with new events!",
     ADDTOITIN_TOOLTIP_STR: "Add this event to your itinerary.",
+    MOREINFO_TOOLTIP_STR: "More info.",
+    LESSINFO_TOOLTIP_STR: "Less info.",
+    DEFAULT_MIN_PRICE_4_DISPLAY: 0,
+    DEFAULT_MAX_PRICE_4_DISPLAY: 10000000,
+    DEFAULT_MIN_TIME_4_DISPLAY: 0,
+    DEFAULT_MAX_TIME_4_DISPLAY: 3000,
+
 }
