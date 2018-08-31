@@ -934,7 +934,7 @@ class Userinput extends Component {
                     }
                   }
                 }
-              }.bind(this))
+            }.bind(this), { key: process.env.REACT_GOOGLE_API_KEY })
 
             }
             else {
@@ -950,7 +950,7 @@ class Userinput extends Component {
               loading: false,
             });
           }
-        }.bind(this))
+      }.bind(this), { key: process.env.REACT_GOOGLE_API_KEY })
       }
     }
   }
@@ -1022,22 +1022,22 @@ class Userinput extends Component {
                  <td><ApproxCostToolTip
                  approxCostFlag={this.state.resultsArray[i].approximateFee}
                  origin={this.state.resultsArray[i].origin}/></td>
-              <td>              
+              <td>
                 <label htmlFor={id}>
                 <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
                 <img alt="lock icon" className="lock" src={lock_icon} />
                 </TooltipMat>
-                </label>                
-                <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />                
-                </td>                
-              <td>              
+                </label>
+                <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
+                </td>
+              <td>
                 <label htmlFor={elim_id}>
                 <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
                 <img alt="eliminate icon" className="elim" src={elim_icon} />
                 </TooltipMat>
                 </label>
                 <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
-                
+
                 </td>
             </tr>
             <tr className={moreInfoStyles.join(' ')}>
@@ -1243,8 +1243,8 @@ class Userinput extends Component {
                       <div className="col-md-2 form-group mb-2 datePickerWrapper">
                         <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
                       </div>
-                      <div className="col-md-2 form-group mb-2">                      
-                        <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleChange} placeholder="Search Radius (mi)" />                        
+                      <div className="col-md-2 form-group mb-2">
+                        <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleChange} placeholder="Search Radius (mi)" />
                       </div>
                       <div className="col-md-2 form-group mb-2">
                       <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
@@ -1286,7 +1286,7 @@ class Userinput extends Component {
               {<MultiResultDisplay apiData={eventsMultiResults}
                 displayCategory={1} //events
                 pageNumber={this.state.pageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} 
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
                 minPrice={CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY}
                 maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
                 maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
@@ -1300,7 +1300,7 @@ class Userinput extends Component {
               {<MultiResultDisplay apiData={foodMultiResults}
                 displayCategory={0} //restaurants
                 pageNumber={this.state.foodPageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} 
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
                 minPrice={CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY}
                 maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
                 maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
@@ -1319,7 +1319,7 @@ class Userinput extends Component {
               {<MultiResultDisplay apiData={this.state.userAddedEvents}
                 displayCategory={2} //user added events
                 pageNumber={this.state.foodPageNumber}
-                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary} 
+                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
                 minPrice={CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY}
                 maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
                 maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}

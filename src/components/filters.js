@@ -11,14 +11,25 @@ const styles = theme => ({
   root: {
     position: 'relative',
     display: 'grid',
-    'grid-template-columns': 'repeat(6, 1fr)',
-    'grid-gap': '20px',
+    'grid-template-columns': 'repeat(10, 1fr)',
+    'grid-gap': '15px',
+    padding: '1.5em 2.1em',
+    'max-width': 1080,
   },
   paper: {
     position: 'absolute',
-    top: 36,
-    right: 0,
-    left: 0,
+    top: 70,
+    left: 33,
+  },
+  paper2: {
+    position: 'absolute',
+    top: 70,
+    left: 136,
+  },
+  paper3: {
+    position: 'absolute',
+    top: 70,
+    left: 239,
   },
   fake: {
     backgroundColor: grey[200],
@@ -29,6 +40,9 @@ const styles = theme => ({
       marginRight: theme.spacing.unit * 3,
     },
   },
+  btn: {
+      'max-width': 100,
+  }
 });
 
 class ClickAway extends React.Component {
@@ -47,37 +61,38 @@ class ClickAway extends React.Component {
 
   handleClickAway = () => {
     this.setState({
-      open: false,
+      openRadius: false,
+      openApi: false,
+      openMeal: false
     });
   };
 
   render() {
     const { classes } = this.props;
     const { openRadius, openApi, openMeal } = this.state;
-    const { open } = this.state;
     const fake = <div className={classes.fake} />;
 
     return (
       <div className={classes.root}>
         <ClickAwayListener  onClickAway={this.handleClickAway}>
-            <Button variant="outlined" onClick={(e) => this.handleClick('openRadius')}>Distance</Button>
+            <Button className={classes.btn} variant="outlined" onClick={(e) => this.handleClick('openRadius')}>Distance</Button>
             {openRadius ? (
               <Paper className={classes.paper}>
                 meow
               </Paper>
             ) : null}
 
-            <Button  variant="outlined" onClick={(e) => this.handleClick('openApi')}>SOURCES</Button>
+            <Button className={classes.btn} variant="outlined" onClick={(e) => this.handleClick('openApi')}>SOURCES</Button>
             {openApi ? (
-              <Paper className={classes.paper}>
+              <Paper className={classes.paper2}>
                 these are the Apis
               </Paper>
             ) : null}
 
 
-            <Button  variant="outlined" onClick={(e) => this.handleClick('openMeal')}>MEALS</Button>
+            <Button className={classes.btn} variant="outlined" onClick={(e) => this.handleClick('openMeal')}>MEALS</Button>
             {openMeal ? (
-              <Paper className={classes.paper}>
+              <Paper className={classes.paper3}>
               These are meal types
               </Paper>
             ) : null}
