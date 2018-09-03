@@ -43,7 +43,7 @@ class ClickAway extends React.Component {
 
   handleChange = (event, value) => {
     this.setState({ value });
-    this.props.setDistance(value);
+    // this.props.setDistance(value);
   };
 
   render() {
@@ -62,7 +62,7 @@ class ClickAway extends React.Component {
             {openRadius ? (
               <Paper className={classes.paper}>
                 <Typography id="label">Choose search raduis</Typography>
-                <Slider value={value} min={0} max={50} step={1} onChange={this.handleChange}/>
+                <Slider value={value} min={0} max={this.props.maxDistance} step={1} onChange={this.handleChange}/>
               </Paper>
             ) : null}
         </ClickAwayListener>

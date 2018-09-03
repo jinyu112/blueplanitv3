@@ -957,9 +957,10 @@ class Userinput extends Component {
   }
 
   handleDistanceFilter(distance) {
-      this.setState({
-         searchRadius: distance
-     });
+     //  this.setState({
+     //     searchRadius: distance
+     // });
+     console.log('dfughidfgh');
   }
 
   render() {
@@ -1279,7 +1280,7 @@ class Userinput extends Component {
         {/* <Filters/> */}
 
         <div  className="filters-div">
-            <DistanceFilter setDistance={this.handleDistanceFilter}></DistanceFilter>
+            <DistanceFilter maxDistance={this.state.searchRadius} setDistance={this.handleDistanceFilter}></DistanceFilter>
         </div>
 
 
