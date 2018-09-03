@@ -97,6 +97,7 @@ class Userinput extends Component {
     this.handleEventPageClick = this.handleEventPageClick.bind(this);
     this.handleFoodPageClick = this.handleFoodPageClick.bind(this);
     this.handleUpdateItinerary = this.handleUpdateItinerary.bind(this);
+    this.handleDistanceFilter = this.handleDistanceFilter.bind(this);
   }
 
   handleChange(e) {
@@ -955,6 +956,12 @@ class Userinput extends Component {
     }
   }
 
+  handleDistanceFilter(distance) {
+      this.setState({
+         searchRadius: distance
+     });
+  }
+
   render() {
     var formStyles = ['form-body'];
     var optionStyles = ['more-options', 'form-body'];
@@ -1257,11 +1264,11 @@ class Userinput extends Component {
                         </TooltipMat>
                       </div>
                       <div className="col-md-2 search-btn">
-                      <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
-                            <Button variant="contained" color="secondary" type="submit">
-                                    GO!
-                            </Button>
-                            </TooltipMat>
+                          <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
+                                <Button variant="contained" color="secondary" type="submit">
+                                        GO!
+                                </Button>
+                          </TooltipMat>
                       </div>
                     </div>
                   </div>
@@ -1270,9 +1277,11 @@ class Userinput extends Component {
             </AppBar>
           </div>
         {/* <Filters/> */}
-        <div className="filters-div">
-            <DistanceFilter></DistanceFilter>
+
+        <div  className="filters-div">
+            <DistanceFilter setDistance={this.handleDistanceFilter}></DistanceFilter>
         </div>
+
 
         {/* All data gets shown here (api data, and user added data) */}
         <div className="nav nav-tabs" id="nav-tab" role="tablist">
@@ -1745,8 +1754,8 @@ function countEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, max
       var eventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]];
       var lenEvents = eventObj.length;
       for (var iEvent = 0; iEvent < lenEvents; iEvent++) {
-        // apiSource is an array of 1s or 0s and is from userinput state eventFilterFlags 
-        // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options       
+        // apiSource is an array of 1s or 0s and is from userinput state eventFilterFlags
+        // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
         const reducer = (accumulator, currentValue) => accumulator + currentValue;
         var apiSourceLength = apiSource.length;
         var EVENTS_ORIGINS_ARRAY = [
@@ -1760,7 +1769,7 @@ function countEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, max
         if (parseFloat(eventObj.cost) < minPrice || parseFloat(eventObj.cost) > maxPrice) {
           // Check if in time range
           if (parseFloat(eventObj.time) < minTime || parseFloat(eventObj.time) > maxTime) {
-            
+
             // Check if itinerary obj is from a selected api source (ie if meetup is checked, check that this itinerary object is a meetup obj)
             if (apiSource[apiSourceLength - 1] === 0) { // if not all apiSources are selected
               if (apiSource.reduce(reducer) === 0) { // none of the apiSources are selected
@@ -1775,7 +1784,7 @@ function countEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, max
                 }
               }
             }
-            
+
 
           }
         }
