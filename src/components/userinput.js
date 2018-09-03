@@ -31,7 +31,8 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import DistanceFilter from './filters.js';
+import DistanceFilter from './distanceFilter.js';
+import ApiFilter from './apiFilter.js';
 
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
@@ -1281,6 +1282,7 @@ class Userinput extends Component {
 
         <div  className="filters-div">
             <DistanceFilter maxDistance={this.state.searchRadius} setDistance={this.handleDistanceFilter}></DistanceFilter>
+            <ApiFilter></ApiFilter>
         </div>
 
 

@@ -43,7 +43,7 @@ class ClickAway extends React.Component {
 
   handleChange = (event, value) => {
     this.setState({ value });
-    // this.props.setDistance(value);
+    //change result display here
   };
 
   render() {
