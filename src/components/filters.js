@@ -5,51 +5,27 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import grey from '@material-ui/core/colors/grey';
-import globalStyles from '../App.css'
+import globalStyles from '../App.css';
+import Slider from '@material-ui/lab/Slider';
+import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
   root: {
     position: 'relative',
-    display: 'grid',
-    'grid-template-columns': 'repeat(10, 1fr)',
-    'grid-gap': '15px',
-    padding: '1.5em 2.1em',
-    'max-width': 1080,
   },
   paper: {
     position: 'absolute',
-    top: 70,
+    top: 175,
     left: 33,
-  },
-  paper2: {
-    position: 'absolute',
-    top: 70,
-    left: 136,
-  },
-  paper3: {
-    position: 'absolute',
-    top: 70,
-    left: 239,
-  },
-  fake: {
-    backgroundColor: grey[200],
-    height: theme.spacing.unit,
-    margin: theme.spacing.unit * 2,
-    // Selects every two elements among any group of siblings.
-    '&:nth-child(2n)': {
-      marginRight: theme.spacing.unit * 3,
-    },
-  },
-  btn: {
-      'max-width': 100,
+    width: '25%',
+    padding: '1em',
   }
 });
 
 class ClickAway extends React.Component {
   state = {
     openRadius: false,
-    openApi: false,
-    openMeal: false,
+    value: 0,
   };
 
   handleClick = (filter_state) => {
@@ -59,46 +35,35 @@ class ClickAway extends React.Component {
     this.setState(objectState);
   };
 
-  handleClickAway = () => {
-    this.setState({
+  handleClickAway = (props) => {
+  this.setState({
       openRadius: false,
-      openApi: false,
-      openMeal: false
     });
+  };
+
+  handleChange = (event, value) => {
+    this.setState({ value });
   };
 
   render() {
     const { classes } = this.props;
-    const { openRadius, openApi, openMeal } = this.state;
-    const fake = <div className={classes.fake} />;
+    const { openRadius } = this.state
+    const { value } = this.state;
+
+    var buttonClasses = ['radiusBtn'];
+
+    this.state.value != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['radiusBtn'];
 
     return (
-      <div className={classes.root}>
-        <ClickAwayListener  onClickAway={this.handleClickAway}>
-            <Button className={classes.btn} variant="outlined" onClick={(e) => this.handleClick('openRadius')}>Distance</Button>
+        <ClickAwayListener onClickAway={this.handleClickAway}>
+            <Button className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('openRadius')}>{this.state.value == 0 ? 'Distance' : this.state.value + ' miles'}</Button>
             {openRadius ? (
               <Paper className={classes.paper}>
-                meow
+                <Typography id="label">Choose search raduis</Typography>
+                <Slider value={value} min={0} max={50} step={1} onChange={this.handleChange}/>
               </Paper>
             ) : null}
-
-            <Button className={classes.btn} variant="outlined" onClick={(e) => this.handleClick('openApi')}>SOURCES</Button>
-            {openApi ? (
-              <Paper className={classes.paper2}>
-                these are the Apis
-              </Paper>
-            ) : null}
-
-
-            <Button className={classes.btn} variant="outlined" onClick={(e) => this.handleClick('openMeal')}>MEALS</Button>
-            {openMeal ? (
-              <Paper className={classes.paper3}>
-              These are meal types
-              </Paper>
-            ) : null}
-
         </ClickAwayListener>
-      </div>
     );
   }
 }

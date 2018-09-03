@@ -525,11 +525,32 @@ button.close {
 }
 
 .singleResultImg {
-    height: 150px;
+    height: 200px;
+    width: 50%;
+    max-width: 200px;
 }
 
 .filterGrid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-gap: 20px;
+}
+
+.filters-div {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-gap: 15px;
+    padding: 1.5em 2.1em;
+    max-width: 1080px;
+}
+
+.filters-div > button {
+    min-width: 100px;
+    max-width: 120px;
+}
+
+
+.activeStatebtn {
+    background-color: #3f51b5!important;
+    color: white!important;
 }
