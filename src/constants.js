@@ -116,5 +116,6 @@ module.exports = {
     DEFAULT_MAX_PRICE_4_DISPLAY: 10000000,
     DEFAULT_MIN_TIME_4_DISPLAY: 0,
     DEFAULT_MAX_TIME_4_DISPLAY: 3000,
-
+    NUM_OF_EVENT_APIS: 4, //currently meetup, seatgeek, eventbrite, google places
+    NUM_OF_EVENT_SLOTS: 4, // event 1 - event4
 }

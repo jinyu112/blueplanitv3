@@ -1152,6 +1152,11 @@ class Userinput extends Component {
     var pages = [];
     var pageNumber;
     if (!misc.isObjEmpty(this.state.allApiData)) {
+      countEventApiDataForFilter(this.state.allApiData,
+      this.state.eventFilterFlags,
+      CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY,CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY,
+      CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY);
+
       var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
       pages.push("<");
 
@@ -1732,6 +1737,54 @@ function resetAPIDataTimeStampToNow(myStorage_in) {
   myStorage_in.setItem('timestamp', currentTimeStampStr);
 }
 
+
+function countEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, maxPrice, minPrice) {
+  var filteredEventCount = 0;
+  for (var i = 0; i < CONSTANTS.NUM_OF_EVENT_APIS; i++) { // cycle through meetup -> google places
+    for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots (j=[0 1 2 3] maps to j*2=[0 2 4 6] -> CONSTANTS.EVENTKEYS)
+      var eventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]];
+      var lenEvents = eventObj.length;
+      for (var iEvent = 0; iEvent < lenEvents; iEvent++) {
+        // apiSource is an array of 1s or 0s and is from userinput state eventFilterFlags 
+        // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options       
+        const reducer = (accumulator, currentValue) => accumulator + currentValue;
+        var apiSourceLength = apiSource.length;
+        var EVENTS_ORIGINS_ARRAY = [
+          CONSTANTS.ORIGINS_MU,
+          CONSTANTS.ORIGINS_EB,
+          CONSTANTS.ORIGINS_SG,
+          CONSTANTS.ORIGINS_GP
+        ]; // same order as apiSource (order matters)
+
+        // Check if in price range
+        if (parseFloat(eventObj.cost) < minPrice || parseFloat(eventObj.cost) > maxPrice) {
+          // Check if in time range
+          if (parseFloat(eventObj.time) < minTime || parseFloat(eventObj.time) > maxTime) {
+            
+            // Check if itinerary obj is from a selected api source (ie if meetup is checked, check that this itinerary object is a meetup obj)
+            if (apiSource[apiSourceLength - 1] === 0) { // if not all apiSources are selected
+              if (apiSource.reduce(reducer) === 0) { // none of the apiSources are selected
+                break;
+              }
+              for (var i = 0; i < apiSourceLength - 1; i++) {
+                if (apiSource[i] === 1) {
+                  if (EVENTS_ORIGINS_ARRAY[i].localeCompare(eventObj.origins) === 0) {
+                    filteredEventCount++;
+                    break;
+                  }
+                }
+              }
+            }
+            
+
+          }
+        }
+
+      }
+    }
+  }
+   return filteredEventCount;
+}
 
 Userinput.propTypes = {}
 
