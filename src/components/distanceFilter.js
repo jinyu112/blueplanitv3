@@ -19,6 +19,7 @@ const styles = theme => ({
     left: 33,
     width: '25%',
     padding: '1em',
+    'z-index': 9999
   }
 });
 

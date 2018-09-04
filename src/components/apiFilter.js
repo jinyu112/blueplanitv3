@@ -23,10 +23,40 @@ const styles = theme => ({
     left: 150,
     width: '25%',
     padding: '1em',
+    'z-index': 9999
   }
 });
 
 class ClickAway extends React.Component {
+
+    constructor(props) {
+    super(props);
+
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+  }
+
+  componentDidMount() {
+     document.addEventListener('mousedown', this.handleClickOutside);
+   }
+
+   componentWillUnmount() {
+     document.removeEventListener('mousedown', this.handleClickOutside);
+   }
+
+   setWrapperRef(node) {
+    this.wrapperRef = node;
+  }
+
+  /**
+   * Alert if clicked on outside of element
+   */
+  handleClickOutside(event) {
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      this.setState({open:false});
+    }
+  }
+
   state = {
     open: false,
     value: false,
@@ -76,7 +106,7 @@ class ClickAway extends React.Component {
     return (
         // <ClickAwayListener onClickAway={this.handleClickAway}>
         //     </ClickAwayListener>
-        <div>
+        <div ref={this.setWrapperRef}>
             <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>SOURCES</Button>
                 {open ? (
                   <Paper className={classes.paper}>
@@ -138,6 +168,7 @@ class ClickAway extends React.Component {
 
 ClickAway.propTypes = {
   classes: PropTypes.object.isRequired,
+  children: PropTypes.element.isRequired,
 };
 
 export default withStyles(styles)(ClickAway);
