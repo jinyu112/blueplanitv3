@@ -599,14 +599,9 @@ class Userinput extends Component {
           this.setState({
             message: messageStrObj,
           });
-          insideBudget = false;
-          return;
+           insideBudget = false;
+           return;
         }
-      }
-      else if (this.state.totalCost > this.state.budgetmax ||
-       this.state.totalCost < this.state.budgetmin) {
-        insideBudget = false;
-        return;
       }
     }
 
@@ -827,7 +822,7 @@ class Userinput extends Component {
                     else {
                       console.log("No need to do API calls!!!")
 
-                      if (indexDBcompat && insideBudget) {
+                      if (indexDBcompat && insideBudget) { 
                         idb_keyval.get('apiData').then(val => {
 
                           // Save the previously saved events by the user as persistent data in
@@ -937,7 +932,7 @@ class Userinput extends Component {
                     }
                   }
                 }
-            }.bind(this), { key: process.env.REACT_GOOGLE_API_KEY })
+            }.bind(this), { key: process.env.REACT_GOOGLE_API_KEY})
 
             }
             else {
@@ -1360,7 +1355,7 @@ class Userinput extends Component {
               {goAgainButton}</div>
               : ''}
 
-            {/*<GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />*/}
+            <GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />
           </div>
 
         </div>

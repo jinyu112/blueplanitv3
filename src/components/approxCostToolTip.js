@@ -11,12 +11,18 @@ export class ApproxCostToolTip extends Component {
  
     render() {
         var origin = this.props.origin;
+
         var toolTipStr = "";
-        if (origin.localeCompare(CONSTANTS.ORIGINS_YELP) === 0) {
-            toolTipStr = CONSTANTS.APPROX_YELPRESTAURANT_COST_STR;
+        if (origin) {
+            if (origin.localeCompare(CONSTANTS.ORIGINS_YELP) === 0) {
+                toolTipStr = CONSTANTS.APPROX_YELPRESTAURANT_COST_STR;
+            }
+            else {
+                toolTipStr = CONSTANTS.APPROX_EVENT_COST_STR;
+            }
         }
         else {
-            toolTipStr = CONSTANTS.APPROX_EVENT_COST_STR;
+            toolTipStr ="";
         }
 
         var approxCostFlag = this.props.approxCostFlag;

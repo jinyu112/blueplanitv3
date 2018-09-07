@@ -2,7 +2,7 @@ module.exports = {
 
   // categories: breakfast, lunch, dinner, event
   doGA: function (allData, budgetmax_in, budgetmin_in, eliminatedEvents_in) {
-    const LOW_BUDGET_THRESHOLD = 40; // dollar amount to run low budget logic
+    const LOW_BUDGET_THRESHOLD = 60; // dollar amount to run low budget logic
 
     console.log("eliminated events array:")
     console.log(eliminatedEvents_in)
@@ -792,7 +792,7 @@ function round2NearestHundredth(number) {
 }
 
 function mutate(itinerary_in, numItemsArray_in, budgetmax_in) {
-  const LOW_BUDGET_THRESHOLD = 40;
+  const LOW_BUDGET_THRESHOLD = 60;
 
   // If 0-6 chosen, individual items will be mutated
   // If 7-10 chosen, pairs of items will be mutated
@@ -805,12 +805,17 @@ function mutate(itinerary_in, numItemsArray_in, budgetmax_in) {
     iNoneItinItem = numItemsArray_in[irand] - 1;
     // if there is a low max budget, need to mutate the itinerary item to "none/free itin." slot
     // this is to help with the problem of generating NO itineraries at low budgets because the initial
-    // population almost never has two "none/free itin." slots
+    // population almost never has two or more "none/free itin." slots
     if (budgetmax_in <= LOW_BUDGET_THRESHOLD) {
       mutatedItinerary[irand] = iNoneItinItem; // this is the "none/free itin." slot
       if (irand < 6) {
         iNoneItinItem = numItemsArray_in[irand + 1] - 1; // the irand + 1 th slot
         mutatedItinerary[irand + 1] = iNoneItinItem; 
+        var threeNoneItems = randomIntFromInterval(0, 2); 
+        if (threeNoneItems < 2) { // set first or second item to none item
+          iNoneItinItem = numItemsArray_in[threeNoneItems] - 1; // the irand + 1 th slot
+          mutatedItinerary[threeNoneItems] = iNoneItinItem; 
+        }
       }
     }
     else { //this is the "normal" path when budget is higher than the low budget threshold

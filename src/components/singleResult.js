@@ -112,7 +112,7 @@ export class SingleResult extends Component {
         else if (origin === CONSTANTS.ORIGINS_YELP) {
             subHeaderTxt = "YELP.COM";
         }
-
+ 
       if (!this.state.expanded) {
         var moreInfoIcon = (
           <TooltipMat placement="top" title={CONSTANTS.MOREINFO_TOOLTIP_STR}>
@@ -160,7 +160,7 @@ export class SingleResult extends Component {
           <Typography>
           {timeStr}
             </Typography>
-            <Typography>
+            <Typography> 
           ${costStr}<ApproxCostToolTip approxCostFlag={approxCostFlag} origin={origin}/>
             </Typography>
             {moreInfoIcon}
