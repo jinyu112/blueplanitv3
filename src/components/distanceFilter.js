@@ -8,6 +8,7 @@ import grey from '@material-ui/core/colors/grey';
 import globalStyles from '../App.css';
 import Slider from '@material-ui/lab/Slider';
 import Typography from '@material-ui/core/Typography';
+import CONSTANTS from '../constants.js'
 
 const styles = theme => ({
   root: {
@@ -26,7 +27,7 @@ const styles = theme => ({
 class ClickAway extends React.Component {
   state = {
     openRadius: false,
-    value: 0,
+    value: this.props.maxDistance,
   };
 
   handleClick = (filter_state) => {
@@ -36,7 +37,7 @@ class ClickAway extends React.Component {
     this.setState(objectState);
   };
 
-  handleClickAway = (props) => {
+  handleClickAway = (props) => {    
   this.setState({
       openRadius: false,
     });
@@ -44,6 +45,7 @@ class ClickAway extends React.Component {
 
   handleChange = (event, value) => {
     this.setState({ value });
+    this.props.setDistance(value);
     //change result display here
   };
 
@@ -62,7 +64,7 @@ class ClickAway extends React.Component {
         <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('openRadius')}>{this.state.value == 0 ? 'Distance' : this.state.value + ' miles'}</Button>
             {openRadius ? (
               <Paper className={classes.paper}>
-                <Typography id="label">Choose search raduis</Typography>
+                <Typography id="label">{CONSTANTS.RADIUS_FILTER_STR}</Typography>
                 <Slider value={value} min={0} max={this.props.maxDistance} step={1} onChange={this.handleChange}/>
               </Paper>
             ) : null}
