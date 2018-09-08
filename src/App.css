@@ -555,3 +555,8 @@ button.close {
     background-color: #3f51b5!important;
     color: white!important;
 }
+
+
+#startTime > div, #endTime > div {
+    margin-bottom: 10px!important;
+}
