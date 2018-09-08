@@ -967,6 +967,8 @@ class Userinput extends Component {
   handleFilterRadius(distance) {
       this.setState({
          filterRadius: distance,
+         pageNumber: 1,
+         foodPageNumber: 1,
      });
   }
 
