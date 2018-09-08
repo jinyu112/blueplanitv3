@@ -115,8 +115,16 @@ class ClickAway extends React.Component {
      timeStr.push(timeOfDay);
 
      this.setState(
-         { timeDisplay: timeStr.join(' '), startValue: value }
+         { timeDisplay: timeStr.join(' '), startValue: value }, () => {
+            if((this.state.endValue > 0 || this.state.startValue > 0) && (this.state.endValue < 24 || this.state.startValue < 24)) {
+                 if(this.state.endValue < this.state.startValue || this.state.endValue == this.state.startValue ) {
+                     this.handleChangeEnd(event, this.state.startValue + 2);
+                     this.setState({endValue: this.state.startValue + 2});
+                 }
+            }
+         }
      );
+
   };
 
   handleChangeEnd = (event, value) => {
@@ -152,7 +160,14 @@ class ClickAway extends React.Component {
      timeStr.push(timeOfDay);
 
      this.setState(
-         { endTimeDisplay: timeStr.join(' '), endValue: value }
+         { endTimeDisplay: timeStr.join(' '), endValue: value }, () => {
+             if((this.state.endValue > 0 || this.state.startValue > 0) && (this.state.endValue < 24 || this.state.startValue < 24)) {
+                 if(this.state.endValue < this.state.startValue || this.state.endValue == this.state.startValue) {
+                     this.handleChange(event, this.state.endValue - 2);
+                     this.setState({startValue: this.state.endValue - 2});
+                 }
+             }
+         }
      );
   };
 

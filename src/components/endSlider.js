@@ -30,7 +30,7 @@ const styles = {
   }
 };
 
-const EndSlider = ({endTimeDisplay, endTime, onChange }) => (
+const EndSlider = ({minValue, endTimeDisplay, endTime, onChange }) => (
   <div>
     <Subheader style={styles.subheader}>
       {CONSTANTS.END_TIME_FILTER_SUB_HEADER}

@@ -24,10 +24,40 @@ const styles = theme => ({
 });
 
 class ClickAway extends React.Component {
-  state = {
-    openRadius: false,
-    value: 0,
-  };
+
+    constructor(props) {
+        super(props);
+
+        this.setWrapperRef = this.setWrapperRef.bind(this);
+        this.handleClickOutside = this.handleClickOutside.bind(this);
+    }
+
+    state = {
+        openRadius: false,
+        value: 0,
+    };
+
+    componentDidMount() {
+       document.addEventListener('mousedown', this.handleClickOutside);
+     }
+
+     componentWillUnmount() {
+       document.removeEventListener('mousedown', this.handleClickOutside);
+     }
+
+     setWrapperRef(node) {
+      this.wrapperRef = node;
+    }
+
+    /**
+     * Alert if clicked on outside of element
+     */
+    handleClickOutside(event) {
+      if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+        this.setState({openRadius:false});
+      }
+    }
+
 
   handleClick = (filter_state) => {
     var objectState = {};
@@ -58,7 +88,7 @@ class ClickAway extends React.Component {
     this.state.value != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['radiusBtn'];
 
     return (
-        <ClickAwayListener onClickAway={this.handleClickAway}>
+        <div ref={this.setWrapperRef}>
         <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('openRadius')}>{this.state.value == 0 ? 'Distance' : this.state.value + ' miles'}</Button>
             {openRadius ? (
               <Paper className={classes.paper}>
@@ -66,7 +96,7 @@ class ClickAway extends React.Component {
                 <Slider value={value} min={0} max={this.props.maxDistance} step={1} onChange={this.handleChange}/>
               </Paper>
             ) : null}
-        </ClickAwayListener>
+        </div>
     );
   }
 }
