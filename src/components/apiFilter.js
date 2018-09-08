@@ -73,11 +73,6 @@ class ClickAway extends React.Component {
     this.setState(objectState);
   };
 
-  handleClickAway = (props) => {
-  this.setState({
-      open: false,
-    });
-  };
 
   handleChange = name => event => {
     this.setState({ [name]: event.target.checked }, function () {
@@ -104,8 +99,6 @@ class ClickAway extends React.Component {
     this.state.value != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
 
     return (
-        // <ClickAwayListener onClickAway={this.handleClickAway}>
-        //     </ClickAwayListener>
         <div ref={this.setWrapperRef}>
             <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>SOURCES</Button>
                 {open ? (
