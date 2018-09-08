@@ -15,6 +15,7 @@
     "idb": "^2.0.4",
     "idb-keyval": "^2.3.0",
     "jquery": "^3.3.1",
+    "material-ui-slider-label": "git+https://github.com/tariqwest/material-ui-slider-label.git",
     "moment": "^2.20.1",
     "react": "^16.1.1",
     "react-bootstrap": "^0.32.1",

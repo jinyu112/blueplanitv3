@@ -12,6 +12,10 @@ import Switch from '@material-ui/core/Switch';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
+import StartSlider from './startSlider';
+import EndSlider from './endSlider';
 
 const styles = theme => ({
   root: {
@@ -21,8 +25,8 @@ const styles = theme => ({
     position: 'absolute',
     top: 175,
     left: 262,
-    width: '25%',
-    padding: '1em',
+    width: '35%',
+    padding: '1em 3em',
     'z-index': 9999
   }
 });
@@ -61,6 +65,8 @@ class ClickAway extends React.Component {
     open: false,
     startValue: 0,
     endValue: 0,
+    timeDisplay: '12:00 AM',
+    endTimeDisplay: '12:00 AM',
   };
 
   handleClick = (filter_state) => {
@@ -77,14 +83,80 @@ class ClickAway extends React.Component {
   };
 
   handleChange = (event, value) => {
-       console.log(event.target.id, value);
-     var objectState = {
-          [event.target.id] : value,
+
+    var timeStr = [];
+    var timeOfDay = ''
+    var time = '';
+
+     if(value < 12) {
+         timeOfDay = 'AM';
+         switch (value) {
+            case 0:
+                time = '12:00'
+                break;
+             default:
+                time = value + ':00'
+         }
+     } else {
+         timeOfDay = 'PM';
+         switch (value) {
+            case 12:
+                time = '12:00'
+                break;
+            case 24:
+                time = '11:59';
+                break;
+             default:
+                time = (value - 12) + ':00'
+         }
      }
 
-    this.setState(objectState);
-    //change result display here
+     timeStr.push(time);
+     timeStr.push(timeOfDay);
+
+     this.setState(
+         { timeDisplay: timeStr.join(' '), startValue: value }
+     );
   };
+
+  handleChangeEnd = (event, value) => {
+
+    var timeStr = [];
+    var timeOfDay = ''
+    var time = '';
+
+     if(value < 12) {
+         timeOfDay = 'AM';
+         switch (value) {
+            case 0:
+                time = '12:00'
+                break;
+             default:
+                time = value + ':00'
+         }
+     } else {
+         timeOfDay = 'PM';
+         switch (value) {
+            case 12:
+                time = '12:00'
+                break;
+            case 24:
+                time = '11:59';
+                break;
+             default:
+                time = (value - 12) + ':00'
+         }
+     }
+
+     timeStr.push(time);
+     timeStr.push(timeOfDay);
+
+     this.setState(
+         { endTimeDisplay: timeStr.join(' '), endValue: value }
+     );
+  };
+
+
 
   render() {
     const { classes } = this.props;
@@ -95,24 +167,19 @@ class ClickAway extends React.Component {
 
     var buttonClasses = ['apiBtn'];
 
-    this.state.startValue != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+    this.state.startValue != 0 && this.state.endValue != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
 
     return (
-        // <ClickAwayListener onClickAway={this.handleClickAway}>
-        //     </ClickAwayListener>
         <div ref={this.setWrapperRef}>
             <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>TIMES</Button>
                 {open ? (
                   <Paper className={classes.paper}>
                       <div>
-                          <Typography id="label">Start Time</Typography>
-                          <Slider value={startValue} id="startValue" min={0} max={24} step={1} onChange={this.handleChange}/>
+                          <StartSlider timeDisplay={this.state.timeDisplay} startTime={this.state.startValue} onChange={this.handleChange}/>
                       </div>
                       <div>
-                          <Typography id="label">End Time</Typography>
-                          <Slider value={endValue} id="endValue" min={0} max={24} step={1} onChange={this.handleChange}/>
+                          <EndSlider endTimeDisplay={this.state.endTimeDisplay} endTime={this.state.endValue} onChange={this.handleChangeEnd}/>
                       </div>
-
                   </Paper>
                 ) : null}
         </div>
