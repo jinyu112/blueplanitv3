@@ -79,6 +79,10 @@ class Userinput extends Component {
       pageNumber: 1,
       foodPageNumber: 1,
       showModal: false,
+      tabState: CONSTANTS.NAV_EVENT_TAB_ID,
+
+      // result display filter states
+      filterRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
     };
     this.apiService = new ApiService();
     this.handleChange = this.handleChange.bind(this);
@@ -99,7 +103,14 @@ class Userinput extends Component {
     this.handleEventPageClick = this.handleEventPageClick.bind(this);
     this.handleFoodPageClick = this.handleFoodPageClick.bind(this);
     this.handleUpdateItinerary = this.handleUpdateItinerary.bind(this);
-    this.handleDistanceFilter = this.handleDistanceFilter.bind(this);
+    this.handleFilterRadius = this.handleFilterRadius.bind(this);
+    this.handleTabState = this.handleTabState.bind(this);
+  }
+
+  handleTabState(e) {
+  this.setState({
+    tabState: e.target.id, // Sets tabState to string (ie CONSTANTS.NAV_EVENT_TAB_ID)
+  });
   }
 
   handleChange(e) {
@@ -932,7 +943,7 @@ class Userinput extends Component {
                     }
                   }
                 }
-            }.bind(this), { key: process.env.REACT_GOOGLE_API_KEY})
+            }.bind(this), { key: 'AIzaSyAGiAZR3bZqHg3ji4ahdjoGG5Vm-yuoCL0'})
 
             }
             else {
@@ -948,16 +959,15 @@ class Userinput extends Component {
               loading: false,
             });
           }
-      }.bind(this), { key: process.env.REACT_GOOGLE_API_KEY })
+      }.bind(this), { key: 'AIzaSyAGiAZR3bZqHg3ji4ahdjoGG5Vm-yuoCL0' })
       }
     }
   }
 
-  handleDistanceFilter(distance) {
-     //  this.setState({
-     //     searchRadius: distance
-     // });
-     console.log('dfughidfgh');
+  handleFilterRadius(distance) {
+      this.setState({
+         filterRadius: distance,
+     });
   }
 
   render() {
@@ -1157,12 +1167,15 @@ class Userinput extends Component {
     var pages = [];
     var pageNumber;
     if (!misc.isObjEmpty(this.state.allApiData)) {
-      countEventApiDataForFilter(this.state.allApiData,
+      var numFilteredEvents = countEventApiDataForFilter(this.state.allApiData,
       this.state.eventFilterFlags,
       CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY,CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY,
-      CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY);
-
-      var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
+      CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY,
+    this.state.filterRadius);
+    // console.log("numberFilteredEvents: " + numFilteredEvents)
+    
+    var numPages = Math.floor(numFilteredEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
+      //var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
       pages.push("<");
 
       for (i = 0; i < numPages; i++) {
@@ -1277,7 +1290,7 @@ class Userinput extends Component {
         {/* <Filters/> */}
 
         <div  className="filters-div">
-            <DistanceFilter maxDistance={this.state.searchRadius} setDistance={this.handleDistanceFilter}></DistanceFilter>
+            <DistanceFilter maxDistance={this.state.searchRadius} setDistance={this.handleFilterRadius}></DistanceFilter>
             <ApiFilter></ApiFilter>
             <TimeFilter></TimeFilter>
         </div>
@@ -1285,9 +1298,9 @@ class Userinput extends Component {
 
         {/* All data gets shown here (api data, and user added data) */}
         <div className="nav nav-tabs" id="nav-tab" role="tablist">
-          <a className="nav-item nav-link active" id="nav-events-tab" data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
-          <a className="nav-item nav-link" id="nav-food-tab" data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
-          <a className="nav-item nav-link" id="nav-add-tab" data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> Add Event</a>
+          <a onClick={this.handleTabState} className="nav-item nav-link active" id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
+          <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
+          <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_USER_TAB_ID} data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> Add Event</a>
         </div>
 
         <div className="row eventsCont apidata">
@@ -1302,7 +1315,9 @@ class Userinput extends Component {
                 maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
                 maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
-                eventFilterFlags={this.state.eventFilterFlags}/>}
+                eventFilterFlags={this.state.eventFilterFlags}
+                filterRadius={this.state.filterRadius}
+                tabState={this.state.tabState}/>}
               {pages}
 
             </div>
@@ -1316,7 +1331,9 @@ class Userinput extends Component {
                 maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
                 maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
-                eventFilterFlags={this.state.eventFilterFlags}/>}
+                eventFilterFlags={this.state.eventFilterFlags}
+                filterRadius={this.state.filterRadius}
+                tabState={this.state.tabState}/>}
             {foodPages}
             </div>
 
@@ -1335,8 +1352,9 @@ class Userinput extends Component {
                 maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
                 maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
-                eventFilterFlags={this.state.eventFilterFlags}/>}
-                {/* {userevents} */}
+                eventFilterFlags={this.state.eventFilterFlags}
+                filterRadius={this.state.filterRadius}
+                tabState={this.state.tabState}/>}
             </div>
           </div>
           <div className="mapsfix itinerary col-md-5">
@@ -1747,52 +1765,51 @@ function resetAPIDataTimeStampToNow(myStorage_in) {
 }
 
 
-function countEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, maxPrice, minPrice) {
+function countEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, maxPrice, minPrice, maxRadius) {
+
   var filteredEventCount = 0;
   for (var i = 0; i < CONSTANTS.NUM_OF_EVENT_APIS; i++) { // cycle through meetup -> google places
-    for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots (j=[0 1 2 3] maps to j*2=[0 2 4 6] -> CONSTANTS.EVENTKEYS)
+    for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots 
       var eventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]];
-      var lenEvents = eventObj.length;
-      for (var iEvent = 0; iEvent < lenEvents; iEvent++) {
-        // apiSource is an array of 1s or 0s and is from userinput state eventFilterFlags
-        // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
-        const reducer = (accumulator, currentValue) => accumulator + currentValue;
-        var apiSourceLength = apiSource.length;
-        var EVENTS_ORIGINS_ARRAY = [
-          CONSTANTS.ORIGINS_MU,
-          CONSTANTS.ORIGINS_EB,
-          CONSTANTS.ORIGINS_SG,
-          CONSTANTS.ORIGINS_GP
-        ]; // same order as apiSource (order matters)
+      if (eventObj) {
+        var lenEvents = eventObj.length;
+        for (var iEvent = 0; iEvent < lenEvents; iEvent++) {
+          // apiSource is an array of 1s or 0s and is from userinput state eventFilterFlags
+          // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
+          const reducer = (accumulator, currentValue) => accumulator + currentValue;
+          var apiSourceLength = apiSource.length;
+          var EVENTS_ORIGINS_ARRAY = [
+            CONSTANTS.ORIGINS_MU,
+            CONSTANTS.ORIGINS_EB,
+            CONSTANTS.ORIGINS_SG,
+            CONSTANTS.ORIGINS_GP
+          ]; // same order as apiSource (order matters)
 
-        // Check if in price range
-        if (parseFloat(eventObj.cost) < minPrice || parseFloat(eventObj.cost) > maxPrice) {
-          // Check if in time range
-          if (parseFloat(eventObj.time) < minTime || parseFloat(eventObj.time) > maxTime) {
+          // Check if in price range
+          if (parseFloat(eventObj[iEvent].cost) >= minPrice && parseFloat(eventObj[iEvent].cost) <= maxPrice && parseFloat(eventObj[iEvent].distance_from_input_location) <= maxRadius) {
+            // Check if in time range
+            if (parseFloat(eventObj[iEvent].time) >= minTime && parseFloat(eventObj[iEvent].time) <= maxTime) {
 
-            // Check if itinerary obj is from a selected api source (ie if meetup is checked, check that this itinerary object is a meetup obj)
-            if (apiSource[apiSourceLength - 1] === 0) { // if not all apiSources are selected
-              if (apiSource.reduce(reducer) === 0) { // none of the apiSources are selected
-                break;
-              }
-              for (var i = 0; i < apiSourceLength - 1; i++) {
-                if (apiSource[i] === 1) {
-                  if (EVENTS_ORIGINS_ARRAY[i].localeCompare(eventObj.origins) === 0) {
-                    filteredEventCount++;
-                    break;
+              // Check if itinerary obj is from a selected api source (ie if meetup is checked, check that this itinerary object is a meetup obj)
+              if (apiSource[apiSourceLength - 1] === 1) { // if not all apiSources are selected
+                for (var k = 0; k < apiSourceLength - 1; k++) {
+                  if (apiSource[k] === 1) {
+                    if (EVENTS_ORIGINS_ARRAY[k].localeCompare(eventObj[iEvent].origin) === 0) {
+                      filteredEventCount++;
+                      break;
+                    }
                   }
                 }
               }
-            }
 
+            } // end if statement for time check
+          } // end if statement for price and radius check
 
-          }
-        }
-
-      }
+        } // end for loop cycling through events in a field (field is like event1 -> event4 in apiData)
+      } // if statement to check valide eventObj
     }
   }
-   return filteredEventCount;
+  return filteredEventCount;
 }
 
 Userinput.propTypes = {}

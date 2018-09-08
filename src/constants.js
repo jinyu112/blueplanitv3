@@ -28,7 +28,7 @@ module.exports = {
         'yelpDinnerItemsGlobal',
         // 'yelpEventsGlobal', //currently commented because not using yelpevents
     ],
-    NUM_RESULTS_PER_PAGE: 10,
+    NUM_RESULTS_PER_PAGE: 6,
     NONE_ITEM_EVENT: {
         name: "None/Free Itinerary Slot",
         cost: 0,
@@ -118,6 +118,10 @@ module.exports = {
     DEFAULT_MAX_TIME_4_DISPLAY: 3000,
     NUM_OF_EVENT_APIS: 4, //currently meetup, seatgeek, eventbrite, google places
     NUM_OF_EVENT_SLOTS: 4, // event 1 - event4
+    NAV_EVENT_TAB_ID: "nav-events-tab",
+    NAV_FOOD_TAB_ID: "nav-food-tab",
+    NAV_USER_TAB_ID: "nav-add-tab",
+    RADIUS_FILTER_STR: "Choose search radius",
     START_TIME_FILTER_SUB_HEADER: 'Start Time',
     END_TIME_FILTER_SUB_HEADER: 'End Time',
 }

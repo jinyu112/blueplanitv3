@@ -33,6 +33,7 @@ export class MultiResultDisplay extends Component {
         var minTime = this.props.minTime;
         var maxPrice = this.props.maxPrice;
         var minPrice = this.props.minPrice;
+        var maxRadius = this.props.filterRadius;
 
         var numArrays = apiData.length;
         var runningEventCnt = 0;
@@ -51,7 +52,8 @@ export class MultiResultDisplay extends Component {
             keys = ['Restaurants'];
         }
 
-        if (displayCategory == 2) { // handle user added events
+        // handle user added events (doesn't limit the events displayed per page)
+        if (displayCategory === 2 && this.props.tabState.localeCompare(CONSTANTS.NAV_USER_TAB_ID) === 0) { 
             var userAddedEvents = apiData;
             
             if (numArrays > 0 && userAddedEvents && userAddedEvents !== undefined) {
@@ -59,7 +61,7 @@ export class MultiResultDisplay extends Component {
                     iItinerary = parseInt(userAddedEvents[i].slot) - 1;
                     if (filterForDisplay(userAddedEvents[i],apiSource,
                         maxTime, minTime,
-                        maxPrice, minPrice, true)) {
+                        maxPrice, minPrice, maxRadius, true)) {
                         apiDataShownToUser.push(<SingleResult key={"userAddedEvents" + i} itinObj={userAddedEvents[i]}
                             AddEvent={this.handleAddEvent} eventKey={iItinerary} />);
                     }
@@ -68,6 +70,8 @@ export class MultiResultDisplay extends Component {
         }
         else { // handle all other event and restaurant data
             // find where to start showing the events based on the pagenumber selected
+            if ( (displayCategory === 0 && this.props.tabState.localeCompare(CONSTANTS.NAV_FOOD_TAB_ID) === 0) ||
+                 (displayCategory === 1 && this.props.tabState.localeCompare(CONSTANTS.NAV_EVENT_TAB_ID) === 0) ) {
             if (numArrays > 0 && apiData && apiData !== undefined) {
                 for (var i = 0; i < numArrays; i++) {
                     for (var ikey = 0; ikey < keys.length; ikey++) {
@@ -144,7 +148,7 @@ export class MultiResultDisplay extends Component {
                                 // construct SingleResult component array
                                 if (filterForDisplay(tempItineraryObj, apiSource,
                                     maxTime, minTime,
-                                    maxPrice, minPrice, false)) {
+                                    maxPrice, minPrice, maxRadius, false)) {
                                     apiDataShownToUser.push(<SingleResult key={runningEventCnt} itinObj={tempItineraryObj}
                                         AddEvent={this.handleAddEvent} eventKey={iItinerary} />);
                                     runningEventCnt = runningEventCnt + 1;
@@ -162,6 +166,7 @@ export class MultiResultDisplay extends Component {
                 }
             } //end if apidata is not empty
         }
+        }
 
         return (
             <div className="ApiDataDisplay">
@@ -173,7 +178,7 @@ export class MultiResultDisplay extends Component {
 }
 
 // Returns true if within parameters and api source is selected
-function filterForDisplay(itineraryObj, apiSource, maxTime, minTime, maxPrice, minPrice, isUserAddedEventFlag) {
+function filterForDisplay(itineraryObj, apiSource, maxTime, minTime, maxPrice, minPrice, maxRadius, isUserAddedEventFlag) {
     // apiSource is an array of 1s or 0s and is from userinput state eventFilterFlags 
     // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options       
     const reducer = (accumulator, currentValue) => accumulator + currentValue;
@@ -185,6 +190,11 @@ function filterForDisplay(itineraryObj, apiSource, maxTime, minTime, maxPrice, m
         CONSTANTS.ORIGINS_SG,
         CONSTANTS.ORIGINS_GP
     ]; // same order as apiSource (order matters)
+
+    // Check if in distance range
+    if (parseFloat(itineraryObj.distance_from_input_location) > maxRadius) {
+        return false;
+    }
 
     // Check if in price range
     if (parseFloat(itineraryObj.cost) < minPrice || parseFloat(itineraryObj.cost) > maxPrice) {
