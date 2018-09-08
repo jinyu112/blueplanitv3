@@ -45,9 +45,14 @@ class ClickAway extends React.Component {
 
   handleChange = (event, value) => {
     this.setState({ value });
-    this.props.setDistance(value);
+    
     //change result display here
   };
+
+  handleApply() {
+    var sliderValue = this.refs.slider.value;
+    this.props.setDistance(sliderValue);
+  }
 
   render() {
     const { classes } = this.props;
@@ -64,9 +69,12 @@ class ClickAway extends React.Component {
         <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('openRadius')}>{this.state.value == 0 ? 'Distance' : this.state.value + ' miles'}</Button>
             {openRadius ? (
               <Paper className={classes.paper}>
-                <Typography id="label">{CONSTANTS.RADIUS_FILTER_STR}</Typography>
-                <Slider value={value} min={0} max={this.props.maxDistance} step={1} onChange={this.handleChange}/>
-              </Paper>
+            <Typography id="label">{CONSTANTS.RADIUS_FILTER_STR}</Typography>
+            <Slider value={value} min={0} max={this.props.maxDistance} step={1} onChange={this.handleChange} ref="slider"/>
+            <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
+              Apply
+            </Button>
+            </Paper>
             ) : null}
         </ClickAwayListener>
     );
