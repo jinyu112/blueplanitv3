@@ -1176,16 +1176,8 @@ class Userinput extends Component {
       CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY,
     this.state.filterRadius,this.state.searchRadius);
     // console.log("numberFilteredEvents: " + numFilteredEvents)
-<<<<<<< HEAD
 
-    var numPages = Math.floor(numFilteredEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
-||||||| merged common ancestors
-    
-    var numPages = Math.floor(numFilteredEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
-=======
-    
     var numPages = Math.floor(filteredEventObj.numFilteredEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
->>>>>>> 8d3054d2e7f7b6f2731e2135766ad21b015880e7
       //var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
       pages.push("<");
 
@@ -1803,7 +1795,7 @@ function countAndFilterEventApiDataForFilter(allApiData, apiSource, maxTime, min
             CONSTANTS.ORIGINS_GP
           ]; // same order as apiSource (order matters)
 
-                    
+
           // Check if in price range
           if (parseFloat(eventObj[iEvent].cost) >= minPrice && parseFloat(eventObj[iEvent].cost) <= maxPrice && parseFloat(eventObj[iEvent].distance_from_input_location) <= filterRadius) {
             // Check if in time range
