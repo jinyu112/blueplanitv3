@@ -1170,15 +1170,14 @@ class Userinput extends Component {
     var pages = [];
     var pageNumber;
     if (!misc.isObjEmpty(this.state.allApiData)) {
-      var filteredEventObj = countAndFilterEventApiDataForFilter(this.state.allApiData,
+      var filteredEventObj = countAndFilterEventApiData(this.state.allApiData,
       this.state.eventFilterFlags,
       CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY,CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY,
       CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY,
     this.state.filterRadius,this.state.searchRadius);
-    // console.log("numberFilteredEvents: " + numFilteredEvents)
+
 
     var numPages = Math.floor(filteredEventObj.numFilteredEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
-      //var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
       pages.push("<");
 
       for (i = 0; i < numPages; i++) {
@@ -1202,7 +1201,12 @@ class Userinput extends Component {
     var foodPages = [];
     var foodPageNumber;
     if (!misc.isObjEmpty(this.state.allApiData)) {
-      var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfFoodPlaces / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
+      var filteredFoodObj = countAndFilterFoodApiData(this.state.allApiData,
+        CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY,CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY,
+        CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY,
+      this.state.filterRadius);
+
+      var numPages = Math.floor(filteredFoodObj.numFilteredFoodPlaces / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
       foodPages.push("<");
 
       for (i = 0; i < numPages; i++) {
@@ -1219,9 +1223,7 @@ class Userinput extends Component {
 
     var foodMultiResults = [];
     if (!misc.isObjEmpty(this.state.allApiData)) {
-      foodMultiResults = [this.state.allApiData.yelpBreakfastItemsGlobal,
-      this.state.allApiData.yelpLunchItemsGlobal,
-      this.state.allApiData.yelpDinnerItemsGlobal];
+       foodMultiResults = filteredFoodObj.filteredFoodPlaces;
     }
 
     const styles = {
@@ -1769,7 +1771,7 @@ function resetAPIDataTimeStampToNow(myStorage_in) {
 }
 
 
-function countAndFilterEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, maxPrice, minPrice, filterRadius, maxRadius) {
+function countAndFilterEventApiData(allApiData, apiSource, maxTime, minTime, maxPrice, minPrice, filterRadius, maxRadius) {
 
   var filteredEvents = [
     {Event1:[],Event2:[],Event3:[],Event4:[]},
@@ -1845,6 +1847,45 @@ function countAndFilterEventApiDataForFilter(allApiData, apiSource, maxTime, min
     filteredEvents: filteredEvents,
   }
   return filteredEventsObj;
+}
+
+
+function countAndFilterFoodApiData(allApiData, maxTime, minTime, maxPrice, minPrice, filterRadius) {
+
+  var filteredFoodPlaces = [
+    [],
+    [],
+    [],
+];
+  var filteredFoodPlacesCount = 0;
+  for (var i = 4; i < 7; i++) { // cycle through yelp breakfast to dinner (see constants file for APIKEYS)
+      var foodPlaceObj = allApiData[CONSTANTS.APIKEYS[i]];
+      if (foodPlaceObj) {
+        var lenFoodPLaces = foodPlaceObj.length;
+        for (var iFood = 0; iFood < lenFoodPLaces; iFood++) {
+
+          // Check if in price range
+          if (parseFloat(foodPlaceObj[iFood].cost) >= minPrice && parseFloat(foodPlaceObj[iFood].cost) <= maxPrice && parseFloat(foodPlaceObj[iFood].distance_from_input_location) <= filterRadius) {
+            if (i===4) {
+              filteredFoodPlaces[0].push(foodPlaceObj[iFood]);
+            }
+            else if (i===5) {
+              filteredFoodPlaces[1].push(foodPlaceObj[iFood]);
+            }
+            else {
+              filteredFoodPlaces[2].push(foodPlaceObj[iFood]);
+            }
+            filteredFoodPlacesCount++;
+          } // end if statement for price and radius check
+      } // if statement to check valide foodPlaceObj
+    }
+  }
+
+  var filteredFoodPlaceObj = {
+    numFilteredFoodPlaces: filteredFoodPlacesCount,
+    filteredFoodPlaces: filteredFoodPlaces,
+  }
+  return filteredFoodPlaceObj;
 }
 
 Userinput.propTypes = {}
