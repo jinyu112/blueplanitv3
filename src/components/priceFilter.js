@@ -30,7 +30,7 @@ const styles = theme => ({
   }
 });
 
-class TimeSlider extends React.Component {
+class PriceSlider extends React.Component {
 
     constructor(props) {
         super(props);
@@ -42,7 +42,8 @@ class TimeSlider extends React.Component {
     state = {
       open: false,
       min: 0,
-      max: 24,
+      max: 500,
+      value: [],
     };
 
     componentDidMount() {
@@ -80,61 +81,33 @@ class TimeSlider extends React.Component {
     };
 
     onSliderChange = (value) => {
+        this.setState({
+            value: value,
+        })
         // sort results here
-    }
-
-    handleDisplay = (value) => {
-        var timeStr = [];
-        var timeOfDay = ''
-        var time = '';
-
-         if(value < 12) {
-             timeOfDay = 'AM';
-             switch (value) {
-                case 0:
-                    time = '12:00'
-                    break;
-                 default:
-                    time = value + ':00'
-             }
-         } else {
-             timeOfDay = 'PM';
-             switch (value) {
-                case 12:
-                    time = '12:00'
-                    break;
-                case 24:
-                    time = '11:59';
-                    break;
-                 default:
-                    time = (value - 12) + ':00'
-             }
-         }
-
-         timeStr.push(time);
-         timeStr.push(timeOfDay);
-
-         return timeStr.join(' ');
     }
 
   render() {
     const { classes } = this.props;
     const { open } = this.state;
+    const { startValue } = this.state;
+    const { endValue } = this.state;
     var disabled = this.props.resultsPresent;
 
     var buttonClasses = ['apiBtn'];
 
-    this.state.min != 8 && this.state.max != 16 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+
+    this.state.value != [175,300] || this.state.value != []  ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
 
     return (
         <div ref={this.setWrapperRef}>
-            <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>TIMES</Button>
+            <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>PRICE</Button>
                 {open ? (
                   <Paper className={classes.paper}>
-                      <Typography className={classes.header}>Choose A Time Range</Typography>
-                      <Range className={classes.slider} defaultValue={[8, 16]} min={this.state.min} max={this.state.max}
+                      <Typography className={classes.header}>Choose A Price Range</Typography>
+                      <Range className={classes.slider} defaultValue={[175, 300]} min={this.state.min} max={this.state.max}
                         onChange={this.onSliderChange}
-                        tipFormatter={this.handleDisplay}
+                        tipFormatter={value => `$${value}.00`}
                       />
                   </Paper>
                 ) : null}
@@ -143,9 +116,9 @@ class TimeSlider extends React.Component {
   }
 }
 
-TimeSlider.propTypes = {
+PriceSlider.propTypes = {
   classes: PropTypes.object.isRequired,
   children: PropTypes.element.isRequired,
 };
 
-export default withStyles(styles)(TimeSlider);
+export default withStyles(styles)(PriceSlider);

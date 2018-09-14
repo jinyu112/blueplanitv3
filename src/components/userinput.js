@@ -34,6 +34,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import DistanceFilter from './distanceFilter.js';
 import ApiFilter from './apiFilter.js';
 import TimeFilter from './timeFilter.js';
+import PriceFilter from './priceFilter.js';
 
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
@@ -833,7 +834,7 @@ class Userinput extends Component {
                     else {
                       console.log("No need to do API calls!!!")
 
-                      if (indexDBcompat && insideBudget) { 
+                      if (indexDBcompat && insideBudget) {
                         idb_keyval.get('apiData').then(val => {
 
                           // Save the previously saved events by the user as persistent data in
@@ -1175,7 +1176,7 @@ class Userinput extends Component {
       CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY,
     this.state.filterRadius);
     // console.log("numberFilteredEvents: " + numFilteredEvents)
-    
+
     var numPages = Math.floor(numFilteredEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
       //var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
       pages.push("<");
@@ -1295,6 +1296,7 @@ class Userinput extends Component {
             <DistanceFilter maxDistance={this.state.searchRadius} setDistance={this.handleFilterRadius}></DistanceFilter>
             <ApiFilter></ApiFilter>
             <TimeFilter></TimeFilter>
+            <PriceFilter></PriceFilter>
         </div>
 
 
@@ -1771,7 +1773,7 @@ function countEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, max
 
   var filteredEventCount = 0;
   for (var i = 0; i < CONSTANTS.NUM_OF_EVENT_APIS; i++) { // cycle through meetup -> google places
-    for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots 
+    for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots
       var eventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]];
       if (eventObj) {
         var lenEvents = eventObj.length;

@@ -17,6 +17,7 @@
     "jquery": "^3.3.1",
     "material-ui-slider-label": "git+https://github.com/tariqwest/material-ui-slider-label.git",
     "moment": "^2.20.1",
+    "rc-slider": "^8.6.2",
     "react": "^16.1.1",
     "react-bootstrap": "^0.32.1",
     "react-datepicker": "^1.0.4",
