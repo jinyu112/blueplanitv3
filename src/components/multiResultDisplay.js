@@ -17,10 +17,16 @@ export class MultiResultDisplay extends Component {
     render() {
         var apiData = this.props.apiData;
         // apiData is either (depending on event data input or restaurant data input to this component):
-        //   1) apiData=[Event1:[obj1,...,objn], (event)
+        //   1) apiData=[[Event1:[obj1,...,objn], (event brite)
         //               Event2:[obj1,...,objn],
         //               Event3:[obj1,...,objn],
-        //               Event4:[obj1,...,objn]]
+        //               Event4:[obj1,...,objn]],
+
+        //               [Event1:[obj1,...,objn], (google places )
+        //               Event2:[obj1,...,objn],
+        //               Event3:[obj1,...,objn],
+        //               Event4:[obj1,...,objn]], ....etc
+        //                                      ]   
         // OR
         //   2) apiData=[[obj1,...,objn] ,       (yelp restuarant)
         //               [obj1,...,objn] ,
@@ -33,7 +39,8 @@ export class MultiResultDisplay extends Component {
         var minTime = this.props.minTime;
         var maxPrice = this.props.maxPrice;
         var minPrice = this.props.minPrice;
-        var maxRadius = this.props.filterRadius;
+        var filterRadius = this.props.filterRadius;
+        var maxRadius = this.props.maxRadius;
 
         var numArrays = apiData.length;
         var runningEventCnt = 0;
@@ -61,7 +68,7 @@ export class MultiResultDisplay extends Component {
                     iItinerary = parseInt(userAddedEvents[i].slot) - 1;
                     if (filterForDisplay(userAddedEvents[i],apiSource,
                         maxTime, minTime,
-                        maxPrice, minPrice, maxRadius, true)) {
+                        maxPrice, minPrice, maxRadius, filterRadius, true)) {
                         apiDataShownToUser.push(<SingleResult key={"userAddedEvents" + i} itinObj={userAddedEvents[i]}
                             AddEvent={this.handleAddEvent} eventKey={iItinerary} />);
                     }
@@ -146,13 +153,10 @@ export class MultiResultDisplay extends Component {
                                 }
 
                                 // construct SingleResult component array
-                                if (filterForDisplay(tempItineraryObj, apiSource,
-                                    maxTime, minTime,
-                                    maxPrice, minPrice, maxRadius, false)) {
-                                    apiDataShownToUser.push(<SingleResult key={runningEventCnt} itinObj={tempItineraryObj}
-                                        AddEvent={this.handleAddEvent} eventKey={iItinerary} />);
-                                    runningEventCnt = runningEventCnt + 1;
-                                }
+                                apiDataShownToUser.push(<SingleResult key={runningEventCnt} itinObj={tempItineraryObj}
+                                    AddEvent={this.handleAddEvent} eventKey={iItinerary} />);
+                                runningEventCnt = runningEventCnt + 1;
+
                                 if (runningEventCnt >= CONSTANTS.NUM_RESULTS_PER_PAGE) {
                                     i = numArrays;
                                     ikey = keys.length;
@@ -178,7 +182,7 @@ export class MultiResultDisplay extends Component {
 }
 
 // Returns true if within parameters and api source is selected
-function filterForDisplay(itineraryObj, apiSource, maxTime, minTime, maxPrice, minPrice, maxRadius, isUserAddedEventFlag) {
+function filterForDisplay(itineraryObj, apiSource, maxTime, minTime, maxPrice, minPrice, maxRadius, filterRadius, isUserAddedEventFlag) {
     // apiSource is an array of 1s or 0s and is from userinput state eventFilterFlags 
     // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options       
     const reducer = (accumulator, currentValue) => accumulator + currentValue;
@@ -191,8 +195,14 @@ function filterForDisplay(itineraryObj, apiSource, maxTime, minTime, maxPrice, m
         CONSTANTS.ORIGINS_GP
     ]; // same order as apiSource (order matters)
 
+    if (filterRadius < maxRadius) { // don't show eventbrite events if the distance filter is used because eventbrite doesn't provide lat long for the location
+        if (itineraryObj.origin.localeCompare(CONSTANTS.ORIGINS_EB)===0) {
+            return false;
+        }
+    }
+
     // Check if in distance range
-    if (parseFloat(itineraryObj.distance_from_input_location) > maxRadius) {
+    if (parseFloat(itineraryObj.distance_from_input_location) > filterRadius) {
         return false;
     }
 

@@ -1169,14 +1169,14 @@ class Userinput extends Component {
     var pages = [];
     var pageNumber;
     if (!misc.isObjEmpty(this.state.allApiData)) {
-      var numFilteredEvents = countEventApiDataForFilter(this.state.allApiData,
+      var filteredEventObj = countAndFilterEventApiDataForFilter(this.state.allApiData,
       this.state.eventFilterFlags,
       CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY,CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY,
       CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY,
-    this.state.filterRadius);
+    this.state.filterRadius,this.state.searchRadius);
     // console.log("numberFilteredEvents: " + numFilteredEvents)
     
-    var numPages = Math.floor(numFilteredEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
+    var numPages = Math.floor(filteredEventObj.numFilteredEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
       //var numPages = Math.floor(this.state.allApiData.numDataPoints.numOfEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
       pages.push("<");
 
@@ -1194,10 +1194,7 @@ class Userinput extends Component {
 
     var eventsMultiResults = [];
     if (!misc.isObjEmpty(this.state.allApiData)) {
-      eventsMultiResults = [this.state.allApiData.eventbriteGlobal,
-      this.state.allApiData.googlePlacesGlobal,
-      this.state.allApiData.meetupItemsGlobal,
-      this.state.allApiData.seatgeekItemsGlobal];
+      eventsMultiResults = filteredEventObj.filteredEvents;
     }
 
     // Food Pagination
@@ -1319,6 +1316,7 @@ class Userinput extends Component {
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
                 eventFilterFlags={this.state.eventFilterFlags}
                 filterRadius={this.state.filterRadius}
+                maxRadius={this.state.searchRadius}
                 tabState={this.state.tabState}/>}
               {pages}
 
@@ -1335,6 +1333,7 @@ class Userinput extends Component {
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
                 eventFilterFlags={this.state.eventFilterFlags}
                 filterRadius={this.state.filterRadius}
+                maxRadius={this.state.searchRadius}
                 tabState={this.state.tabState}/>}
             {foodPages}
             </div>
@@ -1356,6 +1355,7 @@ class Userinput extends Component {
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
                 eventFilterFlags={this.state.eventFilterFlags}
                 filterRadius={this.state.filterRadius}
+                maxRadius={this.state.searchRadius}
                 tabState={this.state.tabState}/>}
             </div>
           </div>
@@ -1767,8 +1767,14 @@ function resetAPIDataTimeStampToNow(myStorage_in) {
 }
 
 
-function countEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, maxPrice, minPrice, maxRadius) {
+function countAndFilterEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, maxPrice, minPrice, filterRadius, maxRadius) {
 
+  var filteredEvents = [
+    {Event1:[],Event2:[],Event3:[],Event4:[]},
+    {Event1:[],Event2:[],Event3:[],Event4:[]},
+    {Event1:[],Event2:[],Event3:[],Event4:[]},
+    {Event1:[],Event2:[],Event3:[],Event4:[]},
+];
   var filteredEventCount = 0;
   for (var i = 0; i < CONSTANTS.NUM_OF_EVENT_APIS; i++) { // cycle through meetup -> google places
     for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots 
@@ -1787,31 +1793,56 @@ function countEventApiDataForFilter(allApiData, apiSource, maxTime, minTime, max
             CONSTANTS.ORIGINS_GP
           ]; // same order as apiSource (order matters)
 
+                    
           // Check if in price range
-          if (parseFloat(eventObj[iEvent].cost) >= minPrice && parseFloat(eventObj[iEvent].cost) <= maxPrice && parseFloat(eventObj[iEvent].distance_from_input_location) <= maxRadius) {
+          if (parseFloat(eventObj[iEvent].cost) >= minPrice && parseFloat(eventObj[iEvent].cost) <= maxPrice && parseFloat(eventObj[iEvent].distance_from_input_location) <= filterRadius) {
             // Check if in time range
             if (parseFloat(eventObj[iEvent].time) >= minTime && parseFloat(eventObj[iEvent].time) <= maxTime) {
-
               // Check if itinerary obj is from a selected api source (ie if meetup is checked, check that this itinerary object is a meetup obj)
               if (apiSource[apiSourceLength - 1] === 1) { // if not all apiSources are selected
                 for (var k = 0; k < apiSourceLength - 1; k++) {
                   if (apiSource[k] === 1) {
-                    if (EVENTS_ORIGINS_ARRAY[k].localeCompare(eventObj[iEvent].origin) === 0) {
-                      filteredEventCount++;
-                      break;
-                    }
+                    // eventbrite check
+                    if ((filterRadius < maxRadius && eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_EB) !== 0) ||
+                      filterRadius === maxRadius) {
+
+                      // api source matches the filter
+                      if (EVENTS_ORIGINS_ARRAY[k].localeCompare(eventObj[iEvent].origin) === 0) {
+                        filteredEventCount++;
+
+                        // populating the filtered events object to return
+                        if (eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_EB) === 0) { // eventbrite
+                          filteredEvents[0][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
+                        }
+                        else if (eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_GP) === 0) {//google places
+                          filteredEvents[1][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
+                        }
+                        else if (eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_MU) === 0) {//meetup
+                          filteredEvents[2][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
+                        }
+                        else { //seatgeek
+                          filteredEvents[3][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
+                        }
+                        break;
+
+                      }
+                    } // eventbrite check
                   }
                 }
               }
 
             } // end if statement for time check
           } // end if statement for price and radius check
-
         } // end for loop cycling through events in a field (field is like event1 -> event4 in apiData)
       } // if statement to check valide eventObj
     }
   }
-  return filteredEventCount;
+
+  var filteredEventsObj = {
+    numFilteredEvents: filteredEventCount,
+    filteredEvents: filteredEvents,
+  }
+  return filteredEventsObj;
 }
 
 Userinput.propTypes = {}
