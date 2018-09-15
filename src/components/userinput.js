@@ -590,6 +590,15 @@ class Userinput extends Component {
       })
     }
 
+    if (this.state.filterRadius > this.state.searchRadius) {      
+      this.setState({
+        filterRadius: this.state.searchRadius,
+      })
+    }
+
+    console.log("search radius: " + this.state.searchRadius);
+    console.log("filter radius: " + this.state.filterRadius);
+
     var insideBudget = true;
     if (this.state.resultsArray.length > 1) {
       var arrayOfCosts = [this.state.resultsArray[0].cost,
@@ -680,8 +689,7 @@ class Userinput extends Component {
                       }
                     }
 
-                    // Determine whether or not API calls need to be made
-                    console.log("search radius: " + this.state.searchRadius);
+                    // Determine whether or not API calls need to be made                    
                     doAPICallsFlag = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, this.state.searchRadius);
 
                     if (doAPICallsFlag || clearApiData || !indexDBcompat) {

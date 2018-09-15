@@ -36,6 +36,8 @@ class ClickAway extends React.Component {
     state = {
         openRadius: false,
         value: this.props.maxDistance,
+        maxDistanceValue: this.props.maxDistance,
+        prevMaxDistanceValue: -1.0,
     };
 
     componentDidMount() {
@@ -95,10 +97,17 @@ this.setState({
     var buttonClasses = ['radiusBtn'];
 
     this.state.value != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['radiusBtn'];
+this.state.maxDistanceValue = this.props.maxDistance;
+var displayValue = this.state.value;
+if (this.state.prevMaxDistanceValue !== this.state.maxDistanceValue) {
+  displayValue = this.state.maxDistanceValue;
+  this.state.value = this.state.maxDistanceValue;
+  this.state.prevMaxDistanceValue = this.state.maxDistanceValue;
+}
 
     return (
         <div ref={this.setWrapperRef}>
-        <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('openRadius')}>{this.state.value == 0 ? 'Distance' : this.state.value + ' miles'}</Button>
+        <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('openRadius')}>{displayValue + ' miles'}</Button>
             {openRadius ? (
               <Paper className={classes.paper}>
             <Typography id="label">{CONSTANTS.RADIUS_FILTER_STR}</Typography>
