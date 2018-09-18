@@ -124,4 +124,5 @@ module.exports = {
     RADIUS_FILTER_STR: "Choose search radius",
     START_TIME_FILTER_SUB_HEADER: 'Start Time',
     END_TIME_FILTER_SUB_HEADER: 'End Time',
+    PRIMARY_COLOR: '#3f51b5',
 }

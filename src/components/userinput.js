@@ -35,6 +35,7 @@ import DistanceFilter from './distanceFilter.js';
 import ApiFilter from './apiFilter.js';
 import TimeFilter from './timeFilter.js';
 import PriceFilter from './priceFilter.js';
+import MealFilter from './mealFilter.js';
 
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
@@ -590,7 +591,7 @@ class Userinput extends Component {
       })
     }
 
-    if (this.state.filterRadius > this.state.searchRadius) {      
+    if (this.state.filterRadius > this.state.searchRadius) {
       this.setState({
         filterRadius: this.state.searchRadius,
       })
@@ -689,7 +690,7 @@ class Userinput extends Component {
                       }
                     }
 
-                    // Determine whether or not API calls need to be made                    
+                    // Determine whether or not API calls need to be made
                     doAPICallsFlag = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, this.state.searchRadius);
 
                     if (doAPICallsFlag || clearApiData || !indexDBcompat) {
@@ -1247,7 +1248,20 @@ class Userinput extends Component {
       },
     };
 
+    // hide/show events
+    // var columnSize = 'col-md-12';
+    // var eventsContent = ['tab-content', 'col-md-7', 'itinerary', 'hidden'];
+    // if(!eventsContent.includes('hidden')) {
+    //     columnSize = 'col-md-5';
+    // }
+    // var itinContent = ['mapsfix', 'itinerary', columnSize];
 
+    var columnSize = 'col-md-5';
+    var eventsContent = ['tab-content', 'col-md-7', 'itinerary'];
+    // if(!eventsContent.includes('hidden')) {
+    //     columnSize = 'col-md-5';
+    // }
+    var itinContent = ['mapsfix', 'itinerary', columnSize];
 
     return (
       <div className="Userinput">
@@ -1299,23 +1313,25 @@ class Userinput extends Component {
           </div>
         {/* <Filters/> */}
 
-        <div  className="filters-div">
-            <DistanceFilter maxDistance={this.state.searchRadius} setDistance={this.handleFilterRadius}></DistanceFilter>
-            <ApiFilter></ApiFilter>
-            <TimeFilter></TimeFilter>
-            <PriceFilter></PriceFilter>
-        </div>
 
-
-        {/* All data gets shown here (api data, and user added data) */}
-        <div className="nav nav-tabs" id="nav-tab" role="tablist">
-          <a onClick={this.handleTabState} className="nav-item nav-link active" id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
-          <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
-          <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_USER_TAB_ID} data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> Add Event</a>
-        </div>
 
         <div className="row eventsCont apidata">
-          <div className="tab-content col-md-7 itinerary">
+          <div className={eventsContent.join(' ')}>
+          <div  className="filters-div">
+              <DistanceFilter maxDistance={this.state.searchRadius} setDistance={this.handleFilterRadius}></DistanceFilter>
+              <ApiFilter></ApiFilter>
+              {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ? <TimeFilter></TimeFilter> : <MealFilter></MealFilter>}
+
+              <PriceFilter></PriceFilter>
+          </div>
+
+
+          {/* All data gets shown here (api data, and user added data) */}
+          <div className="nav nav-tabs" id="nav-tab" role="tablist">
+            <a onClick={this.handleTabState} className="nav-item nav-link active" id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
+            <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
+            <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_USER_TAB_ID} data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> Add Event</a>
+          </div>
             <div className="itinerary tab-pane fade show active" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
 
               {<MultiResultDisplay apiData={eventsMultiResults}
@@ -1371,7 +1387,7 @@ class Userinput extends Component {
                 tabState={this.state.tabState}/>}
             </div>
           </div>
-          <div className="mapsfix itinerary col-md-5">
+          <div className={itinContent.join(' ')}>
             {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
             {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
 

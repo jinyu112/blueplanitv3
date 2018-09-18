@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import 'rc-slider/assets/index.css';
+import CONSTANTS from '../constants';
 
 import Slider from 'rc-slider';
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
@@ -19,14 +20,29 @@ const styles = theme => ({
   paper: {
     position: 'absolute',
     top: 175,
-    width: '35%',
-    padding: '2em 2em 3em',
+    width: '25%',
+    maxWidth: '320px',
+    padding: '1em 2em',
+    textAlign: 'left',
+    color: CONSTANTS.PRIMARY_COLOR,
   },
   slider: {
     zIndex: '9999',
   },
   header: {
-    marginBottom: '1em',
+    marginBottom: '2em',
+    fontSize: '1em',
+  },
+  span: {
+      float: 'right',
+      color: CONSTANTS.PRIMARY_COLOR,
+  },
+  actions: {
+      marginTop: '2em',
+      fontSize: '0.9em',
+  },
+  apply: {
+      float: 'right',
   }
 });
 
@@ -43,7 +59,7 @@ class PriceSlider extends React.Component {
       open: false,
       min: 0,
       max: 500,
-      value: [],
+      value: [0, 500],
     };
 
     componentDidMount() {
@@ -96,19 +112,22 @@ class PriceSlider extends React.Component {
 
     var buttonClasses = ['apiBtn'];
 
-
-    this.state.value != [175,300] || this.state.value != []  ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+    (this.state.value[0] != 0 || this.state.value[1] != 500) ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
 
     return (
         <div ref={this.setWrapperRef}>
             <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>PRICE</Button>
                 {open ? (
                   <Paper className={classes.paper}>
-                      <Typography className={classes.header}>Choose A Price Range</Typography>
-                      <Range className={classes.slider} defaultValue={[175, 300]} min={this.state.min} max={this.state.max}
+                      <Typography className={classes.header}>Price <span className={classes.span}>${this.state.value[0]} - ${this.state.value[1]}</span></Typography>
+                      <Range allowCross={false} className={classes.slider} defaultValue={[0, 500]} min={this.state.min} max={this.state.max}
                         onChange={this.onSliderChange}
                         tipFormatter={value => `$${value}.00`}
                       />
+                   <div className={classes.actions}>
+                       <a className={classes.clear} href="">Clear</a>
+                       <a className={classes.apply} href="">Apply</a>
+                   </div>
                   </Paper>
                 ) : null}
         </div>
@@ -118,7 +137,6 @@ class PriceSlider extends React.Component {
 
 PriceSlider.propTypes = {
   classes: PropTypes.object.isRequired,
-  children: PropTypes.element.isRequired,
 };
 
 export default withStyles(styles)(PriceSlider);

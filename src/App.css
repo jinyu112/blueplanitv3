@@ -539,7 +539,7 @@ button.close {
 
 .filters-div {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(9, 1fr);
     grid-gap: 15px;
     padding: 1.5em 2.1em;
     max-width: 1080px;
@@ -559,4 +559,8 @@ button.close {
 
 #startTime > div, #endTime > div {
     margin-bottom: 10px!important;
+}
+
+.apiBtn {
+    width: 100%;
 }

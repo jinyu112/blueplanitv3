@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import CONSTANTS from '../constants';
 import 'rc-slider/assets/index.css';
 
 import Slider from 'rc-slider';
@@ -19,14 +20,32 @@ const styles = theme => ({
   paper: {
     position: 'absolute',
     top: 175,
-    width: '35%',
-    padding: '2em 2em 3em',
+    width: '25%',
+    maxWidth: '320px',
+    padding: '1em 2em',
+    textAlign: 'left',
+
   },
   slider: {
     zIndex: '9999',
   },
   header: {
-    marginBottom: '1em',
+    marginBottom: '2em',
+    fontSize: '1em',
+  },
+  span: {
+      float: 'right',
+      color: CONSTANTS.PRIMARY_COLOR,
+  },
+  actions: {
+      marginTop: '2em',
+      fontSize: '0.9em',
+  },
+  apply: {
+      float: 'right',
+  },
+  clear: {
+      float: 'left',
   }
 });
 
@@ -43,6 +62,8 @@ class TimeSlider extends React.Component {
       open: false,
       min: 0,
       max: 24,
+      value: [4, 20],
+      timeRange: ['4:00 AM', '8:00 PM'],
     };
 
     componentDidMount() {
@@ -80,10 +101,22 @@ class TimeSlider extends React.Component {
     };
 
     onSliderChange = (value) => {
+        this.setState({
+            value: value,
+        }, this.setTimeRange)
         // sort results here
     }
 
+    setTimeRange = () => {
+        var startTime = this.handleDisplay(this.state.value[0]);
+        var endTime = this.handleDisplay(this.state.value[1]);
+        this.setState({
+            timeRange: [startTime, endTime]
+        })
+    }
+
     handleDisplay = (value) => {
+
         var timeStr = [];
         var timeOfDay = ''
         var time = '';
@@ -123,19 +156,30 @@ class TimeSlider extends React.Component {
     var disabled = this.props.resultsPresent;
 
     var buttonClasses = ['apiBtn'];
+    var active = false;
 
-    this.state.min != 8 && this.state.max != 16 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+    if(this.state.value[0] != 4 || this.state.value[1] != 20) {
+        active = true;
+    } else {
+        active = false;
+    }
+    active ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
 
     return (
         <div ref={this.setWrapperRef}>
-            <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>TIMES</Button>
+            <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>TIMES  </Button>
                 {open ? (
                   <Paper className={classes.paper}>
-                      <Typography className={classes.header}>Choose A Time Range</Typography>
-                      <Range className={classes.slider} defaultValue={[8, 16]} min={this.state.min} max={this.state.max}
+                      <Typography className={classes.header}>Time <span className={classes.span}>{this.state.timeRange[0]} - {this.state.timeRange[1]}</span></Typography>
+                      <Range allowCross={false} className={classes.slider} defaultValue={[4, 20]} min={this.state.min} max={this.state.max}
                         onChange={this.onSliderChange}
                         tipFormatter={this.handleDisplay}
                       />
+
+                      <div className={classes.actions}>
+                          <a className={classes.clear} href="">Clear</a>
+                          <a className={classes.apply} href="">Apply</a>
+                      </div>
                   </Paper>
                 ) : null}
         </div>
@@ -145,7 +189,6 @@ class TimeSlider extends React.Component {
 
 TimeSlider.propTypes = {
   classes: PropTypes.object.isRequired,
-  children: PropTypes.element.isRequired,
 };
 
 export default withStyles(styles)(TimeSlider);
