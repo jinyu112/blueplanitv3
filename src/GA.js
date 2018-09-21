@@ -84,7 +84,7 @@ module.exports = {
 
     // Create first population to initialize GA
     itineraryPopulation = this.initializePopulation(popSize, itinerarySize, numItemsArray);
-    console.log("----gen algo start----")
+    //console.log("----gen algo start----")
 
     // Find the "fittest" itinerary and return some itinerary stats
     bestItineraryObj = findBestItinerary(itineraryPopulation, parsedDataAll, budgetmax, budgetmin);
@@ -234,20 +234,20 @@ module.exports = {
       allItineraryRatings = bestItineraryObj.allItineraryRatingsOut;
       allItineraryRatingsSum = round2NearestHundredth(bestItineraryObj.allItineraryValSumOut);
 
-      if (i % 100 === 0) {
-        console.log("best rating " + i + "th iter: " + bestRating);
-        console.log("best cost " + i + "th iter: " + bestCost);
-        console.log("pop rating sum: " + i + "th iter: " + allItineraryRatingsSum);
-        console.log("_____");
-      }
+      // if (i % 100 === 0) {
+      //   console.log("best rating " + i + "th iter: " + bestRating);
+      //   console.log("best cost " + i + "th iter: " + bestCost);
+      //   console.log("pop rating sum: " + i + "th iter: " + allItineraryRatingsSum);
+      //   console.log("_____");
+      // }
 
     } // end maxIter loop
-    console.log("----gen algo end----")
+    //console.log("----gen algo end----")
     //console.log("End population")
     //console.log(itineraryPopulation)
-    console.log("best rating: " + bestRating);
-    console.log("best cost: " + bestCost);
-    console.log("population rating sum: " + allItineraryRatingsSum);
+    // console.log("best rating: " + bestRating);
+    // console.log("best cost: " + bestCost);
+    // console.log("population rating sum: " + allItineraryRatingsSum);
 
     var urls = ['', '', '', '', '', '', ''];
     var locations = ['', '', '', '', '', '', ''];

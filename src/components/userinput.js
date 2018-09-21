@@ -61,7 +61,7 @@ class Userinput extends Component {
       term: '',
       budgetmax: CONSTANTS.MAX_BUDGET_DEFAULT, // 9999
       budgetmin: CONSTANTS.MIN_BUDGET_DEFAULT, //0
-      searchRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
+      searchRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,      
       location: 'San Francisco, CA',
       resultsArray: [],
       startDate: moment(),
@@ -85,6 +85,7 @@ class Userinput extends Component {
 
       // result display filter states
       filterRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
+      searchRadiusForFilterCompare: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI, // this only changes when handlesubmit is called
     };
     this.apiService = new ApiService();
     this.handleChange = this.handleChange.bind(this);
@@ -107,6 +108,7 @@ class Userinput extends Component {
     this.handleUpdateItinerary = this.handleUpdateItinerary.bind(this);
     this.handleFilterRadius = this.handleFilterRadius.bind(this);
     this.handleTabState = this.handleTabState.bind(this);
+    this.handleSearchRadius = this.handleSearchRadius.bind(this);
   }
 
   handleTabState(e) {
@@ -119,6 +121,16 @@ class Userinput extends Component {
     const state = this.state;
     state[e.target.name] = e.target.value;
     this.setState(state);
+  }
+
+  handleSearchRadius(e) {
+    var searchRadiusInput = parseFloat(e.target.value);
+    if (isNaN(searchRadiusInput)) {
+      searchRadiusInput = CONSTANTS.DEFAULT_SEARCH_RADIUS_MI;
+    }
+    this.setState({
+      searchRadius: searchRadiusInput,
+    })
   }
 
   handleDateChange(e) {
@@ -348,7 +360,7 @@ class Userinput extends Component {
   // to add to the itinerary, or when "x" is clicked or when user adds an event
   handleUpdateItinerary(itinObj_in) {
 
-    // only go through this logic if the itinerary is populated (thus the if statement to check)
+    // only go through this logic if the itinerary is populated (ts the if statement to check)
     if (this.state.resultsArray.length > 0 && this.state.resultsArray !== null && this.state.resultsArray !== undefined) {
       // Update the total cost displayed
       var i_resultsArray = parseInt(itinObj_in.other); // i_resultsArray is the index position in the itinerary results
@@ -405,6 +417,7 @@ class Userinput extends Component {
   handleEventCostChange(edittedEventCost, edittedEventName, i_resultsArray, edittedEventOrigin) {
     var indexDBcompat = window.indexedDB;
     var myStorage = window.localStorage;
+    var bestItineraryObjsParsed;
 
     // edittedEventCost is a float
     if (edittedEventCost !== null &&
@@ -426,7 +439,7 @@ class Userinput extends Component {
           this.state.resultsArray[i_resultsArray].cost = edittedEventCost;
 
           // save the change in the user-saved objects persistent data
-          var bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
+          bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
           bestItineraryObjsParsed[CONSTANTS.EVENTKEYS[i_resultsArray]].cost = edittedEventCost;
           myStorage.setItem("prevBestItinerarySavedObjects", JSON.stringify(bestItineraryObjsParsed));
 
@@ -458,7 +471,7 @@ class Userinput extends Component {
         }
 
         // save the change in the user-saved objects persistent data
-        var bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
+        bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
         bestItineraryObjsParsed[CONSTANTS.EVENTKEYS[i_resultsArray]].cost = edittedEventCost;
         myStorage.setItem("prevBestItinerarySavedObjects", JSON.stringify(bestItineraryObjsParsed));
       }
@@ -573,30 +586,34 @@ class Userinput extends Component {
 
     console.clear();
     // Handle empty budget inputs
-    if (!this.state.budgetmax || this.state.budgetmax === NaN || this.state.budgetmax === undefined) {
+    if (!this.state.budgetmax || isNaN(this.state.budgetmax) || this.state.budgetmax === undefined) {
       this.setState({
         budgetmax: CONSTANTS.MAX_BUDGET_DEFAULT,
       })
     }
-    if (!this.state.budgetmin || this.state.budgetmin === NaN || this.state.budgetmax === undefined) {
+    if (!this.state.budgetmin || isNaN(this.state.budgetmin) || this.state.budgetmax === undefined) {
       this.setState({
         budgetmin: CONSTANTS.MIN_BUDGET_DEFAULT,
       })
     }
 
     //Handle empty search radius input
-    if (!this.state.searchRadius || this.state.searchRadius === NaN || this.state.searchRadius === undefined) {
+    if (!this.state.searchRadius || isNaN(this.state.searchRadius) || this.state.searchRadius === undefined 
+      || this.state.searchRadius==="") {
       this.setState({
         searchRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
       })
     }
 
-    if (this.state.filterRadius > this.state.searchRadius) {
+    this.state.searchRadiusForFilterCompare = this.state.searchRadius; //this should be only place searchRadiusForFilterCompare should be set
+    this.state.filterRadius = this.state.searchRadiusForFilterCompare;
+    if (this.state.filterRadius > this.state.searchRadiusForFilterCompare) {
       this.setState({
-        filterRadius: this.state.searchRadius,
+        filterRadius: this.state.searchRadiusForFilterCompare,
       })
     }
 
+    console.log("search radius for filter: " + this.state.searchRadiusForFilterCompare);
     console.log("search radius: " + this.state.searchRadius);
     console.log("filter radius: " + this.state.filterRadius);
 
@@ -983,6 +1000,7 @@ class Userinput extends Component {
   }
 
   render() {
+    console.log("userinput render function!")
     var formStyles = ['form-body'];
     var optionStyles = ['more-options', 'form-body'];
     const ITINCONTAINER_STYLE = 'itinContainer';
@@ -1183,7 +1201,7 @@ class Userinput extends Component {
       this.state.eventFilterFlags,
       CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY,CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY,
       CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY,
-    this.state.filterRadius,this.state.searchRadius);
+    this.state.filterRadius,this.state.searchRadiusForFilterCompare);
 
 
     var numPages = Math.floor(filteredEventObj.numFilteredEvents / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
@@ -1286,7 +1304,7 @@ class Userinput extends Component {
                         <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
                       </div>
                       <div className="col-md-2 form-group mb-2">
-                        <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleChange} placeholder="Search Radius (mi)" />
+                        <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
                       </div>
                       <div className="col-md-2 form-group mb-2">
                       <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
@@ -1318,7 +1336,7 @@ class Userinput extends Component {
         <div className="row eventsCont apidata">
           <div className={eventsContent.join(' ')}>
           <div  className="filters-div">
-              <DistanceFilter maxDistance={this.state.searchRadius} setDistance={this.handleFilterRadius}></DistanceFilter>
+              <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare} setDistance={this.handleFilterRadius}></DistanceFilter>
               <ApiFilter></ApiFilter>
               {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ? <TimeFilter></TimeFilter> : <MealFilter></MealFilter>}
 
@@ -1344,7 +1362,7 @@ class Userinput extends Component {
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
                 eventFilterFlags={this.state.eventFilterFlags}
                 filterRadius={this.state.filterRadius}
-                maxRadius={this.state.searchRadius}
+                maxRadius={this.state.searchRadiusForFilterCompare}
                 tabState={this.state.tabState}/>}
               {pages}
 
@@ -1361,7 +1379,7 @@ class Userinput extends Component {
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
                 eventFilterFlags={this.state.eventFilterFlags}
                 filterRadius={this.state.filterRadius}
-                maxRadius={this.state.searchRadius}
+                maxRadius={this.state.searchRadiusForFilterCompare}
                 tabState={this.state.tabState}/>}
             {foodPages}
             </div>
@@ -1383,7 +1401,7 @@ class Userinput extends Component {
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
                 eventFilterFlags={this.state.eventFilterFlags}
                 filterRadius={this.state.filterRadius}
-                maxRadius={this.state.searchRadius}
+                maxRadius={this.state.searchRadiusForFilterCompare}
                 tabState={this.state.tabState}/>}
             </div>
           </div>
@@ -1798,11 +1816,15 @@ function resetAPIDataTimeStampToNow(myStorage_in) {
 function countAndFilterEventApiData(allApiData, apiSource, maxTime, minTime, maxPrice, minPrice, filterRadius, maxRadius) {
 
   var filteredEvents = [
-    {Event1:[],Event2:[],Event3:[],Event4:[]},
-    {Event1:[],Event2:[],Event3:[],Event4:[]},
-    {Event1:[],Event2:[],Event3:[],Event4:[]},
-    {Event1:[],Event2:[],Event3:[],Event4:[]},
-];
+    { Event1: [], Event2: [], Event3: [], Event4: [] },
+    { Event1: [], Event2: [], Event3: [], Event4: [] },
+    { Event1: [], Event2: [], Event3: [], Event4: [] },
+    { Event1: [], Event2: [], Event3: [], Event4: [] },
+  ];
+
+  filterRadius = parseFloat(filterRadius);
+  maxRadius = parseFloat(maxRadius);
+
   var filteredEventCount = 0;
   for (var i = 0; i < CONSTANTS.NUM_OF_EVENT_APIS; i++) { // cycle through meetup -> google places
     for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots
@@ -1830,7 +1852,7 @@ function countAndFilterEventApiData(allApiData, apiSource, maxTime, minTime, max
               if (apiSource[apiSourceLength - 1] === 1) { // if not all apiSources are selected
                 for (var k = 0; k < apiSourceLength - 1; k++) {
                   if (apiSource[k] === 1) {
-                    // eventbrite check
+                    // eventbrite check (check to see that origin is NOT eventbrite)
                     if ((filterRadius < maxRadius && eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_EB) !== 0) ||
                       filterRadius === maxRadius) {
 
@@ -1880,27 +1902,30 @@ function countAndFilterFoodApiData(allApiData, maxTime, minTime, maxPrice, minPr
     [],
     [],
     [],
-];
+  ];
+
+  filterRadius = parseFloat(filterRadius);
+
   var filteredFoodPlacesCount = 0;
   for (var i = 4; i < 7; i++) { // cycle through yelp breakfast to dinner (see constants file for APIKEYS)
-      var foodPlaceObj = allApiData[CONSTANTS.APIKEYS[i]];
-      if (foodPlaceObj) {
-        var lenFoodPLaces = foodPlaceObj.length;
-        for (var iFood = 0; iFood < lenFoodPLaces; iFood++) {
+    var foodPlaceObj = allApiData[CONSTANTS.APIKEYS[i]];
+    if (foodPlaceObj) {
+      var lenFoodPLaces = foodPlaceObj.length;
+      for (var iFood = 0; iFood < lenFoodPLaces; iFood++) {
 
-          // Check if in price range
-          if (parseFloat(foodPlaceObj[iFood].cost) >= minPrice && parseFloat(foodPlaceObj[iFood].cost) <= maxPrice && parseFloat(foodPlaceObj[iFood].distance_from_input_location) <= filterRadius) {
-            if (i===4) {
-              filteredFoodPlaces[0].push(foodPlaceObj[iFood]);
-            }
-            else if (i===5) {
-              filteredFoodPlaces[1].push(foodPlaceObj[iFood]);
-            }
-            else {
-              filteredFoodPlaces[2].push(foodPlaceObj[iFood]);
-            }
-            filteredFoodPlacesCount++;
-          } // end if statement for price and radius check
+        // Check if in price range
+        if (parseFloat(foodPlaceObj[iFood].cost) >= minPrice && parseFloat(foodPlaceObj[iFood].cost) <= maxPrice && parseFloat(foodPlaceObj[iFood].distance_from_input_location) <= filterRadius) {
+          if (i === 4) {
+            filteredFoodPlaces[0].push(foodPlaceObj[iFood]);
+          }
+          else if (i === 5) {
+            filteredFoodPlaces[1].push(foodPlaceObj[iFood]);
+          }
+          else {
+            filteredFoodPlaces[2].push(foodPlaceObj[iFood]);
+          }
+          filteredFoodPlacesCount++;
+        } // end if statement for price and radius check
       } // if statement to check valide foodPlaceObj
     }
   }
