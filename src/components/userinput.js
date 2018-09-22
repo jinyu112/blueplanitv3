@@ -94,7 +94,7 @@ class Userinput extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleCheckbox = this.handleCheckbox.bind(this);
     this.handleEliminate = this.handleEliminate.bind(this);
-    this.handleFilter = this.handleFilter.bind(this);
+    this.handleApiFilter = this.handleApiFilter.bind(this);
     this.handleExpand = this.handleExpand.bind(this);
     this.handleMoreOptions = this.handleMoreOptions.bind(this);
     this.handleData = this.handleData.bind(this);
@@ -139,28 +139,10 @@ class Userinput extends Component {
     });
   }
 
-  handleFilter(e) {
-    if (e.target.value === "selectAllOption") {
-      if (e.target.checked) {
-        this.setState({ eventFilterFlags: [1, 1, 1, 1, 1] });
-      }
-      else {
-        this.setState({ eventFilterFlags: [0, 0, 0, 0, 0] });
-      }
-    }
-    else {
-      // If the checkbox is checked, add the checkbox index to the states
-      let eventFilterFlags = this.state.eventFilterFlags.slice();
-      if (e.target.checked) {
-        eventFilterFlags[e.target.value] = 1;
-        this.setState({ eventFilterFlags: eventFilterFlags });
-      }
-      // If the checkbox is unchecked, find and remove the checkbox index from the states
-      else {
-        eventFilterFlags[e.target.value] = 0;
-        this.setState({ eventFilterFlags: eventFilterFlags });
-      }
-    }
+  handleApiFilter(e) {
+    this.setState({
+      eventFilterFlags: e,
+    });
   }
 
   // This function updates the checked state to toggle checkboxes and update which items are "locked" or choosen
@@ -1000,7 +982,7 @@ class Userinput extends Component {
   }
 
   render() {
-    console.log("userinput render function!")
+    // console.log("userinput render function!")
     var formStyles = ['form-body'];
     var optionStyles = ['more-options', 'form-body'];
     const ITINCONTAINER_STYLE = 'itinContainer';
@@ -1170,23 +1152,6 @@ class Userinput extends Component {
       }
     }
 
-    // More options display
-    var options = [];
-    var filters = [];
-    var filterNames = CONSTANTS.FILTER_NAMES;
-    var filterDesc = CONSTANTS.FILTER_DESC;
-    options.push(<li className="filter" key="eventFilterFlags">
-      <input checked={this.state.eventFilterFlags[CONSTANTS.NUM_EVENT_APIS]} onChange={this.handleFilter} type='checkbox' value='selectAllOption' /> Select All</li>)
-    options.push(<li key="alleventsdesc" className="filterDesc">Use events from all services.</li>);
-    for (i = 0; i < CONSTANTS.NUM_EVENT_APIS; i++) {
-      var event = 'event-' + i;
-      var desc = 'desc-' + i;
-      options.push(<li className="filter" key={event}>
-        <input checked={this.state.eventFilterFlags[i]} onChange={this.handleFilter} type='checkbox' value={i} /> {filterNames[i]}</li>
-      );
-      options.push(<li key={desc}><p className="filterDesc">{filterDesc[i]}</p></li>);
-    }
-
     var userevents = [];
     for (i = 0; i < this.state.userAddedEvents.length; i++) {
       userevents.unshift(<DeleteUserEvent key={key} userevent={this.state.userAddedEvents[i]} handleDelete={this.handleDeleteUserEvent} />);
@@ -1337,7 +1302,7 @@ class Userinput extends Component {
           <div className={eventsContent.join(' ')}>
           <div  className="filters-div">
               <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare} setDistance={this.handleFilterRadius}></DistanceFilter>
-              <ApiFilter></ApiFilter>
+              <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
               {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ? <TimeFilter></TimeFilter> : <MealFilter></MealFilter>}
 
               <PriceFilter></PriceFilter>
@@ -1834,7 +1799,6 @@ function countAndFilterEventApiData(allApiData, apiSource, maxTime, minTime, max
         for (var iEvent = 0; iEvent < lenEvents; iEvent++) {
           // apiSource is an array of 1s or 0s and is from userinput state eventFilterFlags
           // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
-          const reducer = (accumulator, currentValue) => accumulator + currentValue;
           var apiSourceLength = apiSource.length;
           var EVENTS_ORIGINS_ARRAY = [
             CONSTANTS.ORIGINS_MU,
@@ -1843,44 +1807,40 @@ function countAndFilterEventApiData(allApiData, apiSource, maxTime, minTime, max
             CONSTANTS.ORIGINS_GP
           ]; // same order as apiSource (order matters)
 
-
           // Check if in price range
           if (parseFloat(eventObj[iEvent].cost) >= minPrice && parseFloat(eventObj[iEvent].cost) <= maxPrice && parseFloat(eventObj[iEvent].distance_from_input_location) <= filterRadius) {
             // Check if in time range
             if (parseFloat(eventObj[iEvent].time) >= minTime && parseFloat(eventObj[iEvent].time) <= maxTime) {
               // Check if itinerary obj is from a selected api source (ie if meetup is checked, check that this itinerary object is a meetup obj)
-              if (apiSource[apiSourceLength - 1] === 1) { // if not all apiSources are selected
-                for (var k = 0; k < apiSourceLength - 1; k++) {
-                  if (apiSource[k] === 1) {
-                    // eventbrite check (check to see that origin is NOT eventbrite)
-                    if ((filterRadius < maxRadius && eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_EB) !== 0) ||
-                      filterRadius === maxRadius) {
+              for (var k = 0; k < apiSourceLength - 1; k++) {
+                if (apiSource[k] === 1) { // api source is selected
+                  // eventbrite check (check to see that origin is NOT eventbrite)
+                  if ((filterRadius < maxRadius && eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_EB) !== 0) ||
+                    filterRadius === maxRadius) {
 
-                      // api source matches the filter
-                      if (EVENTS_ORIGINS_ARRAY[k].localeCompare(eventObj[iEvent].origin) === 0) {
-                        filteredEventCount++;
+                    // api source matches the filter
+                    if (EVENTS_ORIGINS_ARRAY[k].localeCompare(eventObj[iEvent].origin) === 0) {
+                      filteredEventCount++;
 
-                        // populating the filtered events object to return
-                        if (eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_EB) === 0) { // eventbrite
-                          filteredEvents[0][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
-                        }
-                        else if (eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_GP) === 0) {//google places
-                          filteredEvents[1][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
-                        }
-                        else if (eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_MU) === 0) {//meetup
-                          filteredEvents[2][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
-                        }
-                        else { //seatgeek
-                          filteredEvents[3][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
-                        }
-                        break;
-
+                      // populating the filtered events object to return
+                      if (eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_EB) === 0) { // eventbrite
+                        filteredEvents[0][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
                       }
-                    } // eventbrite check
-                  }
+                      else if (eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_GP) === 0) {//google places
+                        filteredEvents[1][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
+                      }
+                      else if (eventObj[iEvent].origin.localeCompare(CONSTANTS.ORIGINS_MU) === 0) {//meetup
+                        filteredEvents[2][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
+                      }
+                      else { //seatgeek
+                        filteredEvents[3][CONSTANTS.EVENTKEYS[j * 2]].push(eventObj[iEvent]);
+                      }
+                      break;
+
+                    }
+                  } // eventbrite check
                 }
               }
-
             } // end if statement for time check
           } // end if statement for price and radius check
         } // end for loop cycling through events in a field (field is like event1 -> event4 in apiData)
