@@ -69,11 +69,18 @@ export class MapContainer extends Component {
             }
 
         }
+
+        const mapClasses  = ['maps', 'hidden'];
+
+        if(this.props.show == 'maps') {
+            mapClasses.pop();
+        };
+
         return (
           <Map google={this.props.google}
                zoom={CONSTANTS.GMAPS_DEFAULT_ZOOM}
                center={this.props.center}
-               className="maps"
+               className={mapClasses.join(' ')}
                style={maps}
             >
 

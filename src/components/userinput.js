@@ -54,12 +54,13 @@ import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Card from '@material-ui/core/Card';
 
 import CONSTANTS from '../constants.js'
 
 var geocoder = require('geocoder');
 
-const drawerWidth = 240;
+const drawerWidth = 940;
 
 const styles = theme => ({
   root: {
@@ -72,26 +73,6 @@ const styles = theme => ({
     position: 'relative',
     display: 'flex',
     width: '100%',
-  },
-  appBar: {
-    position: 'absolute',
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  'appBarShift-left': {
-    marginLeft: drawerWidth,
-  },
-  'appBarShift-right': {
-    marginRight: drawerWidth,
   },
   menuButton: {
     marginLeft: 12,
@@ -178,7 +159,8 @@ class Userinput extends Component {
 
       //Events drawer
       openDrawer: false,
-      anchor: 'left'
+      anchor: 'left',
+      mapItin: 'itinerary',
     };
 
     this.apiService = new ApiService();
@@ -206,6 +188,8 @@ class Userinput extends Component {
     this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
     this.handleDrawerClose = this.handleDrawerClose.bind(this);
     this.handleChangeAnchor = this.handleChangeAnchor.bind(this);
+    this.handleShowItin = this.handleShowItin.bind(this);
+    this.handleShowMap = this.handleShowMap.bind(this);
   }
 
   handleTabState(e) {
@@ -1093,6 +1077,14 @@ class Userinput extends Component {
      });
   }
 
+    handleShowItin() {
+        this.setState({mapItin: 'itinerary'})
+    }
+
+    handleShowMap() {
+        this.setState({mapItin: 'maps'})
+    }
+
   render() {
     // console.log("userinput render function!")
     var formStyles = ['form-body'];
@@ -1113,9 +1105,6 @@ class Userinput extends Component {
     var indents = [];
 
     if(this.state.resultsArray.length > 0) {
-        indents.push(<div key="tablehead">
-            <h4>Your Itinerary</h4>
-        </div>);
         // Form the itinerary results display
         for (var i = 0; i < ITINERARY_LENGTH; i++) {
           var origin = this.state.resultsArray[i].origin;
@@ -1139,20 +1128,20 @@ class Userinput extends Component {
         var id = 'checkbox-' + i;
         var elim_id = 'elim-' + i;
         indents.push(
-            <div>
-                <div key={key} className="itinRowContent">
-                    <div>
+            <Card key={key}>
+                <div className="itinRowContent">
+                    <div className="itinEventCol1">
                         <a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a>
                     </div>
-                    <div>
-                        <strong>{this.state.itinTimes[i] ? this.state.itinTimes[i] : ''}</strong>
+                    <div className="itinEventCol2">
+                        <strong>{this.state.itinTimes[i] ? (this.state.itinTimes[i] == 'Food' ? <i className="fas fa-utensils fa-2x"></i> : this.state.itinTimes[i]) : ''}</strong>
                     </div>
-                    <div className="resultsName">
+                    <div className="resultsName itinEventCol3">
                         {this.state.resultsArray[i].url === "" ? this.state.resultsArray[i].name :
                             <a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a>}
                         {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
                     </div>
-                    <div className="edit-cost text-success">
+                    <div className="itinEventCol4 edit-cost text-success">
                         <EditCostComponent
                             name={this.state.resultsArray[i].name}
                             cost={this.state.resultsArray[i].cost}
@@ -1160,14 +1149,12 @@ class Userinput extends Component {
                             i_resultsArray={i}
                             origin={this.state.resultsArray[i].origin}
                         />
-                    </div>
-                    <div>
                         <ApproxCostToolTip
                             approxCostFlag={this.state.resultsArray[i].approximateFee}
                             origin={this.state.resultsArray[i].origin}
                         />
                     </div>
-                    <div>
+                    <div className="itinEventCol6">
                         <label htmlFor={id}>
                             <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
                                 <img alt="lock icon" className="lock" src={lock_icon} />
@@ -1175,7 +1162,7 @@ class Userinput extends Component {
                         </label>
                         <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
                     </div>
-                    <div>
+                    <div className="itinEventCol7">
                         <label htmlFor={elim_id}>
                             <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
                                 <img alt="eliminate icon" className="elim" src={elim_icon} />
@@ -1197,7 +1184,7 @@ class Userinput extends Component {
                         defaultDurationFlag={this.state.resultsArray[i].defaultDuration}
                     />
                 </div>
-            </div>
+            </Card>
         );
       }
 
@@ -1366,6 +1353,10 @@ class Userinput extends Component {
     // }
     var itinContent = ['mapsfix', 'itinerary'];
 
+    var onlyItin = ['itinDiv','hidden'];
+    if(this.state.mapItin == 'itinerary') {
+        onlyItin.pop();
+    }
     return (
       <div className="Userinput">
           <div className={styles.root}>
@@ -1524,20 +1515,29 @@ class Userinput extends Component {
                 {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
                 {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
 
-                  <div className="itinDiv">
-                    {indents}
+                  <div>
+                    {this.state.resultsArray.length > 0 ?
+                      <div className="itinActions" key="toggleItin">
+                          <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Itinerary</Button>
+                          <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
+                      </div> : ''
+                    }
+
+                    <div className={onlyItin.join(' ')}>
+                        {indents}
+                        {this.state.loading === false ? <div className="totalCost">
+                          {total}
+                        </div> : ''}
+
+                        {this.state.loading === false ? <div>
+                          {goAgainButton}</div>
+                          : ''}
+                    </div>
+
                   </div>}
-
-                {this.state.loading === false ? <div className="totalCost">
-                  {total}
-                </div> : ''}
-
-                {this.state.loading === false ? <div>
-                  {goAgainButton}</div>
-                  : ''}
-
-                <GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />
               </div>
+              <GoogleApiWrapper show={this.state.mapItin} results={this.state.resultsArray} center={this.state.center} />
+
           </main>
         </div>
         <div >

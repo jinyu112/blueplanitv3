@@ -317,6 +317,8 @@ input[name="location"] {
 .resultsName {
     max-width: 325px;
     white-space: pre-wrap;
+    font-size: 1em;
+    text-align: left;
 }
 
 .greeting {
@@ -568,4 +570,80 @@ button.close {
 
 .eventsCont {
     margin: 0!important;
+}
+
+.itinDiv {
+    display: grid;
+    grid-gap: 1em;
+}
+
+.itinRowContent {
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5em 0 0.5em 0.5em;
+  /* display: flex;*/
+}
+
+.itinEventCol1 {
+  -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.itinEventCol2 {
+  -webkit-box-flex: 2;
+    -moz-box-flex: 2;
+    -webkit-flex: 2;
+    -ms-flex: 2;
+    flex: 2;
+}
+
+.itinEventCol3 {
+  -webkit-box-flex: 5;
+    -moz-box-flex: 5;
+    -webkit-flex: 5;
+    -ms-flex: 5;
+    flex: 5;
+}
+
+.itinEventCol4 {
+  -webkit-box-flex: 2;
+    -moz-box-flex: 2;
+    -webkit-flex: 2;
+    -ms-flex: 2;
+    flex: 2;
+}
+
+
+.itinEventCol5 {
+  -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.itinEventCol6 {
+  -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.itinEventCol7 {
+  -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.itinActions {
+    display: flex;
+    justify-content: center;
+
 }
