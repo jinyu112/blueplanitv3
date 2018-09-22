@@ -564,3 +564,8 @@ button.close {
 .apiBtn {
     width: 100%;
 }
+
+
+.eventsCont {
+    margin: 0!important;
+}

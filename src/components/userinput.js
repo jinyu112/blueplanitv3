@@ -48,20 +48,109 @@ import unlock from '../images/unlock.png';
 import dark from '../images/dark.png';
 import light from '../images/light.png';
 
+//DRAWER IMPORTS
+import classNames from 'classnames';
+import { withStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import CONSTANTS from '../constants.js'
 
 var geocoder = require('geocoder');
 
+const drawerWidth = 240;
+
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+  },
+  appFrame: {
+    height: 430,
+    zIndex: 1,
+    overflow: 'hidden',
+    position: 'relative',
+    display: 'flex',
+    width: '100%',
+  },
+  appBar: {
+    position: 'absolute',
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  'appBarShift-left': {
+    marginLeft: drawerWidth,
+  },
+  'appBarShift-right': {
+    marginRight: drawerWidth,
+  },
+  menuButton: {
+    marginLeft: 12,
+    marginRight: 20,
+  },
+  hide: {
+    display: 'none',
+  },
+  drawerPaper: {
+    position: 'relative',
+    width: drawerWidth,
+  },
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: '0 8px',
+    ...theme.mixins.toolbar,
+  },
+  content: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.default,
+    padding: theme.spacing.unit * 3,
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  'content-left': {
+    marginLeft: -drawerWidth,
+  },
+  'content-right': {
+    marginRight: -drawerWidth,
+  },
+  contentShift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  'contentShift-left': {
+    marginLeft: 0,
+  },
+  'contentShift-right': {
+    marginRight: 0,
+  },
+});
+
 class Userinput extends Component {
   constructor(props) {
-    super(props)
+
+
+    super(props);
 
     this.state = {
       term: '',
       budgetmax: CONSTANTS.MAX_BUDGET_DEFAULT, // 9999
       budgetmin: CONSTANTS.MIN_BUDGET_DEFAULT, //0
-      searchRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,      
+      searchRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
       location: 'San Francisco, CA',
       resultsArray: [],
       startDate: moment(),
@@ -86,7 +175,12 @@ class Userinput extends Component {
       // result display filter states
       filterRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
       searchRadiusForFilterCompare: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI, // this only changes when handlesubmit is called
+
+      //Events drawer
+      openDrawer: false,
+      anchor: 'left'
     };
+
     this.apiService = new ApiService();
     this.handleChange = this.handleChange.bind(this);
     this.openModal = this.openModal.bind(this);
@@ -109,6 +203,9 @@ class Userinput extends Component {
     this.handleFilterRadius = this.handleFilterRadius.bind(this);
     this.handleTabState = this.handleTabState.bind(this);
     this.handleSearchRadius = this.handleSearchRadius.bind(this);
+    this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
+    this.handleDrawerClose = this.handleDrawerClose.bind(this);
+    this.handleChangeAnchor = this.handleChangeAnchor.bind(this);
   }
 
   handleTabState(e) {
@@ -337,6 +434,21 @@ class Userinput extends Component {
       foodPageNumber: pageNumber_in,
     })
   }
+
+  //EVENT DRAWER FUNCTIONS
+  handleDrawerOpen = () => {
+      this.setState({ openDrawer: true });
+  };
+
+  handleDrawerClose = () => {
+      this.setState({ openDrawer: false });
+  };
+
+  handleChangeAnchor = event => {
+      this.setState({
+          anchor: event.target.value,
+      });
+  };
 
   // handles what happens when user selects a event/itinerary item from the comprehensive displayed results
   // to add to the itinerary, or when "x" is clicked or when user adds an event
@@ -580,7 +692,7 @@ class Userinput extends Component {
     }
 
     //Handle empty search radius input
-    if (!this.state.searchRadius || isNaN(this.state.searchRadius) || this.state.searchRadius === undefined 
+    if (!this.state.searchRadius || isNaN(this.state.searchRadius) || this.state.searchRadius === undefined
       || this.state.searchRadius==="") {
       this.setState({
         searchRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
@@ -1001,11 +1113,9 @@ class Userinput extends Component {
     var indents = [];
 
     if(this.state.resultsArray.length > 0) {
-        indents.push(<thead key="tablehead">
-        <tr>
-            <th colSpan="7"><h4>Your Itinerary</h4></th>
-        </tr>
-    </thead>);
+        indents.push(<div key="tablehead">
+            <h4>Your Itinerary</h4>
+        </div>);
         // Form the itinerary results display
         for (var i = 0; i < ITINERARY_LENGTH; i++) {
           var origin = this.state.resultsArray[i].origin;
@@ -1029,57 +1139,65 @@ class Userinput extends Component {
         var id = 'checkbox-' + i;
         var elim_id = 'elim-' + i;
         indents.push(
-          <tbody key={key}>
-            <tr>
-              <td><a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a></td>
-              <td><strong>{this.state.itinTimes[i] ? this.state.itinTimes[i] : ''}</strong></td>
-              <td className="resultsName">
-                {this.state.resultsArray[i].url === "" ? this.state.resultsArray[i].name :
-                  <a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a>}
-                {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
-              </td>
-              <td className="edit-cost text-success"><EditCostComponent
-                name={this.state.resultsArray[i].name}
-                cost={this.state.resultsArray[i].cost}
-                handleCostChange={this.handleEventCostChange}
-                i_resultsArray={i}
-                origin={this.state.resultsArray[i].origin} />
-
-                 </td>
-                 <td><ApproxCostToolTip
-                 approxCostFlag={this.state.resultsArray[i].approximateFee}
-                 origin={this.state.resultsArray[i].origin}/></td>
-              <td>
-                <label htmlFor={id}>
-                <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
-                <img alt="lock icon" className="lock" src={lock_icon} />
-                </TooltipMat>
-                </label>
-                <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
-                </td>
-              <td>
-                <label htmlFor={elim_id}>
-                <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
-                <img alt="eliminate icon" className="elim" src={elim_icon} />
-                </TooltipMat>
-                </label>
-                <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
-
-                </td>
-            </tr>
-            <tr className={moreInfoStyles.join(' ')}>
-              <td colSpan="8"><MoreInfoView desc={this.state.resultsArray[i].description}
-                phone={this.state.resultsArray[i].phone}
-                address={this.state.resultsArray[i].address}
-                duration={this.state.resultsArray[i].duration}
-                otherInfo={this.state.resultsArray[i].other}
-                origin={this.state.resultsArray[i].origin}
-                thumbnail={this.state.resultsArray[i].thumbnail}
-                url={this.state.resultsArray[i].url}
-                approxFeeFlag={this.state.resultsArray[i].approximateFee}
-                defaultDurationFlag={this.state.resultsArray[i].defaultDuration} /></td>
-            </tr>
-          </tbody>
+            <div>
+                <div key={key} className="itinRowContent">
+                    <div>
+                        <a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a>
+                    </div>
+                    <div>
+                        <strong>{this.state.itinTimes[i] ? this.state.itinTimes[i] : ''}</strong>
+                    </div>
+                    <div className="resultsName">
+                        {this.state.resultsArray[i].url === "" ? this.state.resultsArray[i].name :
+                            <a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a>}
+                        {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
+                    </div>
+                    <div className="edit-cost text-success">
+                        <EditCostComponent
+                            name={this.state.resultsArray[i].name}
+                            cost={this.state.resultsArray[i].cost}
+                            handleCostChange={this.handleEventCostChange}
+                            i_resultsArray={i}
+                            origin={this.state.resultsArray[i].origin}
+                        />
+                    </div>
+                    <div>
+                        <ApproxCostToolTip
+                            approxCostFlag={this.state.resultsArray[i].approximateFee}
+                            origin={this.state.resultsArray[i].origin}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor={id}>
+                            <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
+                                <img alt="lock icon" className="lock" src={lock_icon} />
+                            </TooltipMat>
+                        </label>
+                        <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
+                    </div>
+                    <div>
+                        <label htmlFor={elim_id}>
+                            <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
+                                <img alt="eliminate icon" className="elim" src={elim_icon} />
+                            </TooltipMat>
+                        </label>
+                        <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
+                    </div>
+                </div>
+                <div className={moreInfoStyles.join(' ')}>
+                    <MoreInfoView desc={this.state.resultsArray[i].description}
+                        phone={this.state.resultsArray[i].phone}
+                        address={this.state.resultsArray[i].address}
+                        duration={this.state.resultsArray[i].duration}
+                        otherInfo={this.state.resultsArray[i].other}
+                        origin={this.state.resultsArray[i].origin}
+                        thumbnail={this.state.resultsArray[i].thumbnail}
+                        url={this.state.resultsArray[i].url}
+                        approxFeeFlag={this.state.resultsArray[i].approximateFee}
+                        defaultDurationFlag={this.state.resultsArray[i].defaultDuration}
+                    />
+                </div>
+            </div>
         );
       }
 
@@ -1231,7 +1349,10 @@ class Userinput extends Component {
       },
     };
 
-    // hide/show events
+    //EVENTS DRAWER
+
+    const { classes, theme } = this.props;
+    const { anchor, openDrawer } = this.state;
     // var columnSize = 'col-md-12';
     // var eventsContent = ['tab-content', 'col-md-7', 'itinerary', 'hidden'];
     // if(!eventsContent.includes('hidden')) {
@@ -1239,12 +1360,11 @@ class Userinput extends Component {
     // }
     // var itinContent = ['mapsfix', 'itinerary', columnSize];
 
-    var columnSize = 'col-md-5';
-    var eventsContent = ['tab-content', 'col-md-7', 'itinerary'];
+    var eventsContent = ['tab-content', 'itinerary'];
     // if(!eventsContent.includes('hidden')) {
     //     columnSize = 'col-md-5';
     // }
-    var itinContent = ['mapsfix', 'itinerary', columnSize];
+    var itinContent = ['mapsfix', 'itinerary'];
 
     return (
       <div className="Userinput">
@@ -1297,8 +1417,29 @@ class Userinput extends Component {
         {/* <Filters/> */}
 
 
+        <IconButton
+          color="inherit"
+          aria-label="Open drawer"
+          onClick={this.handleDrawerOpen}
+          className={classNames(classes.menuButton, openDrawer && classes.hide)}
+        >
+          <MenuIcon />
+        </IconButton>
 
         <div className="row eventsCont apidata">
+            <Drawer
+            variant="persistent"
+            anchor={anchor}
+            open={openDrawer}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            >
+                <div className={classes.drawerHeader}>
+                  <IconButton onClick={this.handleDrawerClose}>
+                    {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                  </IconButton>
+                </div>
           <div className={eventsContent.join(' ')}>
           <div  className="filters-div">
               <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare} setDistance={this.handleFilterRadius}></DistanceFilter>
@@ -1370,29 +1511,38 @@ class Userinput extends Component {
                 tabState={this.state.tabState}/>}
             </div>
           </div>
-          <div className={itinContent.join(' ')}>
-            {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
-            {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
+           </Drawer>
 
-              <table>
-                {indents}
-              </table>}
+          {/* ITINERARY CONTENT */}
+          <main
+            className={classNames(classes.content, classes[`content-${anchor}`], {
+              [classes.contentShift]: openDrawer,
+              [classes[`contentShift-${anchor}`]]: openDrawer,
+            })}
+          >
+              <div className={itinContent.join(' ')}>
+                {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
+                {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
 
-            {this.state.loading === false ? <div className="totalCost">
-              {total}
-            </div> : ''}
+                  <div className="itinDiv">
+                    {indents}
+                  </div>}
 
-            {this.state.loading === false ? <div>
-              {goAgainButton}</div>
-              : ''}
+                {this.state.loading === false ? <div className="totalCost">
+                  {total}
+                </div> : ''}
 
-            <GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />
-          </div>
+                {this.state.loading === false ? <div>
+                  {goAgainButton}</div>
+                  : ''}
 
+                <GoogleApiWrapper results={this.state.resultsArray} center={this.state.center} />
+              </div>
+          </main>
         </div>
         <div >
-        {<Footer/>}
-          </div>
+            {<Footer/>}
+        </div>
       </div>
 
     )
@@ -1897,8 +2047,11 @@ function countAndFilterFoodApiData(allApiData, maxTime, minTime, maxPrice, minPr
   return filteredFoodPlaceObj;
 }
 
-Userinput.propTypes = {}
+Userinput.propTypes = {
+    classes: PropTypes.object.isRequired,
+    theme: PropTypes.object.isRequired,
+}
 
 Userinput.defaultProps = {}
 
-export default Userinput;
+export default withStyles(styles, { withTheme: true })(Userinput);
