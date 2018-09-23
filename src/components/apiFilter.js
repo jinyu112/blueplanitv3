@@ -66,7 +66,7 @@ class ClickAway extends React.Component {
     mu: true,
     sg: true,
     all: true,
-  };
+  }; 
 
   handleClick = (filter_state) => {
     var objectState = {};
@@ -84,7 +84,6 @@ class ClickAway extends React.Component {
         this.setState({ value: false });
       }
     });
-    // send information to parent
   };
 
   handleAllChange = name => event => {

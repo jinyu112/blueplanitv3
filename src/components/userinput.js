@@ -68,8 +68,7 @@ class Userinput extends Component {
       savedEvents: [], // actual indices of the user saved events
       eliminatedEvents: [], // indices of the user eliminated itinerary slots (0-6)
       checked: [0, 0, 0, 0, 0, 0, 0], // for displaying checked or unchecked in user saved events
-      eliminated: [0, 0, 0, 0, 0, 0, 0], // for displaying checked or unchecked in eliminating itinerary slots
-      eventFilterFlags: [1, 1, 1, 1, 1], // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
+      eliminated: [0, 0, 0, 0, 0, 0, 0], // for displaying checked or unchecked in eliminating itinerary slots      
       totalCost: 0,
       itinTimes: [], // time string in AM/PM format for display
       userAddedEvents: [],
@@ -83,9 +82,13 @@ class Userinput extends Component {
       showModal: false,
       tabState: CONSTANTS.NAV_EVENT_TAB_ID,
 
-      // result display filter states
+      // filter states
       filterRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
       searchRadiusForFilterCompare: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI, // this only changes when handlesubmit is called
+      priceFilterRange: [CONSTANTS.DEFAULT_PRICEFILTER_MIN,CONSTANTS.DEFAULT_PRICEFILTER_MAX],
+      timeFilterRange: [CONSTANTS.DEFAULT_TIMEFILTER_MIN,CONSTANTS.DEFAULT_TIMEFILTER_MAX],
+      mealFilterFlags: [true, true, true, true], // [breakfast,lunch,dinner,all]
+      eventFilterFlags: [1, 1, 1, 1, 1], // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
     };
     this.apiService = new ApiService();
     this.handleChange = this.handleChange.bind(this);
@@ -109,6 +112,9 @@ class Userinput extends Component {
     this.handleFilterRadius = this.handleFilterRadius.bind(this);
     this.handleTabState = this.handleTabState.bind(this);
     this.handleSearchRadius = this.handleSearchRadius.bind(this);
+    this.handlePriceFilter = this.handlePriceFilter.bind(this);
+    this.handleTimeFilter = this.handleTimeFilter.bind(this);
+    this.handleMealFilter = this.handleMealFilter.bind(this);
   }
 
   handleTabState(e) {
@@ -139,9 +145,45 @@ class Userinput extends Component {
     });
   }
 
+  handleFilterRadius(distance) {
+    distance = parseFloat(distance);
+    this.setState({
+      filterRadius: distance, // max radius [miles]
+      pageNumber: 1,
+      foodPageNumber: 1,
+    });
+  }
+
+  // Returned filter data from the api filter
   handleApiFilter(e) {
     this.setState({
-      eventFilterFlags: e,
+      eventFilterFlags: e, // array of 1s and 0s indicating which api sources are selected (order matters)
+      pageNumber: 1,
+      foodPageNumber: 1,      
+    });
+  }
+
+  // Returned filter data from the meal filter
+  handleMealFilter(e) {
+    this.setState({
+      mealFilterFlags: e, // array of true/false flags [breakfast lunch dinner all
+      foodPageNumber: 1,      
+    });
+  }
+
+  // Returned filter data from the price filter
+  handlePriceFilter(e) {
+    this.setState({
+      priceFilterRange: e, //[min max]
+      pageNumber: 1,
+      foodPageNumber: 1,      
+    });
+  }
+
+  handleTimeFilter(e) {
+    this.setState({
+      timeFilterRange: e, //[min max]
+      pageNumber: 1,      
     });
   }
 
@@ -588,13 +630,13 @@ class Userinput extends Component {
     }
 
     this.state.searchRadiusForFilterCompare = this.state.searchRadius; //this should be only place searchRadiusForFilterCompare should be set
-    this.state.filterRadius = this.state.searchRadiusForFilterCompare;
     if (this.state.filterRadius > this.state.searchRadiusForFilterCompare) {
+      this.state.filterRadius = this.state.searchRadiusForFilterCompare;
       this.setState({
         filterRadius: this.state.searchRadiusForFilterCompare,
-      })
-    }
-
+      });
+    } 
+    
     console.log("search radius for filter: " + this.state.searchRadiusForFilterCompare);
     console.log("search radius: " + this.state.searchRadius);
     console.log("filter radius: " + this.state.filterRadius);
@@ -693,6 +735,13 @@ class Userinput extends Component {
                     doAPICallsFlag = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, this.state.searchRadius);
 
                     if (doAPICallsFlag || clearApiData || !indexDBcompat) {
+
+                        // Reset filterRadius
+                        this.state.filterRadius = this.state.searchRadiusForFilterCompare;
+                        this.setState({
+                            filterRadius: this.state.searchRadiusForFilterCompare,
+                        });
+
                       // Reset API data cached timestamp
                       resetAPIDataTimeStampToNow(myStorage);
 
@@ -933,7 +982,6 @@ class Userinput extends Component {
                               boldIndex: 1
                             };
 
-
                             // Set the state in this component and re-render
                             this.setState({
                               resultsArray: resultsArrayOutput,
@@ -971,14 +1019,6 @@ class Userinput extends Component {
       }.bind(this), { key: 'AIzaSyAGiAZR3bZqHg3ji4ahdjoGG5Vm-yuoCL0' })
       }
     }
-  }
-
-  handleFilterRadius(distance) {
-      this.setState({
-         filterRadius: distance,
-         pageNumber: 1,
-         foodPageNumber: 1,
-     });
   }
 
   render() {
@@ -1164,8 +1204,8 @@ class Userinput extends Component {
     if (!misc.isObjEmpty(this.state.allApiData)) {
       var filteredEventObj = countAndFilterEventApiData(this.state.allApiData,
       this.state.eventFilterFlags,
-      CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY,CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY,
-      CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY,
+      this.state.timeFilterRange,
+      this.state.priceFilterRange, //[minPrice maxPrice]
     this.state.filterRadius,this.state.searchRadiusForFilterCompare);
 
 
@@ -1194,8 +1234,8 @@ class Userinput extends Component {
     var foodPageNumber;
     if (!misc.isObjEmpty(this.state.allApiData)) {
       var filteredFoodObj = countAndFilterFoodApiData(this.state.allApiData,
-        CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY,CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY,
-        CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY,CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY,
+        this.state.mealFilterFlags,
+        this.state.priceFilterRange, //[minPrice maxPrice],
       this.state.filterRadius);
 
       var numPages = Math.floor(filteredFoodObj.numFilteredFoodPlaces / CONSTANTS.NUM_RESULTS_PER_PAGE) + 1;
@@ -1301,19 +1341,22 @@ class Userinput extends Component {
         <div className="row eventsCont apidata">
           <div className={eventsContent.join(' ')}>
           <div  className="filters-div">
-              <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare} setDistance={this.handleFilterRadius}></DistanceFilter>
+              <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare} 
+              setDistance={this.handleFilterRadius}></DistanceFilter>
               <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
-              {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ? <TimeFilter></TimeFilter> : <MealFilter></MealFilter>}
-
-              <PriceFilter></PriceFilter>
+              {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ? 
+              <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> : 
+              <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
+              <PriceFilter setPriceRange={this.handlePriceFilter} ></PriceFilter>
           </div>
+
 
 
           {/* All data gets shown here (api data, and user added data) */}
           <div className="nav nav-tabs" id="nav-tab" role="tablist">
             <a onClick={this.handleTabState} className="nav-item nav-link active" id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
             <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
-            <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_USER_TAB_ID} data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> Add Event</a>
+            {/* <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_USER_TAB_ID} data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> Add Event</a> */}
           </div>
             <div className="itinerary tab-pane fade show active" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
 
@@ -1321,8 +1364,7 @@ class Userinput extends Component {
                 displayCategory={1} //events
                 pageNumber={this.state.pageNumber}
                 AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
-                minPrice={CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY}
-                maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
+                priceFilterRange={this.state.priceFilterRange}
                 maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
                 eventFilterFlags={this.state.eventFilterFlags}
@@ -1338,8 +1380,7 @@ class Userinput extends Component {
                 displayCategory={0} //restaurants
                 pageNumber={this.state.foodPageNumber}
                 AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
-                minPrice={CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY}
-                maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
+                priceFilterRange={this.state.priceFilterRange}
                 maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
                 eventFilterFlags={this.state.eventFilterFlags}
@@ -1360,8 +1401,7 @@ class Userinput extends Component {
                 displayCategory={2} //user added events
                 pageNumber={this.state.foodPageNumber}
                 AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
-                minPrice={CONSTANTS.DEFAULT_MIN_PRICE_4_DISPLAY}
-                maxPrice={CONSTANTS.DEFAULT_MAX_PRICE_4_DISPLAY}
+                priceFilterRange={this.state.priceFilterRange}
                 maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
                 minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
                 eventFilterFlags={this.state.eventFilterFlags}
@@ -1778,7 +1818,7 @@ function resetAPIDataTimeStampToNow(myStorage_in) {
 }
 
 
-function countAndFilterEventApiData(allApiData, apiSource, maxTime, minTime, maxPrice, minPrice, filterRadius, maxRadius) {
+function countAndFilterEventApiData(allApiData, apiSource, timeFilterRange, priceFilterRange, filterRadius, maxRadius) {
 
   var filteredEvents = [
     { Event1: [], Event2: [], Event3: [], Event4: [] },
@@ -1786,6 +1826,12 @@ function countAndFilterEventApiData(allApiData, apiSource, maxTime, minTime, max
     { Event1: [], Event2: [], Event3: [], Event4: [] },
     { Event1: [], Event2: [], Event3: [], Event4: [] },
   ];
+
+  var maxPrice = parseFloat(priceFilterRange[1]);
+  var minPrice = parseFloat(priceFilterRange[0]);
+
+  var maxTime = parseFloat(timeFilterRange[1]);
+  var minTime = parseFloat(timeFilterRange[0]);
 
   filterRadius = parseFloat(filterRadius);
   maxRadius = parseFloat(maxRadius);
@@ -1856,45 +1902,53 @@ function countAndFilterEventApiData(allApiData, apiSource, maxTime, minTime, max
 }
 
 
-function countAndFilterFoodApiData(allApiData, maxTime, minTime, maxPrice, minPrice, filterRadius) {
+function countAndFilterFoodApiData(allApiData, mealFilterFlags, priceFilterRange, filterRadius) {
 
-  var filteredFoodPlaces = [
-    [],
-    [],
-    [],
-  ];
+    var filteredFoodPlaces = [
+        [],
+        [],
+        [],
+    ];
 
-  filterRadius = parseFloat(filterRadius);
+    var showBreakfast = mealFilterFlags[0]; //true or false
+    var showLunch = mealFilterFlags[1];
+    var showDinner = mealFilterFlags[2];
+    var maxPrice = parseFloat(priceFilterRange[1]);
+    var minPrice = parseFloat(priceFilterRange[0]);
+    filterRadius = parseFloat(filterRadius);
 
-  var filteredFoodPlacesCount = 0;
-  for (var i = 4; i < 7; i++) { // cycle through yelp breakfast to dinner (see constants file for APIKEYS)
-    var foodPlaceObj = allApiData[CONSTANTS.APIKEYS[i]];
-    if (foodPlaceObj) {
-      var lenFoodPLaces = foodPlaceObj.length;
-      for (var iFood = 0; iFood < lenFoodPLaces; iFood++) {
+    var filteredFoodPlacesCount = 0;
+    for (var i = 4; i < 7; i++) { // cycle through yelp breakfast to dinner (see constants file for APIKEYS)
+        var foodPlaceObj = allApiData[CONSTANTS.APIKEYS[i]];
 
-        // Check if in price range
-        if (parseFloat(foodPlaceObj[iFood].cost) >= minPrice && parseFloat(foodPlaceObj[iFood].cost) <= maxPrice && parseFloat(foodPlaceObj[iFood].distance_from_input_location) <= filterRadius) {
-          if (i === 4) {
-            filteredFoodPlaces[0].push(foodPlaceObj[iFood]);
-          }
-          else if (i === 5) {
-            filteredFoodPlaces[1].push(foodPlaceObj[iFood]);
-          }
-          else {
-            filteredFoodPlaces[2].push(foodPlaceObj[iFood]);
-          }
-          filteredFoodPlacesCount++;
-        } // end if statement for price and radius check
-      } // if statement to check valide foodPlaceObj
+        if (foodPlaceObj) {
+            var lenFoodPLaces = foodPlaceObj.length;
+            for (var iFood = 0; iFood < lenFoodPLaces; iFood++) {
+
+                // Check if in price range
+                if (parseFloat(foodPlaceObj[iFood].cost) >= minPrice && parseFloat(foodPlaceObj[iFood].cost) <= maxPrice && parseFloat(foodPlaceObj[iFood].distance_from_input_location) <= filterRadius) {
+                    if (i === 4 && showBreakfast) {
+                        filteredFoodPlaces[0].push(foodPlaceObj[iFood]);
+                        filteredFoodPlacesCount++;
+                    }
+                    else if (i === 5 && showLunch) {
+                        filteredFoodPlaces[1].push(foodPlaceObj[iFood]);
+                        filteredFoodPlacesCount++;
+                    }
+                    else if (i ===6 && showDinner) {
+                        filteredFoodPlaces[2].push(foodPlaceObj[iFood]);
+                        filteredFoodPlacesCount++;
+                    }
+                } // end if statement for price and radius check
+            } // if statement to check valide foodPlaceObj
+        }
     }
-  }
 
-  var filteredFoodPlaceObj = {
-    numFilteredFoodPlaces: filteredFoodPlacesCount,
-    filteredFoodPlaces: filteredFoodPlaces,
-  }
-  return filteredFoodPlaceObj;
+    var filteredFoodPlaceObj = {
+        numFilteredFoodPlaces: filteredFoodPlacesCount,
+        filteredFoodPlaces: filteredFoodPlaces,
+    }
+    return filteredFoodPlaceObj;
 }
 
 Userinput.propTypes = {}

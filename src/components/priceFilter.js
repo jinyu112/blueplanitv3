@@ -14,36 +14,36 @@ const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 
 const styles = theme => ({
-  root: {
-    position: 'relative',
-  },
-  paper: {
-    position: 'absolute',
-    top: 175,
-    width: '25%',
-    maxWidth: '320px',
-    padding: '1em 2em',
-    textAlign: 'left',
-    color: CONSTANTS.PRIMARY_COLOR,
-  },
-  slider: {
-    zIndex: '9999',
-  },
-  header: {
-    marginBottom: '2em',
-    fontSize: '1em',
-  },
-  span: {
-      float: 'right',
-      color: CONSTANTS.PRIMARY_COLOR,
-  },
-  actions: {
-      marginTop: '2em',
-      fontSize: '0.9em',
-  },
-  apply: {
-      float: 'right',
-  }
+    root: {
+        position: 'relative',
+    },
+    paper: {
+        position: 'absolute',
+        top: 175,
+        width: '25%',
+        maxWidth: '320px',
+        padding: '1em 2em',
+        textAlign: 'left',
+        color: CONSTANTS.PRIMARY_COLOR,
+    },
+    slider: {
+        zIndex: '9999',
+    },
+    header: {
+        marginBottom: '2em',
+        fontSize: '1em',
+    },
+    span: {
+        float: 'right',
+        color: CONSTANTS.PRIMARY_COLOR,
+    },
+    actions: {
+        marginTop: '2em',
+        fontSize: '0.9em',
+    },
+    apply: {
+        float: 'right',
+    }
 });
 
 class PriceSlider extends React.Component {
@@ -56,87 +56,108 @@ class PriceSlider extends React.Component {
     }
 
     state = {
-      open: false,
-      min: 0,
-      max: 500,
-      value: [0, 500],
+        open: false,
+        min: CONSTANTS.DEFAULT_PRICEFILTER_MIN,
+        max: CONSTANTS.DEFAULT_PRICEFILTER_MAX,
+        value: [CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX,],
     };
 
     componentDidMount() {
-       document.addEventListener('mousedown', this.handleClickOutside);
+        document.addEventListener('mousedown', this.handleClickOutside);
     }
 
-     componentWillUnmount() {
-       document.removeEventListener('mousedown', this.handleClickOutside);
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside);
     }
 
-     setWrapperRef(node) {
-      this.wrapperRef = node;
+    setWrapperRef(node) {
+        this.wrapperRef = node;
     }
 
     /**
      * Alert if clicked on outside of element
      */
     handleClickOutside(event) {
-      if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
-        this.setState({open:false});
-      }
+        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+            this.setState({ open: false });
+        }
     }
 
     handleClick = (filter_state) => {
-      var objectState = {};
-      var currentState = this.state[filter_state];
-      objectState[filter_state] = !currentState;
-      this.setState(objectState);
+        var objectState = {};
+        var currentState = this.state[filter_state];
+        objectState[filter_state] = !currentState;
+        this.setState(objectState);
     };
 
     handleClickAway = (props) => {
-    this.setState({
-        open: false,
-      });
+        this.setState({
+            open: false,
+        });
     };
 
     onSliderChange = (value) => {
         this.setState({
             value: value,
         })
-        // sort results here
     }
 
-  render() {
-    const { classes } = this.props;
-    const { open } = this.state;
-    const { startValue } = this.state;
-    const { endValue } = this.state;
-    var disabled = this.props.resultsPresent;
+    handleApply = (props) => {
+        this.props.setPriceRange(this.state.value)
+        this.setState({
+            open: false,
+            value: [this.state.value[0], this.state.value[1]]
+        })
+    };
 
-    var buttonClasses = ['apiBtn'];
+    handleClear = (props) => {
+        this.props.setPriceRange([CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX,])
+        this.setState({
+            open: false,
+            min: CONSTANTS.DEFAULT_PRICEFILTER_MIN,
+            max: CONSTANTS.DEFAULT_PRICEFILTER_MAX,
+            value: [CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX,],
+        })
+    };
 
-    (this.state.value[0] != 0 || this.state.value[1] != 500) ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+    render() {
+        const { classes } = this.props;
+        const { open } = this.state;
+        var disabled = this.props.resultsPresent;
 
-    return (
-        <div ref={this.setWrapperRef}>
-            <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>PRICE</Button>
+        var buttonClasses = ['apiBtn'];
+
+        (this.state.value[0] != 0 || this.state.value[1] != 500) ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+
+        return (
+            <div ref={this.setWrapperRef}>
+                <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>PRICE</Button>
                 {open ? (
-                  <Paper className={classes.paper}>
-                      <Typography className={classes.header}>Price <span className={classes.span}>${this.state.value[0]} - ${this.state.value[1]}</span></Typography>
-                      <Range allowCross={false} className={classes.slider} defaultValue={[0, 500]} min={this.state.min} max={this.state.max}
-                        onChange={this.onSliderChange}
-                        tipFormatter={value => `$${value}.00`}
-                      />
-                   <div className={classes.actions}>
-                       <a className={classes.clear} href="">Clear</a>
-                       <a className={classes.apply} href="">Apply</a>
-                   </div>
-                  </Paper>
+                    <Paper className={classes.paper}>
+                        <Typography className={classes.header}>Price <span className={classes.span}>${this.state.value[0]} - ${this.state.value[1]}</span></Typography>
+                        <Range allowCross={false} value={this.state.value} defaultValue={[CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX]}
+                            min={CONSTANTS.DEFAULT_PRICEFILTER_MIN} max={CONSTANTS.DEFAULT_PRICEFILTER_MAX}
+                            step={CONSTANTS.PRICE_FILTER_STEP}
+                            onChange={this.onSliderChange} tipFormatter={value => `$${value}.00`} />
+
+                        <div className={classes.actions}>
+                            <Button href="#text-buttons" className={classes.button} onClick={this.handleClear}>
+                                Clear
+                            </Button>
+                            <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
+                                Apply
+                            </Button>
+                        </div>
+
+                    </Paper>
                 ) : null}
-        </div>
-    );
-  }
+            </div>
+        );
+    }
 }
 
 PriceSlider.propTypes = {
-  classes: PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(PriceSlider);
