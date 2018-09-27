@@ -582,7 +582,7 @@ button.close {
   justify-content: space-between;
   align-items: center;
   padding: 0.5em 0 0.5em 0.5em;
-  /* display: flex;*/
+  display: inline-flex;
 }
 
 .itinEventCol1 {
@@ -615,6 +615,11 @@ button.close {
     -webkit-flex: 2;
     -ms-flex: 2;
     flex: 2;
+    display: inline-flex;
+}
+
+.justify {
+    justify-self: start;
 }
 
 
@@ -640,6 +645,7 @@ button.close {
     -webkit-flex: 1;
     -ms-flex: 1;
     flex: 1;
+    align-self: stretch;
 }
 
 .itinActions {

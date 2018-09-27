@@ -37,8 +37,9 @@ export class MultiResultDisplay extends Component {
         var apiSource = this.props.eventFilterFlags;
         var maxTime = this.props.maxTime;
         var minTime = this.props.minTime;
-        var maxPrice = this.props.maxPrice;
-        var minPrice = this.props.minPrice;
+        var priceFilterRange = this.props.priceFilterRange;
+        var maxPrice = parseFloat(priceFilterRange[1]);
+        var minPrice = parseFloat(priceFilterRange[0]);
         var filterRadius = this.props.filterRadius;
         var maxRadius = this.props.maxRadius;
 

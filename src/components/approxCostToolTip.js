@@ -7,9 +7,15 @@ import TooltipMat from '@material-ui/core/Tooltip';
 export class ApproxCostToolTip extends Component {
     constructor(props) {
         super(props);
-    } 
- 
+    }
+
     render() {
+        const styles = {
+            start: {
+                justifyContent: 'start',
+            }
+        }
+
         var origin = this.props.origin;
 
         var toolTipStr = "";
@@ -33,7 +39,7 @@ export class ApproxCostToolTip extends Component {
             );
         }
         return (
-            <span>{indicateApproxCost}</span>
+            <span className="justify">{indicateApproxCost}</span>
         )
     }
 }

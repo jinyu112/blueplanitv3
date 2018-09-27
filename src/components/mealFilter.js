@@ -14,142 +14,189 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 
 const styles = theme => ({
-  root: {
-    position: 'relative',
-  },
-  paper: {
-    position: 'absolute',
-    top: 175,
-    left: 200,
-    width: '25%',
-    padding: '1em',
-    'z-index': 9999
-  }
+    root: {
+        position: 'relative',
+    },
+    paper: {
+        position: 'absolute',
+        top: 175,
+        left: 200,
+        width: '25%',
+        padding: '1em',
+        'z-index': 9999
+    }
 });
 
 class MealFilter extends React.Component {
 
     constructor(props) {
-    super(props);
+        super(props);
 
-    this.setWrapperRef = this.setWrapperRef.bind(this);
-    this.handleClickOutside = this.handleClickOutside.bind(this);
-  }
-
-  componentDidMount() {
-     document.addEventListener('mousedown', this.handleClickOutside);
-   }
-
-   componentWillUnmount() {
-     document.removeEventListener('mousedown', this.handleClickOutside);
-   }
-
-   setWrapperRef(node) {
-    this.wrapperRef = node;
-  }
-
-  /**
-   * Alert if clicked on outside of element
-   */
-  handleClickOutside(event) {
-    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
-      this.setState({open:false});
+        this.setWrapperRef = this.setWrapperRef.bind(this);
+        this.handleClickOutside = this.handleClickOutside.bind(this);
     }
-  }
 
-  state = {
-    open: false,
-    value: false,
-    breakfast:true,
-    lunch:true,
-    dinner:true,
-  };
+    componentDidMount() {
+        document.addEventListener('mousedown', this.handleClickOutside);
+    }
 
-  handleClick = (filter_state) => {
-    var objectState = {};
-    var currentState = this.state[filter_state];
-    objectState[filter_state] = !currentState;
-    this.setState(objectState);
-  };
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside);
+    }
 
+    setWrapperRef(node) {
+        this.wrapperRef = node;
+    }
 
-  handleChange = name => event => {
-    this.setState({ [name]: event.target.checked }, function () {
-        if(!this.state.breakfast || !this.state.lunch || !this.state.dinner) {
-            this.setState({ value: true });
-        } else {
-            this.setState({ value: false });
+    /**
+     * Alert if clicked on outside of element
+     */
+    handleClickOutside(event) {
+        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+            this.setState({ open: false });
         }
-    });
+    }
 
-    // send information to parent
+    state = {
+        open: false,
+        value: false,
+        breakfast: true,
+        lunch: true,
+        dinner: true,
+        all: true,
+    };
+
+    handleClick = (filter_state) => {
+        var objectState = {};
+        var currentState = this.state[filter_state];
+        objectState[filter_state] = !currentState;
+        this.setState(objectState);
+    };
 
 
-  };
+    handleChange = name => event => {
+        this.setState({ [name]: event.target.checked }, function () {
+            if (!this.state.breakfast || !this.state.lunch || !this.state.dinner) {
+                this.setState({ value: true });
+            } else {
+                this.setState({ value: false });
+            }
+        });
+    };
 
-  render() {
-    const { classes } = this.props;
-    const { open } = this.state
-    const { value } = this.state;
-    var disabled = this.props.resultsPresent;
 
-    var buttonClasses = ['apiBtn'];
+    handleAllChange = name => event => {
+        this.setState({ [name]: event.target.checked }, function () {
+            // set everything to true if select all is toggled
+            if (this.state.all) {
+                this.setState({
+                    value: true,
+                    breakfast: true,
+                    lunch: true,
+                    dinner: true,
+                    all: true,
+                });
+            }
+            // set everything to false if 'select all' is switched to "off" 
+            else {
+                this.setState({
+                    value: false,
+                    breakfast: false,
+                    lunch: false,
+                    dinner: false,
+                    all: false,
+                });
+            }
+        });
+    };
 
-    this.state.value != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+    handleApply = (props) => {
+        // Handle what happens when 'Apply' button is pressed.
+        // send back to userinput for display and input into GA
+        var mealFilterFlags = [this.state.breakfast, this.state.lunch, this.state.dinner, this.state.all];
+        this.props.setMealFilterFlags(mealFilterFlags);
+        this.setState({
+            open: false,
+        })
+    };
 
-    return (
-        <div ref={this.setWrapperRef}>
-            <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>MEALS</Button>
+    render() {
+        const { classes } = this.props;
+        const { open } = this.state
+        const { value } = this.state;
+        var disabled = this.props.resultsPresent;
+
+        var buttonClasses = ['apiBtn'];
+
+        this.state.value != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+
+        return (
+            <div ref={this.setWrapperRef}>
+                <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>MEALS</Button>
                 {open ? (
-                  <Paper className={classes.paper}>
-                    <Typography id="label">Include restaurants for: </Typography>
+                    <Paper className={classes.paper}>
+                        <Typography id="label">Include restaurants for: </Typography>
                         <FormControl component="fieldset">
-                           <FormGroup>
-                             <FormControlLabel
-                               control={
-                                 <Switch
-                                   checked={this.state.breakfast}
-                                   onChange={this.handleChange('breakfast')}
-                                   value="breakfast"
-                                   color="primary"
-                                 />
-                               }
-                               label="Breakfast"
-                             />
-                             <FormControlLabel
-                               control={
-                                 <Switch
-                                   checked={this.state.lunch}
-                                   onChange={this.handleChange('lunch')}
-                                   value="lunch"
-                                   color="primary"
-                                 />
-                               }
-                               label="Lunch"
-                             />
-                             <FormControlLabel
-                               control={
-                                 <Switch
-                                   checked={this.state.dinner}
-                                   onChange={this.handleChange('dinner')}
-                                   value="dinner"
-                                   color="primary"
-                                 />
-                               }
-                               label="Dinner"
-                             />
-                           </FormGroup>
-                         </FormControl>
-                  </Paper>
+                            <FormGroup>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={this.state.all}
+                                            onChange={this.handleAllChange('all')}
+                                            value="all"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Select All"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={this.state.breakfast}
+                                            onChange={this.handleChange('breakfast')}
+                                            value="breakfast"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Breakfast"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={this.state.lunch}
+                                            onChange={this.handleChange('lunch')}
+                                            value="lunch"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Lunch"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={this.state.dinner}
+                                            onChange={this.handleChange('dinner')}
+                                            value="dinner"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Dinner"
+                                />
+                            </FormGroup>
+                        </FormControl>
+                        <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
+                            Apply
+                        </Button>
+                    </Paper>
                 ) : null}
-        </div>
-    );
-  }
+            </div>
+        );
+    }
 }
 
 MealFilter.propTypes = {
-  classes: PropTypes.object.isRequired,
-  children: PropTypes.element.isRequired,
+    classes: PropTypes.object.isRequired,
+    children: PropTypes.element.isRequired,
 };
 
 export default withStyles(styles)(MealFilter);
