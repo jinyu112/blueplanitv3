@@ -59,7 +59,6 @@
 }
 
 .form-header {
-    background: url('./images/banner.jpg') no-repeat center center fixed;
     background-size: cover;
     background-color: white;
     text-align: center;
@@ -575,6 +574,9 @@ button.close {
 .itinDiv {
     display: grid;
     grid-gap: 1em;
+    width: 80%;
+    margin: auto;
+    max-width: 940px;
 }
 
 .itinRowContent {
@@ -583,6 +585,7 @@ button.close {
   align-items: center;
   padding: 0.5em 0 0.5em 0.5em;
   display: inline-flex;
+  min-height: calc(75vh / 7);
 }
 
 .itinEventCol1 {
@@ -651,5 +654,20 @@ button.close {
 .itinActions {
     display: flex;
     justify-content: center;
+}
 
+.actions {
+    position: relative;
+    z-index: 1;
+    left: 46%;
+    top: -27%;
+    height: 0;
+}
+
+.actions button {
+    margin: 10px;
+}
+
+.showActions {
+    overflow: visible!important;
 }

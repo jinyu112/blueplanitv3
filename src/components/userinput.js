@@ -36,7 +36,6 @@ import ApiFilter from './apiFilter.js';
 import TimeFilter from './timeFilter.js';
 import PriceFilter from './priceFilter.js';
 import MealFilter from './mealFilter.js';
-
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
 import meetup_logo from '../images/meetup_logo.png';
@@ -56,7 +55,8 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Card from '@material-ui/core/Card';
 
-import CONSTANTS from '../constants.js'
+import CONSTANTS from '../constants.js';
+
 
 var geocoder = require('geocoder');
 
@@ -138,7 +138,7 @@ class Userinput extends Component {
       savedEvents: [], // actual indices of the user saved events
       eliminatedEvents: [], // indices of the user eliminated itinerary slots (0-6)
       checked: [0, 0, 0, 0, 0, 0, 0], // for displaying checked or unchecked in user saved events
-      eliminated: [0, 0, 0, 0, 0, 0, 0], // for displaying checked or unchecked in eliminating itinerary slots      
+      eliminated: [0, 0, 0, 0, 0, 0, 0], // for displaying checked or unchecked in eliminating itinerary slots
       totalCost: 0,
       itinTimes: [], // time string in AM/PM format for display
       userAddedEvents: [],
@@ -155,19 +155,16 @@ class Userinput extends Component {
       // filter states
       filterRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
       searchRadiusForFilterCompare: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI, // this only changes when handlesubmit is called
-<<<<<<< HEAD
+      priceFilterRange: [CONSTANTS.DEFAULT_PRICEFILTER_MIN,CONSTANTS.DEFAULT_PRICEFILTER_MAX],
+      timeFilterRange: [CONSTANTS.DEFAULT_TIMEFILTER_MIN,CONSTANTS.DEFAULT_TIMEFILTER_MAX],
+      mealFilterFlags: [true, true, true, true], // [breakfast,lunch,dinner,all]
+      eventFilterFlags: [1, 1, 1, 1, 1], // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
 
       //Events drawer
       openDrawer: false,
       anchor: 'left',
       mapItin: 'itinerary',
-||||||| merged common ancestors
-=======
-      priceFilterRange: [CONSTANTS.DEFAULT_PRICEFILTER_MIN,CONSTANTS.DEFAULT_PRICEFILTER_MAX],
-      timeFilterRange: [CONSTANTS.DEFAULT_TIMEFILTER_MIN,CONSTANTS.DEFAULT_TIMEFILTER_MAX],
-      mealFilterFlags: [true, true, true, true], // [breakfast,lunch,dinner,all]
-      eventFilterFlags: [1, 1, 1, 1, 1], // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
->>>>>>> b648d71e4b7b8201d17fb1c2d786fc993a3f6a78
+
     };
 
     this.apiService = new ApiService();
@@ -192,18 +189,14 @@ class Userinput extends Component {
     this.handleFilterRadius = this.handleFilterRadius.bind(this);
     this.handleTabState = this.handleTabState.bind(this);
     this.handleSearchRadius = this.handleSearchRadius.bind(this);
-<<<<<<< HEAD
     this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
     this.handleDrawerClose = this.handleDrawerClose.bind(this);
     this.handleChangeAnchor = this.handleChangeAnchor.bind(this);
     this.handleShowItin = this.handleShowItin.bind(this);
     this.handleShowMap = this.handleShowMap.bind(this);
-||||||| merged common ancestors
-=======
     this.handlePriceFilter = this.handlePriceFilter.bind(this);
     this.handleTimeFilter = this.handleTimeFilter.bind(this);
     this.handleMealFilter = this.handleMealFilter.bind(this);
->>>>>>> b648d71e4b7b8201d17fb1c2d786fc993a3f6a78
   }
 
   handleTabState(e) {
@@ -248,7 +241,7 @@ class Userinput extends Component {
     this.setState({
       eventFilterFlags: e, // array of 1s and 0s indicating which api sources are selected (order matters)
       pageNumber: 1,
-      foodPageNumber: 1,      
+      foodPageNumber: 1,
     });
   }
 
@@ -256,7 +249,7 @@ class Userinput extends Component {
   handleMealFilter(e) {
     this.setState({
       mealFilterFlags: e, // array of true/false flags [breakfast lunch dinner all
-      foodPageNumber: 1,      
+      foodPageNumber: 1,
     });
   }
 
@@ -265,14 +258,14 @@ class Userinput extends Component {
     this.setState({
       priceFilterRange: e, //[min max]
       pageNumber: 1,
-      foodPageNumber: 1,      
+      foodPageNumber: 1,
     });
   }
 
   handleTimeFilter(e) {
     this.setState({
       timeFilterRange: e, //[min max]
-      pageNumber: 1,      
+      pageNumber: 1,
     });
   }
 
@@ -739,8 +732,8 @@ class Userinput extends Component {
       this.setState({
         filterRadius: this.state.searchRadiusForFilterCompare,
       });
-    } 
-    
+    }
+
     console.log("search radius for filter: " + this.state.searchRadiusForFilterCompare);
     console.log("search radius: " + this.state.searchRadius);
     console.log("filter radius: " + this.state.filterRadius);
@@ -1125,7 +1118,6 @@ class Userinput extends Component {
     }
   }
 
-<<<<<<< HEAD
   handleFilterRadius(distance) {
       this.setState({
          filterRadius: distance,
@@ -1142,17 +1134,6 @@ class Userinput extends Component {
         this.setState({mapItin: 'maps'})
     }
 
-||||||| merged common ancestors
-  handleFilterRadius(distance) {
-      this.setState({
-         filterRadius: distance,
-         pageNumber: 1,
-         foodPageNumber: 1,
-     });
-  }
-
-=======
->>>>>>> b648d71e4b7b8201d17fb1c2d786fc993a3f6a78
   render() {
     // console.log("userinput render function!")
     var formStyles = ['form-body'];
@@ -1196,7 +1177,27 @@ class Userinput extends Component {
         var id = 'checkbox-' + i;
         var elim_id = 'elim-' + i;
         indents.push(
-            <Card key={key}>
+            <Card className="showActions" key={key}>
+                <div className="actions">
+
+                    <Button variant="fab" color="primary">
+                        <label htmlFor={id}>
+                            <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
+                                <img alt="lock icon" className="lock" src={lock_icon} />
+                            </TooltipMat>
+                        </label>
+                        <input  className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
+                    </Button>
+
+                    <Button variant="fab" color="secondary">
+                        <label htmlFor={elim_id}>
+                            <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
+                                <img alt="eliminate icon" className="elim" src={elim_icon} />
+                            </TooltipMat>
+                        </label>
+                        <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
+                    </Button>
+                </div>
                 <div className="itinRowContent">
                     <div className="itinEventCol1">
                         <a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a>
@@ -1221,22 +1222,6 @@ class Userinput extends Component {
                             approxCostFlag={this.state.resultsArray[i].approximateFee}
                             origin={this.state.resultsArray[i].origin}
                         />
-                    </div>
-                    <div className="itinEventCol6">
-                        <label htmlFor={id}>
-                            <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
-                                <img alt="lock icon" className="lock" src={lock_icon} />
-                            </TooltipMat>
-                        </label>
-                        <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
-                    </div>
-                    <div className="itinEventCol7">
-                        <label htmlFor={elim_id}>
-                            <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
-                                <img alt="eliminate icon" className="elim" src={elim_icon} />
-                            </TooltipMat>
-                        </label>
-                        <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
                     </div>
                 </div>
                 <div className={moreInfoStyles.join(' ')}>
@@ -1501,11 +1486,11 @@ class Userinput extends Component {
                 </div>
           <div className={eventsContent.join(' ')}>
           <div  className="filters-div">
-              <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare} 
+              <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
               setDistance={this.handleFilterRadius}></DistanceFilter>
               <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
-              {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ? 
-              <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> : 
+              {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
+              <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
               <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
               <PriceFilter setPriceRange={this.handlePriceFilter} ></PriceFilter>
           </div>
