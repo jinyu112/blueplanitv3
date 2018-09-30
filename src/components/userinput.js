@@ -1178,37 +1178,20 @@ class Userinput extends Component {
         var elim_id = 'elim-' + i;
         indents.push(
             <Card className="showActions" key={key}>
-                <div className="actions">
-
-                    <Button variant="fab" color="primary">
-                        <label htmlFor={id}>
-                            <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
-                                <img alt="lock icon" className="lock" src={lock_icon} />
-                            </TooltipMat>
-                        </label>
-                        <input  className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
-                    </Button>
-
-                    <Button variant="fab" color="secondary">
-                        <label htmlFor={elim_id}>
-                            <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
-                                <img alt="eliminate icon" className="elim" src={elim_icon} />
-                            </TooltipMat>
-                        </label>
-                        <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
-                    </Button>
-                </div>
                 <div className="itinRowContent">
                     <div className="itinEventCol1">
-                        <a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a>
-                    </div>
-                    <div className="itinEventCol2">
-                        <strong>{this.state.itinTimes[i] ? (this.state.itinTimes[i] == 'Food' ? <i className="fas fa-utensils fa-2x"></i> : this.state.itinTimes[i]) : ''}</strong>
+                        <img src={this.state.resultsArray[i].thumbnail}></img>
                     </div>
                     <div className="resultsName itinEventCol3">
                         {this.state.resultsArray[i].url === "" ? this.state.resultsArray[i].name :
                             <a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a>}
                         {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
+                        <div>
+                            <a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a>
+                            <span>
+                                <strong>{ this.state.itinTimes[i] == 'Food' ? <span><i className="fas fa-utensils fa-2x"></i></span> : this.state.itinTimes[i] }</strong>
+                            </span>
+                        </div>
                     </div>
                     <div className="itinEventCol4 edit-cost text-success">
                         <EditCostComponent
@@ -1222,7 +1205,28 @@ class Userinput extends Component {
                             approxCostFlag={this.state.resultsArray[i].approximateFee}
                             origin={this.state.resultsArray[i].origin}
                         />
+
+                        <div className="actions">
+                            <Button mini variant="fab" className="actionsBtn">
+                                <label htmlFor={id}>
+                                    <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
+                                        <img alt="lock icon" className="lock" src={lock_icon} />
+                                    </TooltipMat>
+                                </label>
+                                <input  className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
+                            </Button>
+
+                            <Button mini variant="fab" className="actionsBtn">
+                                <label htmlFor={elim_id}>
+                                    <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
+                                        <img alt="eliminate icon" className="elim" src={elim_icon} />
+                                    </TooltipMat>
+                                </label>
+                                <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
+                            </Button>
+                        </div>
                     </div>
+
                 </div>
                 <div className={moreInfoStyles.join(' ')}>
                     <MoreInfoView desc={this.state.resultsArray[i].description}

@@ -316,7 +316,7 @@ input[name="location"] {
 .resultsName {
     max-width: 325px;
     white-space: pre-wrap;
-    font-size: 1em;
+    font-size: 1.1em;
     text-align: left;
 }
 
@@ -573,7 +573,7 @@ button.close {
 
 .itinDiv {
     display: grid;
-    grid-gap: 1em;
+    grid-gap: 3em;
     width: 80%;
     margin: auto;
     max-width: 940px;
@@ -583,12 +583,35 @@ button.close {
   width: 100%;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5em 0 0.5em 0.5em;
+  padding: 2em;
   display: inline-flex;
-  min-height: calc(75vh / 7);
+  max-height: 220px;
+  overflow-y: hidden;
+}
+
+.itinEventCol1 img {
+    object-fit: cover;
 }
 
 .itinEventCol1 {
+  -webkit-box-flex: 2;
+    -moz-box-flex: 2;
+    -webkit-flex: 2;
+    -ms-flex: 2;
+    flex: 2;
+}
+
+
+.itinEventCol3 {
+  -webkit-box-flex: 2;
+    -moz-box-flex: 2;
+    -webkit-flex: 2;
+    -ms-flex: 2;
+    flex: 2;
+    padding: 0 1em;
+}
+
+.itinEventCol4 {
   -webkit-box-flex: 1;
     -moz-box-flex: 1;
     -webkit-flex: 1;
@@ -596,60 +619,11 @@ button.close {
     flex: 1;
 }
 
-.itinEventCol2 {
-  -webkit-box-flex: 2;
-    -moz-box-flex: 2;
-    -webkit-flex: 2;
-    -ms-flex: 2;
-    flex: 2;
-}
-
-.itinEventCol3 {
-  -webkit-box-flex: 5;
-    -moz-box-flex: 5;
-    -webkit-flex: 5;
-    -ms-flex: 5;
-    flex: 5;
-}
-
-.itinEventCol4 {
-  -webkit-box-flex: 2;
-    -moz-box-flex: 2;
-    -webkit-flex: 2;
-    -ms-flex: 2;
-    flex: 2;
-    display: inline-flex;
-}
 
 .justify {
     justify-self: start;
 }
-
-
-.itinEventCol5 {
-  -webkit-box-flex: 1;
-    -moz-box-flex: 1;
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
-}
-
-.itinEventCol6 {
-  -webkit-box-flex: 1;
-    -moz-box-flex: 1;
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
-}
-
-.itinEventCol7 {
-  -webkit-box-flex: 1;
-    -moz-box-flex: 1;
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
-    align-self: stretch;
-}
+-
 
 .itinActions {
     display: flex;
@@ -659,9 +633,6 @@ button.close {
 .actions {
     position: relative;
     z-index: 1;
-    left: 46%;
-    top: -27%;
-    height: 0;
 }
 
 .actions button {
@@ -670,4 +641,12 @@ button.close {
 
 .showActions {
     overflow: visible!important;
+}
+
+.actionsBtn {
+    background-color: white!important;
+}
+
+.actonsBtn label {
+    margin: 0;
 }
