@@ -89,6 +89,7 @@ class Userinput extends Component {
       timeFilterRange: [CONSTANTS.DEFAULT_TIMEFILTER_MIN,CONSTANTS.DEFAULT_TIMEFILTER_MAX],
       mealFilterFlags: [true, true, true, true], // [breakfast,lunch,dinner,all]
       eventFilterFlags: [1, 1, 1, 1, 1], // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
+      apiCalls: true,
     };
     this.apiService = new ApiService();
     this.handleChange = this.handleChange.bind(this);
@@ -115,6 +116,7 @@ class Userinput extends Component {
     this.handlePriceFilter = this.handlePriceFilter.bind(this);
     this.handleTimeFilter = this.handleTimeFilter.bind(this);
     this.handleMealFilter = this.handleMealFilter.bind(this);
+    this.handleResetFilter = this.handleResetFilter.bind(this);
   }
 
   handleTabState(e) {
@@ -184,6 +186,13 @@ class Userinput extends Component {
     this.setState({
       timeFilterRange: e, //[min max]
       pageNumber: 1,      
+    });
+  }
+
+  // This function resets the filters when the api calls occur
+  handleResetFilter() {
+    this.setState({
+      apiCalls: false, 
     });
   }
 
@@ -736,10 +745,13 @@ class Userinput extends Component {
 
                     if (doAPICallsFlag || clearApiData || !indexDBcompat) {
 
-                        // Reset filterRadius
+                        // Reset filters
                         this.state.filterRadius = this.state.searchRadiusForFilterCompare;
                         this.setState({
                             filterRadius: this.state.searchRadiusForFilterCompare,
+                            priceFilterRange: [CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX],
+                            timeFilterRange: [CONSTANTS.DEFAULT_TIMEFILTER_MIN, CONSTANTS.DEFAULT_TIMEFILTER_MAX],
+                            apiCalls: true,
                         });
 
                       // Reset API data cached timestamp
@@ -796,7 +808,6 @@ class Userinput extends Component {
                             resultsArray: resultsArrayOutput,
                             checked: [0, 0, 0, 0, 0, 0, 0], //reset the checkboxes to being unchecked
                             eliminated: [0, 0, 0, 0, 0, 0, 0], //reset the checkboxes for the eliminated slots
-                            // totalCost: optimItinerary.totalCost,
                             savedEvents: [],
                             eliminatedEvents: [],
                             itinTimes: [],
@@ -890,7 +901,9 @@ class Userinput extends Component {
                     // have not changed.
                     else {
                       console.log("No need to do API calls!!!")
-
+                      this.setState({
+                          apiCalls: false,
+                      })
                       if (indexDBcompat && insideBudget) {
                         idb_keyval.get('apiData').then(val => {
 
@@ -940,7 +953,6 @@ class Userinput extends Component {
                               resultsArray: resultsArrayOutput,
                               checked: [0, 0, 0, 0, 0, 0, 0], //reset the checkboxes to being unchecked
                               eliminated: [0, 0, 0, 0, 0, 0, 0], //reset the checkboxes for the eliminated slots
-                              // totalCost: optimItinerary.totalCost,
                               savedEvents: [],
                               eliminatedEvents: [],
                               itinTimes: [],
@@ -1342,12 +1354,12 @@ class Userinput extends Component {
           <div className={eventsContent.join(' ')}>
           <div  className="filters-div">
               <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare} 
-              setDistance={this.handleFilterRadius}></DistanceFilter>
-              <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
+              setDistance={this.handleFilterRadius} apiCalls={this.state.apiCalls} handleResetFilter={this.handleResetFilter}></DistanceFilter>
+              <ApiFilter setApiFilterFlags={this.handleApiFilter} apiCalls={this.state.apiCalls} handleResetFilter={this.handleResetFilter}></ApiFilter>
               {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ? 
-              <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> : 
-              <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
-              <PriceFilter setPriceRange={this.handlePriceFilter} ></PriceFilter>
+              <TimeFilter setTimeRange={this.handleTimeFilter} apiCalls={this.state.apiCalls} handleResetFilter={this.handleResetFilter}></TimeFilter> : 
+              <MealFilter setMealFilterFlags={this.handleMealFilter} apiCalls={this.state.apiCalls} handleResetFilter={this.handleResetFilter}></MealFilter>}
+              <PriceFilter setPriceRange={this.handlePriceFilter} apiCalls={this.state.apiCalls} handleResetFilter={this.handleResetFilter}></PriceFilter>
           </div>
 
 
