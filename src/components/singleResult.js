@@ -163,7 +163,7 @@ export class SingleResult extends Component {
 
 <Card>
     <AlertContainer position="bottom-left">
-    {this.state.isShowingInfoAlert ? (<Alert type="success" showIcon={false} timeout={1000} onDismiss={this.dismissAlert.bind(this)}>
+    {this.state.isShowingInfoAlert ? (<Alert type="success" showIcon={false} timeout={CONSTANTS.NOTIF_DISMISS_TIME_MS} onDismiss={this.dismissAlert.bind(this)}>
     Added to Itinerary Slot {this.props.eventKey+1}</Alert>): null}
     </AlertContainer>
         <CardHeader

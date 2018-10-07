@@ -134,4 +134,5 @@ module.exports = {
     ABS_TIMEFILTER_MAX:2400,
     NOON: 1200,
     TIME_FILTER_STEP: 100,
+    NOTIF_DISMISS_TIME_MS: 1500, //ms
 }
