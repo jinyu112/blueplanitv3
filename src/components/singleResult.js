@@ -19,6 +19,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import renderHTML from 'react-render-html';
 import Checkbox from '@material-ui/core/Checkbox';
+import{Alert, AlertContainer} from 'react-bs-notifier';
 
 const styles = theme => ({
     card: {
@@ -51,6 +52,12 @@ const styles = theme => ({
     },
   });
 
+  const alerts = [{
+	id: 1,
+	type: "info",
+	message: "Hello, world"
+}]
+
 // This component constructs a single result that is displayed to the user from the api data
 export class SingleResult extends Component {
     constructor(props) {
@@ -58,6 +65,7 @@ export class SingleResult extends Component {
         this.state ={
             expanded: false,
             checked: true,
+            isShowingInfoAlert: false,
         }
     }
 
@@ -69,7 +77,7 @@ export class SingleResult extends Component {
         // if (e.target.checked) {
             var tempObj = this.props.itinObj;
             tempObj["other"]=this.props.eventKey;
-            this.props.AddEvent(tempObj);
+            this.props.AddEvent(tempObj);            
         // }
     }
 
@@ -86,6 +94,18 @@ export class SingleResult extends Component {
     handleExpandClick = () => {
         this.setState(state => ({ expanded: !state.expanded }));
       };
+
+      onAlertToggle(type) {
+		this.setState({
+			[type]: !this.state[type]
+		});
+    }
+    
+    dismissAlert() {
+        this.setState({
+            isShowingInfoAlert: false,
+        });
+    }
 
     render() {
         var titleStr = this.truncateText(this.props.itinObj.name);
@@ -142,6 +162,10 @@ export class SingleResult extends Component {
         return (
 
 <Card>
+    <AlertContainer position="bottom-left">
+    {this.state.isShowingInfoAlert ? (<Alert type="success" showIcon={false} timeout={1000} onDismiss={this.dismissAlert.bind(this)}>
+    Added to Itinerary Slot {this.props.eventKey+1}</Alert>): null}
+    </AlertContainer>
         <CardHeader
           title={<a href={urlStr} target='_blank'>{titleStr}</a>}
           subheader={subHeaderTxt}
@@ -153,7 +177,7 @@ export class SingleResult extends Component {
         <CardActions  style={{justifyContent: 'center'}}>
         <TooltipMat placement="top" title={CONSTANTS.ADDTOITIN_TOOLTIP_STR}>
           <IconButton aria-label="Add to favorites"  onClick={this.handleAddEvent}>
-            <FavoriteIcon />
+            <FavoriteIcon onClick={() => this.onAlertToggle("isShowingInfoAlert")}/>
           </IconButton>
           </TooltipMat>
 
