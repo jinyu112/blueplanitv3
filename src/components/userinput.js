@@ -1027,7 +1027,7 @@ class Userinput extends Component {
                                         }
                                     }
                                 }
-                            }.bind(this), { key: 'AIzaSyAGiAZR3bZqHg3ji4ahdjoGG5Vm-yuoCL0' })
+                            }.bind(this), { key: process.env.REACT_APP_GOOGLE_API_KEY })
 
                         }
                         else {
@@ -1043,7 +1043,7 @@ class Userinput extends Component {
                             loading: false,
                         });
                     }
-                }.bind(this), { key: 'AIzaSyAGiAZR3bZqHg3ji4ahdjoGG5Vm-yuoCL0' })
+                }.bind(this), { key: process.env.REACT_APP_GOOGLE_API_KEY })
             }
         }
     }
