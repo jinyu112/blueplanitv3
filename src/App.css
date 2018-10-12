@@ -314,10 +314,16 @@ input[name="location"] {
 }
 
 .resultsName {
-    max-width: 325px;
+    max-width: 450px;
     white-space: pre-wrap;
     font-size: 1.1em;
     text-align: left;
+}
+
+.resultsName a {
+    font-size: 1.2em;
+    font-family: 'Roboto';
+    font-weight: 500;
 }
 
 .greeting {
@@ -649,4 +655,18 @@ button.close {
 
 .actonsBtn label {
     margin: 0;
+}
+
+.icon-name {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-gap: 10px;
+}
+
+.align {
+    align-self: center;
+}
+
+.justify-end {
+    justify-self: end;
 }

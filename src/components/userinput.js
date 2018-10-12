@@ -1179,17 +1179,20 @@ class Userinput extends Component {
         indents.push(
             <Card className="showActions" key={key}>
                 <div className="itinRowContent">
-                    <div className="itinEventCol1">
-                        <img src={this.state.resultsArray[i].thumbnail}></img>
-                    </div>
                     <div className="resultsName itinEventCol3">
-                        {this.state.resultsArray[i].url === "" ? this.state.resultsArray[i].name :
-                            <a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a>}
-                        {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
+                        <div className="icon-name">
+                            <span class="justify-end"><a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a></span>
+                            <span className="align">
+
+                                {this.state.resultsArray[i].url === "" ? <strong>this.state.resultsArray[i].name</strong> :
+                                    <strong><a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a></strong>}
+                                {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
+
+                            </span>
+                        </div>
                         <div>
-                            <a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a>
                             <span>
-                                <strong>{ this.state.itinTimes[i] == 'Food' ? <span><i className="fas fa-utensils fa-2x"></i></span> : this.state.itinTimes[i] }</strong>
+                                { this.state.itinTimes[i] == 'Food' ? <span><i className="fas fa-utensils fa-2x"></i></span> : <i className="far fa-clock">this.state.itinTimes[i]</i>}
                             </span>
                         </div>
                     </div>
