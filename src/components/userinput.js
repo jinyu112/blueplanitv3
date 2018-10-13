@@ -53,6 +53,7 @@ import CONSTANTS from '../constants.js'
 
 var geocoder = require('geocoder');
 
+// test comment
 class Userinput extends Component {
     constructor(props) {
         super(props)
@@ -83,7 +84,7 @@ class Userinput extends Component {
             showModal: false,
             tabState: CONSTANTS.NAV_EVENT_TAB_ID,
 
-            // filter states
+            // filter states 
             filterRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
             searchRadiusForFilterCompare: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI, // this only changes when handlesubmit is called
             priceFilterRange: [CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX],
