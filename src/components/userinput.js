@@ -53,7 +53,6 @@ import CONSTANTS from '../constants.js'
 
 var geocoder = require('geocoder');
 
-// test comment
 class Userinput extends Component {
     constructor(props) {
         super(props)
