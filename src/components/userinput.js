@@ -15,6 +15,7 @@ import MoreInfoView from './moreInfoView.js';
 import EditCostComponent from './editCostComponent.js';
 import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
+import MoreOptions from './moreOptions';
 import Message from './message.js';
 import ApproxCostToolTip from './approxCostToolTip.js';
 import misc from '../miscfuncs/misc.js'
@@ -51,7 +52,10 @@ import light from '../images/light.png';
 
 import CONSTANTS from '../constants.js'
 
-var geocoder = require('geocoder');
+//https://developers.google.com/maps/documentation/geocoding/usage-and-billing
+//0-100k queries = $5 per 1k queries
+var geocoder = require('geocoder'); 
+
 
 class Userinput extends Component {
     constructor(props) {
@@ -82,6 +86,9 @@ class Userinput extends Component {
             foodPageNumber: 1,
             showModal: false,
             tabState: CONSTANTS.NAV_EVENT_TAB_ID,
+
+            //Setting
+            userFoodCost: 0,
 
             // filter states
             filterRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
@@ -118,6 +125,7 @@ class Userinput extends Component {
         this.handleTimeFilter = this.handleTimeFilter.bind(this);
         this.handleMealFilter = this.handleMealFilter.bind(this);
         this.handleResetFilter = this.handleResetFilter.bind(this);
+        this.handleUpdateUserFoodCost = this.handleUpdateUserFoodCost.bind(this);
     }
 
     handleTabState(e) {
@@ -439,6 +447,22 @@ class Userinput extends Component {
         }
     }
 
+    handleUpdateUserFoodCost(e) {
+        var indexDBcompat = window.indexedDB;
+        var userFoodCost = parseFloat(e);
+        var allApiData;
+        this.setState({
+            userFoodCost: userFoodCost,
+        })
+
+        if (this.state.allApiData !== undefined) {
+            allApiData = updateAllFoodCosts(userFoodCost,this.state.allApiData);
+            this.setState({
+                allApiData: allApiData,
+            })
+        }
+
+    }
 
     handleMoreInfo(e) {
         var tempShowMoreInfo = (this.state.showMoreInfo).slice();
@@ -1049,7 +1073,7 @@ class Userinput extends Component {
     }
 
     render() {
-        // console.log("userinput render function!")
+        console.log("userinput render function!")
         var formStyles = ['form-body'];
         var optionStyles = ['more-options', 'form-body'];
         const ITINCONTAINER_STYLE = 'itinContainer';
@@ -1412,7 +1436,7 @@ class Userinput extends Component {
                         <div className="nav nav-tabs" id="nav-tab" role="tablist">
                             <a onClick={this.handleTabState} className="nav-item nav-link active" id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
                             <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
-                            {/* <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_USER_TAB_ID} data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> Add Event</a> */}
+                            <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_USER_TAB_ID} data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> More Options</a>
                         </div>
                         <div className="itinerary tab-pane fade show active" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
 
@@ -1448,22 +1472,7 @@ class Userinput extends Component {
 
 
                         <div className="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="nav-add-tab">
-                            <h5>Add Your Own Event:</h5>
-                            <AddUserEvent handleAdd={this.handleAddUserEvent} />
-                            {/* clear all user added events*/}
-                            <a href="javascript:void(0)" onClick={this.handleClearUserEvents}> Clear All Added Events
-                          </a>
-                            {<MultiResultDisplay apiData={this.state.userAddedEvents}
-                                displayCategory={2} //user added events
-                                pageNumber={this.state.foodPageNumber}
-                                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
-                                priceFilterRange={this.state.priceFilterRange}
-                                maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
-                                minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
-                                eventFilterFlags={this.state.eventFilterFlags}
-                                filterRadius={this.state.filterRadius}
-                                maxRadius={this.state.searchRadiusForFilterCompare}
-                                tabState={this.state.tabState} />}
+                            {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost}/>}
                         </div>
                     </div>
                     <div className={itinContent.join(' ')}>
@@ -1999,6 +2008,27 @@ function countAndFilterFoodApiData(allApiData, mealFilterFlags, priceFilterRange
         filteredFoodPlaces: filteredFoodPlaces,
     }
     return filteredFoodPlaceObj;
+}
+
+function updateAllFoodCosts(userFoodCostBias, allApiData) {
+
+console.log(allApiData)
+
+
+    var tempLen = allApiData.yelpBreakfastItemsGlobal.length;
+    for (var i = 0; i < tempLen; i++) {
+        allApiData.yelpBreakfastItemsGlobal[i].cost += userFoodCostBias;
+    }
+    tempLen = allApiData.yelpLunchItemsGlobal.length;
+    for (var i = 0; i < tempLen; i++) {
+        allApiData.yelpLunchItemsGlobal[i].cost += userFoodCostBias;
+    }
+    tempLen = allApiData.yelpDinnerItemsGlobal.length;
+    for (var i = 0; i < tempLen; i++) {
+        allApiData.yelpDinnerItemsGlobal[i].cost += userFoodCostBias;
+    }
+
+    return allApiData;
 }
 
 Userinput.propTypes = {}
