@@ -10,7 +10,7 @@ export class EditCostComponent extends Component {
     }
 
     handleBlur(event) {
-        var edittedEventCost = misc.round2NearestHundredth(parseFloat(this.refs.edittedEventCost.value));
+        var edittedEventCost = misc.round2NearestHundredth(parseFloat(this.refs.edittedEventCost.value.replace('$ ','')));
         var edittedEventName = this.props.name;
         var i_resultsArray = this.props.i_resultsArray; // index of the event in the itinerary results (0-6, ie the itinerary slot)
         var edittedEventOrigin = this.props.origin;
@@ -28,17 +28,17 @@ export class EditCostComponent extends Component {
             eventOrigin = CONSTANTS.ORIGINS_NONE;
         }
         if (eventOrigin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) { //if not a "none item" itinerary slot, show the price
-            editCostComponentArray.push(<span key={this.props.name + "editCostSpan"}>$</span>);
-            editCostComponentArray.push(<input type="number" className="text-success form-control editCostStyle" min="0"
-                defaultValue={cost} onBlur={this.handleBlur}
-                ref="edittedEventCost" 
+            // editCostComponentArray.push(<span key={this.props.name + "editCostSpan"}>$</span>);
+            editCostComponentArray.push(<input type="text" className="text-succes form-control editCostStyle" min="0"
+                defaultValue={'$ ' + cost} onBlur={this.handleBlur}
+                ref="edittedEventCost"
                 key={this.props.name + "editCostInput"}/>);
         }
 
         return (
             <form>
                 <TooltipMat placement="top" title={CONSTANTS.EDITCOST_TOOLTIP_STR}>
-            <div className="edit-cost-cont" key={this.props.name + "editCostDiv"}>                
+            <div key={this.props.name + "editCostDiv"}>
                 {editCostComponentArray}
             </div>
             </TooltipMat>
