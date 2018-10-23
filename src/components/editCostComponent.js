@@ -38,10 +38,10 @@ export class EditCostComponent extends Component {
         return (
             <form>
                 <TooltipMat placement="top" title={CONSTANTS.EDITCOST_TOOLTIP_STR}>
-            <div key={this.props.name + "editCostDiv"}>
-                {editCostComponentArray}
-            </div>
-            </TooltipMat>
+                    <div key={this.props.name + "editCostDiv"}>
+                        {editCostComponentArray}
+                    </div>
+                </TooltipMat>
             </form>
         );
     }

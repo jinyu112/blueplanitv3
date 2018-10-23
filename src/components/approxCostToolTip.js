@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { Component } from 'react';
 import CONSTANTS from '../constants.js';
 import TooltipMat from '@material-ui/core/Tooltip';
+import Icon from '@material-ui/core/Icon';
 
 // This component shows a tool tip if the price of the event is unknown or inaccurate
 export class ApproxCostToolTip extends Component {
@@ -35,7 +36,7 @@ export class ApproxCostToolTip extends Component {
         var indicateApproxCost;
         if (approxCostFlag) {
             indicateApproxCost = (
-                <TooltipMat placement="top" title={toolTipStr}><span>*</span></TooltipMat>
+                <TooltipMat placement="top" title={toolTipStr}><span><Icon>info</Icon></span></TooltipMat>
             );
         }
         return (

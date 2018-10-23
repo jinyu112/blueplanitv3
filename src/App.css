@@ -324,9 +324,9 @@ input[name="location"] {
 }
 
 .resultsName a {
-    font-size: 1.2em;
+    font-size: 1.3em;
     font-family: 'Roboto';
-    font-weight: 300;
+    font-weight: 500;
 }
 
 .greeting {
@@ -422,9 +422,10 @@ img{
 
 .edit-cost-cont {
     display: grid;
-    grid-template-columns: 1fr 2fr;
     align-items: center;
     grid-gap: 5px;
+    margin: 0 10px;
+    grid-template-columns: 10fr 1fr;
 }
 
 .edit-cost-cont span {
@@ -596,7 +597,7 @@ button.close {
   width: 100%;
   justify-content: space-between;
   align-items: center;
-  padding: 1em;
+  padding: 2em 1.2em;
   display: inline-flex;
   max-height: 220px;
   overflow-y: hidden;
@@ -645,6 +646,8 @@ button.close {
 .actions {
     position: relative;
     z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
 }
 
 .actions button {
@@ -674,4 +677,18 @@ button.close {
 
 .costPanel {
     padding: 1em;
+}
+
+.descBtn {
+    margin-top: 1em!important;
+    margin-left: -5px!important;
+}
+
+.boldIt {
+    font-family: 'Roboto';
+    font-weight: 500;
+}
+
+.displayInline {
+    display: inline;
 }

@@ -56,6 +56,8 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Card from '@material-ui/core/Card';
 
 import CONSTANTS from '../constants.js';
+import DescDialog from './descDialog.js'
+
 
 
 var geocoder = require('geocoder');
@@ -165,6 +167,8 @@ class Userinput extends Component {
       anchor: 'left',
       mapItin: 'itinerary',
 
+      //Event description
+      descDialogOpen: false,
     };
 
     this.apiService = new ApiService();
@@ -197,6 +201,8 @@ class Userinput extends Component {
     this.handlePriceFilter = this.handlePriceFilter.bind(this);
     this.handleTimeFilter = this.handleTimeFilter.bind(this);
     this.handleMealFilter = this.handleMealFilter.bind(this);
+    this.handleClickDescOpen = this.handleClickDescOpen.bind(this);
+    this.handleClickDescClose = this.handleClickDescClose.bind(this);
   }
 
   handleTabState(e) {
@@ -1134,6 +1140,14 @@ class Userinput extends Component {
         this.setState({mapItin: 'maps'})
     }
 
+    handleClickDescOpen() {
+        this.setState({descDialogOpen: true})
+    }
+
+    handleClickDescClose() {
+        this.setState({descDialogOpen: false})
+    }
+
   render() {
     // console.log("userinput render function!")
     var formStyles = ['form-body'];
@@ -1176,7 +1190,16 @@ class Userinput extends Component {
         var key = 'tbody-' + i;
         var id = 'checkbox-' + i;
         var elim_id = 'elim-' + i;
-        var clock = <span><i className="fa fa-clock"></i></span>;
+        var description = this.state.resultsArray[i].description;
+        var num_words_desc = 0;
+        var descDialog = null;
+        if(description) {
+            num_words_desc = description.split(/\W+/).length;
+            if(num_words_desc > 10) {
+                descDialog = <DescDialog eventname={this.state.resultsArray[i].name} open={this.state.descDialogOpen} eventDesc={description} handleClose={this.handleClickDescClose}></DescDialog>;
+            }
+        }
+
         indents.push(
             <Card className="showActions" key={key}>
                 <div className="itinRowContent">
@@ -1186,14 +1209,15 @@ class Userinput extends Component {
                         <div>
                             <span className="align">
                                 {this.state.resultsArray[i].url === "" ? <strong>this.state.resultsArray[i].name</strong> :
-                                    <strong><a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a></strong>}
+                                    <strong><a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a></strong> } 
                                 {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
 
                             </span>
                             <div>
                                 <span>
-                                    { this.state.itinTimes[i] == 'Food' ? <span><i className="fas fa-utensils"></i></span> :  this.state.itinTimes[i]}
+                                    { this.state.itinTimes[i] == 'Food' ? <div className="displayInline"><i className="fas fa-utensils"></i></div> : <span className="boldIt">{this.state.itinTimes[i]}</span>  } { num_words_desc > 10 ? <div><Button className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}>Read More</Button></div> : description === 0 || !description ? '' : '- ' + description }
                                 </span>
+                                {descDialog}
                             </div>
                         </div>
 
@@ -1215,7 +1239,7 @@ class Userinput extends Component {
                             </div>
 
                             <div className="actions">
-                                <Button mini variant="fab" className="actionsBtn">
+                                <Button variant="outlined" color="primary">
                                     <label htmlFor={id}>
                                         <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
                                             <img alt="lock icon" className="lock" src={lock_icon} />
@@ -1224,7 +1248,7 @@ class Userinput extends Component {
                                     <input  className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
                                 </Button>
 
-                                <Button mini variant="fab" className="actionsBtn">
+                                <Button variant="outlined" color="secondary">
                                     <label htmlFor={elim_id}>
                                         <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
                                             <img alt="eliminate icon" className="elim" src={elim_icon} />
