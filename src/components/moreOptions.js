@@ -7,7 +7,10 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import misc from '../miscfuncs/misc.js';
-
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import Slider from '@material-ui/lab/Slider';
+import Typography from '@material-ui/core/Typography';
 const styles = theme => ({
     root: {
         display: 'flex',
@@ -26,14 +29,27 @@ const styles = theme => ({
 class MoreOptions extends Component {
     constructor(props) {
         super(props);
-        this.handleBlur = this.handleBlur.bind(this);
-
+        this.handleApply = this.handleApply.bind(this);
     }
 
-    handleBlur(event) {
-        var userFoodCost = misc.round2NearestHundredth(parseFloat(this.refs.foodCost.value));
-        this.props.updateUserFoodCost(userFoodCost)
+    state = {
+        foodCost: this.props.currentFoodCost,
+        eventCost: this.props.currentEventCost,
     }
+
+    handleApply(event) {
+        var userFoodCost = misc.round2NearestHundredth(parseFloat(this.state.foodCost));
+        this.props.updateUserFoodCost(userFoodCost);
+        var userEventCost = misc.round2NearestHundredth(parseFloat(this.state.eventCost));
+        this.props.updateUserEventCost(userEventCost);
+    }
+
+    handleFoodChange = (event, value) => {
+        this.setState({ foodCost: value });
+    };
+    handleEventChange = (event, value) => {
+        this.setState({ eventCost: value });
+    };
 
     render() {
 
@@ -41,14 +57,25 @@ class MoreOptions extends Component {
         return (
             <div>
                 <div>
-                    <input type="number" className="text-success form-control moreOptionFoodCost" min="0"
-                        defaultValue={0} onBlur={this.handleBlur}
-                        ref="foodCost" />
+                    <Paper >
+                        <Typography id="label">{CONSTANTS.MOREOPT_FOODSTRING}</Typography>
+                        <Slider value={this.state.foodCost} min={0} max={CONSTANTS.MOREOPT_MAXFOODPRICE}
+                            step={CONSTANTS.MOREOPT_FOODPRICESTEP}
+                            onChange={this.handleFoodChange} />
+                        ${this.state.foodCost}
+
+                    </Paper>
                 </div>
                 <div>
-                    <input type="number" className="text-success form-control moreOptionEventCost" min="0"
-                        defaultValue={20} onBlur={this.handleBlur}
-                        ref="eventCost" />
+                    <Paper >
+                        <Typography id="label">{CONSTANTS.MOREOPT_EVENTSTRING}</Typography>
+                        <Slider value={this.state.eventCost} min={0} max={CONSTANTS.MOREOPT_MAXEVENTPRICE}
+                            step={CONSTANTS.MOREOPT_EVENTPRICESTEP}
+                            onChange={this.handleEventChange} />
+                        ${this.state.eventCost}
+
+                    </Paper>
+
                 </div>
                 <div>
                     <FormControl>
@@ -83,7 +110,9 @@ class MoreOptions extends Component {
                         </Select>
                     </FormControl></div>
 
-
+                <Button href="#text-buttons" onClick={this.handleApply}>
+                    Apply
+            </Button>
             </div>
 
         );

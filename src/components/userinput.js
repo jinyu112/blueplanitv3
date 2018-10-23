@@ -87,8 +87,9 @@ class Userinput extends Component {
             showModal: false,
             tabState: CONSTANTS.NAV_EVENT_TAB_ID,
 
-            //Setting
-            userFoodCost: 0,
+            //Settings
+            userFoodCost: 0, // a blanket cost set to food defined by the user in the settings/more options function
+            userEventCost: 0, // a blanket cost set to events defined by the user in the settings/more options function
 
             // filter states
             filterRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
@@ -126,6 +127,7 @@ class Userinput extends Component {
         this.handleMealFilter = this.handleMealFilter.bind(this);
         this.handleResetFilter = this.handleResetFilter.bind(this);
         this.handleUpdateUserFoodCost = this.handleUpdateUserFoodCost.bind(this);
+        this.handleUpdateUserEventCost = this.handleUpdateUserEventCost.bind(this);        
     }
 
     handleTabState(e) {
@@ -447,8 +449,10 @@ class Userinput extends Component {
         }
     }
 
+    // this function is a callback from the more options component to set all food costs defined by the user
     handleUpdateUserFoodCost(e) {
         var indexDBcompat = window.indexedDB;
+        var myStorage = window.localStorage;
         var userFoodCost = parseFloat(e);
         var allApiData;
         this.setState({
@@ -456,12 +460,47 @@ class Userinput extends Component {
         })
 
         if (this.state.allApiData !== undefined) {
-            allApiData = updateAllFoodCosts(userFoodCost,this.state.allApiData);
+            allApiData = updateAllFoodCosts(userFoodCost, this.state.allApiData);
             this.setState({
                 allApiData: allApiData,
             })
-        }
 
+            // Update persistent api data in browser
+            if (indexDBcompat && myStorage) {
+                idb_keyval.set('apiData', allApiData)
+                    .then(function (e) {
+                        console.log("food default cost update successful!")
+                    }.bind(this))
+                    .catch(err => console.log('It failed in handleUpdateUserFoodCost!', err));
+            }
+        }
+    }
+
+    // this function is a callback from the more options component to set all event costs that were previously approximat costs
+    handleUpdateUserEventCost(e) {
+        var indexDBcompat = window.indexedDB;
+        var myStorage = window.localStorage;
+        var userEventCost = parseFloat(e);
+        var allApiData;
+        this.setState({
+            userEventCost: userEventCost,
+        })
+
+        if (this.state.allApiData !== undefined) {
+            allApiData = updateAllEventCosts(userEventCost, this.state.allApiData);
+            this.setState({
+                allApiData: allApiData,
+            })
+
+            // Update persistent api data in browser
+            if (indexDBcompat && myStorage) {
+                idb_keyval.set('apiData', allApiData)
+                    .then(function (e) {
+                        console.log("event default cost update successful!")
+                    }.bind(this))
+                    .catch(err => console.log('It failed in handleUpdateUsereventCost!', err));
+            }
+        }
     }
 
     handleMoreInfo(e) {
@@ -805,6 +844,11 @@ class Userinput extends Component {
                                                     savedEvents,
                                                     bestItineraryObjsParsed,
                                                     this.state.userAddedEvents);
+
+                                                if (this.state.userFoodCost !== 0) {
+                                                    data.data = updateAllFoodCosts(this.state.userFoodCost,data.data);
+                                                }
+                                                data.data = updateAllEventCosts(this.state.userEventCost,data.data);
 
                                                 // Do optimization to find locally "best" itinerary
                                                 var optimItinerary = genAlgo.doGA(dataForGA, this.state.budgetmax, this.state.budgetmin, eliminatedEvents);
@@ -1472,7 +1516,10 @@ class Userinput extends Component {
 
 
                         <div className="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="nav-add-tab">
-                            {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost}/>}
+                            {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost} 
+                            updateUserEventCost={this.handleUpdateUserEventCost}
+                            currentFoodCost={this.state.userFoodCost}
+                            currentEventCost={this.state.userEventCost}/>}
                         </div>
                     </div>
                     <div className={itinContent.join(' ')}>
@@ -2010,22 +2057,61 @@ function countAndFilterFoodApiData(allApiData, mealFilterFlags, priceFilterRange
     return filteredFoodPlaceObj;
 }
 
-function updateAllFoodCosts(userFoodCostBias, allApiData) {
-
-console.log(allApiData)
-
-
+function updateAllFoodCosts(userFoodCost, allApiData) {
+// This function sets all food costs to userFoodCost unless it is 0. If it is zero, the food costs
+// will be the default yelp costs found in the constants file
     var tempLen = allApiData.yelpBreakfastItemsGlobal.length;
     for (var i = 0; i < tempLen; i++) {
-        allApiData.yelpBreakfastItemsGlobal[i].cost += userFoodCostBias;
+        if (userFoodCost === 0) {
+            allApiData.yelpBreakfastItemsGlobal[i].cost = 
+            CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpBreakfastItemsGlobal[i].numDollarSigns-1];
+        }
+        else {
+            allApiData.yelpBreakfastItemsGlobal[i].cost = userFoodCost;
+        }
     }
     tempLen = allApiData.yelpLunchItemsGlobal.length;
     for (var i = 0; i < tempLen; i++) {
-        allApiData.yelpLunchItemsGlobal[i].cost += userFoodCostBias;
+        if (userFoodCost === 0) {
+            allApiData.yelpLunchItemsGlobal[i].cost = 
+            CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpLunchItemsGlobal[i].numDollarSigns-1];
+        }
+        else {
+            allApiData.yelpLunchItemsGlobal[i].cost = userFoodCost;
+        }
     }
     tempLen = allApiData.yelpDinnerItemsGlobal.length;
     for (var i = 0; i < tempLen; i++) {
-        allApiData.yelpDinnerItemsGlobal[i].cost += userFoodCostBias;
+        if (userFoodCost === 0) {
+            allApiData.yelpDinnerItemsGlobal[i].cost = 
+                CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpDinnerItemsGlobal[i].numDollarSigns - 1];
+        }
+        else {
+            allApiData.yelpDinnerItemsGlobal[i].cost = userFoodCost;
+        }
+    }
+
+    return allApiData;
+}
+
+function updateAllEventCosts(userEventCost, allApiData) {
+// This function sets all event costs that were not specifically set by the event api to whatever the user
+// chooses.
+    for (var i = 0; i < CONSTANTS.NUM_OF_EVENT_APIS; i++) { // cycle through meetup -> google places
+        for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots
+            var eventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]];
+            if (eventObj) {
+                var lenEvents = eventObj.length;
+                for (var iEvent = 0; iEvent < lenEvents; iEvent++) {
+                    var singleEventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]][iEvent];
+                    if (singleEventObj.approximateFee) { // only update the cost if the event's cost is currently an approximate (ie not set by the api or not accurate)
+                        allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]][iEvent].cost
+                            = userEventCost;
+                    }
+                }
+            }
+
+        }
     }
 
     return allApiData;
