@@ -168,7 +168,7 @@ class Userinput extends Component {
       mapItin: 'itinerary',
 
       //Event description
-      descDialogOpen: false,
+      descDialogOpen: [false, false, false, false, false, false, false],
     };
 
     this.apiService = new ApiService();
@@ -1140,12 +1140,22 @@ class Userinput extends Component {
         this.setState({mapItin: 'maps'})
     }
 
-    handleClickDescOpen() {
-        this.setState({descDialogOpen: true})
+    handleClickDescOpen(e) {
+        var button_id= e.target.id;
+        var eventNum = button_id.substr(button_id.length - 1);
+
+        const dialogStates = this.state.descDialogOpen;
+console.log(dialogStates);
+        dialogStates[eventNum] = true;
+
+        this.setState({descDialogOpen: dialogStates})
     }
 
-    handleClickDescClose() {
-        this.setState({descDialogOpen: false})
+    handleClickDescClose(e) {
+
+        const dialogStates = [false,false,false,false,false,false,false];
+
+        this.setState({descDialogOpen: dialogStates})
     }
 
   render() {
@@ -1190,13 +1200,14 @@ class Userinput extends Component {
         var key = 'tbody-' + i;
         var id = 'checkbox-' + i;
         var elim_id = 'elim-' + i;
+        var eventNum = i;
         var description = this.state.resultsArray[i].description;
         var num_words_desc = 0;
         var descDialog = null;
         if(description) {
             num_words_desc = description.split(/\W+/).length;
             if(num_words_desc > 10) {
-                descDialog = <DescDialog eventname={this.state.resultsArray[i].name} open={this.state.descDialogOpen} eventDesc={description} handleClose={this.handleClickDescClose}></DescDialog>;
+                descDialog = <DescDialog eventname={this.state.resultsArray[i].name} open={this.state.descDialogOpen[i]} eventDesc={description} handleClose={this.handleClickDescClose}></DescDialog>;
             }
         }
 
@@ -1209,13 +1220,13 @@ class Userinput extends Component {
                         <div>
                             <span className="align">
                                 {this.state.resultsArray[i].url === "" ? <strong>this.state.resultsArray[i].name</strong> :
-                                    <strong><a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a></strong> } 
+                                    <strong><a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a></strong> }
                                 {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
 
                             </span>
                             <div>
                                 <span>
-                                    { this.state.itinTimes[i] == 'Food' ? <div className="displayInline"><i className="fas fa-utensils"></i></div> : <span className="boldIt">{this.state.itinTimes[i]}</span>  } { num_words_desc > 10 ? <div><Button className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}>Read More</Button></div> : description === 0 || !description ? '' : '- ' + description }
+                                    { this.state.itinTimes[i] == 'Food' ? <div className="displayInline"><i className="fas fa-utensils"></i></div> : <span className="boldIt">{this.state.itinTimes[i]}</span>  } { num_words_desc > 10 ? <div><Button id={'open-'+i} className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}>Read More</Button></div> : description === 0 || !description ? '' : '- ' + description }
                                 </span>
                                 {descDialog}
                             </div>

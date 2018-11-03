@@ -631,7 +631,7 @@ button.close {
     -ms-flex: 1;
     flex: 1;
     margin: -1em 0;
-    border-left: #ececec!important;
+    border-left: 1px solid #ececec!important;
 }
 
 .justify {
