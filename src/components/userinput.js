@@ -1145,7 +1145,7 @@ class Userinput extends Component {
         var eventNum = button_id.substr(button_id.length - 1);
 
         const dialogStates = this.state.descDialogOpen;
-console.log(dialogStates);
+
         dialogStates[eventNum] = true;
 
         this.setState({descDialogOpen: dialogStates})
@@ -1226,7 +1226,7 @@ console.log(dialogStates);
                             </span>
                             <div>
                                 <span>
-                                    { this.state.itinTimes[i] == 'Food' ? <div className="displayInline"><i className="fas fa-utensils"></i></div> : <span className="boldIt">{this.state.itinTimes[i]}</span>  } { num_words_desc > 10 ? <div><Button id={'open-'+i} className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}>Read More</Button></div> : description === 0 || !description ? '' : '- ' + description }
+                                    { this.state.itinTimes[i] == 'Food' ? <div className="displayInline"><i className="fas fa-utensils"></i></div> : <span className="boldIt">{this.state.itinTimes[i]}</span>  } { num_words_desc > 10 ? <div><Button id={'open-'+i} className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}><span id={'open-span-' + i}>Read More</span></Button></div> : description === 0 || !description ? '' : '- ' + description }
                                 </span>
                                 {descDialog}
                             </div>
