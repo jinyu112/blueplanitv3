@@ -5,12 +5,10 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import genAlgo from '../GA.js'
 import idb_keyval from 'idb-keyval'
-import globalStyles from '../App.css'
 import GoogleApiWrapper from './googlemaps.js';
 import Loader from './reactloading.js';
 import DeleteUserEvent from './deleteUserEvent.js';
 import AddUserEvent from './addUserEvent.js';
-import MoreInfoButton from './moreInfoButton.js';
 import MoreInfoView from './moreInfoView.js';
 import EditCostComponent from './editCostComponent.js';
 import PaginationLink from './paginationLink.js'
@@ -290,7 +288,7 @@ class Userinput extends Component {
       }
       checked[i_checkbox] = 1;
       this.setState({ checked: checked });
-    }
+  ``  }
     // If the checkbox is NOT checked, find and remove the checkbox index from the states
     else {
       var index = this.state.savedEvents.indexOf(i_checkbox);
@@ -1454,8 +1452,8 @@ class Userinput extends Component {
     // }
     var itinContent = ['mapsfix', 'itinerary'];
 
-    var onlyItin = ['itinDiv','hidden'];
-    if(this.state.mapItin == 'itinerary') {
+    var onlyItin = ['itinDiv','clearfix','hidden'];
+    if(this.state.mapItin == 'itinerary' && this.state.resultsArray.length > 0) {
         onlyItin.pop();
     }
     return (
@@ -1625,14 +1623,18 @@ class Userinput extends Component {
                     }
 
                     <div className={onlyItin.join(' ')}>
-                        {indents}
-                        {this.state.loading === false ? <div className="totalCost">
-                          {total}
-                        </div> : ''}
+                        <div className="ItinEvents clearfix">
+                            {indents}
+                        </div>
+                        <div className="itinFooter">
+                            {this.state.loading === false ? <div className="totalCost">
+                              {total}
+                            </div> : ''}
 
-                        {this.state.loading === false ? <div>
-                          {goAgainButton}</div>
-                          : ''}
+                            {this.state.loading === false ? <div>
+                              {goAgainButton}</div>
+                              : ''}
+                        </div>
                     </div>
 
                   </div>}

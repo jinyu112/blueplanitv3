@@ -584,9 +584,16 @@ button.close {
     margin: 0!important;
 }
 
-.itinDiv {
+.ItinEvents {
     display: grid;
     grid-gap: 2em;
+    width: 70%;
+    margin: auto;
+    max-width: 740px;
+    min-width: 620px;
+}
+
+.itinFooter {
     width: 70%;
     margin: auto;
     max-width: 740px;
@@ -658,8 +665,42 @@ button.close {
 .showActions {
     overflow: visible!important;
     color: #666!important;
+    transition: all .25s linear;
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
 }
 
+.showActions:hover {
+    box-shadow: -3px 6px 17px 0px rgba(0,0,0,0.4);
+}
+
+.ItinEvents .showActions::before {
+    width: 4px;
+    height: 25%;
+    background-color: #ececec;
+    display: block;
+    content: '';
+    position: absolute;
+    z-index: 1;
+    overflow-y: hidden;
+    margin-left: -3em;
+}
+
+.itinRowContent::after {
+    width: 18px;
+    height: 18px;
+    margin-left: -73px;
+    margin-top: 3px;
+    background-color: #ececec;
+    position: absolute;
+    z-index: 3;
+    content: attr(data-number);
+    display: block;
+    color: #fff;
+    text-align: center;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    transition: all .25s linear;
+}
 .actionsBtn {
     background-color: white!important;
 }
