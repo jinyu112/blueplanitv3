@@ -90,6 +90,7 @@ class Userinput extends Component {
             //Settings
             userFoodCost: 0, // a blanket cost set to food defined by the user in the settings/more options function
             userEventCost: 0, // a blanket cost set to events defined by the user in the settings/more options function
+            eventType: 0, // index used to map to a search term for events (see EVENTTYPE_SEARCHKEYS in constants)
 
             // filter states
             filterRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
@@ -503,6 +504,13 @@ class Userinput extends Component {
         }
     }
 
+
+    handleUpdateEventTypeSearch(e) {
+        this.setState({
+            eventType:e,
+        })
+    }
+
     handleMoreInfo(e) {
         var tempShowMoreInfo = (this.state.showMoreInfo).slice();
         tempShowMoreInfo[e] = !tempShowMoreInfo[e];
@@ -823,7 +831,7 @@ class Userinput extends Component {
 
                                             console.log("Do API calls!!!")
                                             // Do API requests and return a promise object to display results
-                                            var promiseObj = this.apiService.getData(this.state.term,
+                                            var promiseObj = this.apiService.getData(this.state.eventType,
                                                 locationLatLong,
                                                 city,
                                                 date,
@@ -1518,6 +1526,7 @@ class Userinput extends Component {
                         <div className="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="nav-add-tab">
                             {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost} 
                             updateUserEventCost={this.handleUpdateUserEventCost}
+                            updateEventTypeSearch={this.handleUpdateEventTypeSearch}
                             currentFoodCost={this.state.userFoodCost}
                             currentEventCost={this.state.userEventCost}/>}
                         </div>

@@ -28,6 +28,13 @@ module.exports = {
         'yelpDinnerItemsGlobal',
         // 'yelpEventsGlobal', //currently commented because not using yelpevents
     ],
+    EVENTTYPE_SEARCHKEYS: [
+        'All Events',
+        'Party/Night Life',
+        'Sports/Outdoor Activities',
+        'Tourism',
+        'Arts/Museums/Music',
+    ],
     NUM_RESULTS_PER_PAGE: 6,
     NONE_ITEM_EVENT: {
         name: "None/Free Itinerary Slot",
