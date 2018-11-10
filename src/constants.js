@@ -29,7 +29,7 @@ module.exports = {
         // 'yelpEventsGlobal', //currently commented because not using yelpevents
     ],
     EVENTTYPE_SEARCHKEYS: [
-        'All Events',
+        'All Types of Events',
         'Party/Night Life',
         'Sports/Outdoor Activities',
         'Tourism',
@@ -144,9 +144,10 @@ module.exports = {
     NOTIF_DISMISS_TIME_MS: 1500, //ms
     MOREOPT_MAXFOODPRICE: 500,
     MOREOPT_FOODPRICESTEP: 5,
-    MOREOPT_FOODSTRING: "Default Food Cost",
+    MOREOPT_FOODSTRING: "How Much You Want to Spend on Each Meal",
     MOREOPT_MAXEVENTPRICE: 500,
     MOREOPT_EVENTPRICESTEP: 5,
-    MOREOPT_EVENTSTRING: "Default Event Cost",    
+    MOREOPT_EVENTSTRING: "How Much You Want to Spend on Each Event",    
     DEFAULT_YELP_COSTS: [10,30,60,100],
+    EVENT_CUSTOMIZATION_STRING: "Event Search Customization",
 }

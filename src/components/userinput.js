@@ -812,9 +812,9 @@ class Userinput extends Component {
                                         }
 
                                         // Determine whether or not API calls need to be made
-                                        doAPICallsFlag = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, this.state.searchRadius, this.state.eventType);
+                                        var doAPICallsObj = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, this.state.searchRadius, this.state.eventType);
 
-                                        if (doAPICallsFlag || clearApiData || !indexDBcompat) {
+                                        if (doAPICallsObj.doApiCallsFlag || clearApiData || !indexDBcompat) {
 
                                             // Reset filters
                                             this.state.filterRadius = this.state.searchRadiusForFilterCompare;
@@ -844,6 +844,17 @@ class Userinput extends Component {
                                                 var savedEvents = [];
                                                 var eliminatedEvents = [];
                                                 var bestItineraryObjsParsed = [];
+
+                                                // if user saved an event previously, but the app needs to redo api calls,
+                                                // keep the saved events only if the call redo is from event type or radius change
+                                                if (doAPICallsObj.eventTypeSearchTermIsDifferent ||
+                                                    doAPICallsObj.radiusIsDifferent) {
+                                                        if (this.state.savedEvents.length > 0 && null !== myStorage.getItem('prevBestItinerarySavedObjects')) {
+                                                            var bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
+                                                            savedEvents = this.state.savedEvents.map(Number);
+                                                        }
+                                                        eliminatedEvents = this.state.eliminatedEvents;
+                                                    }
 
                                                 // Preprocess data for genetic algo
                                                 var dataForGA = processAPIDataForGA(data.data,
@@ -917,12 +928,21 @@ class Userinput extends Component {
                                                     };
 
                                                     // Set the state in this component and re-render
+                                                    var tempCheckedState = [0, 0, 0, 0, 0, 0, 0];
+                                                    var tempEliminatedState = [0, 0, 0, 0, 0, 0, 0];
+                                                    // Carry over the saved/eliminated itinerary items if api calls are performed because of
+                                                    // a change in search radius or a change in event type 
+                                                    if (doAPICallsObj.eventTypeSearchTermIsDifferent ||
+                                                        doAPICallsObj.radiusIsDifferent) {
+                                                            tempCheckedState = this.state.checked;
+                                                            tempEliminatedState = this.state.eliminated;
+                                                        }
                                                     this.setState({
                                                         resultsArray: resultsArrayOutput,
                                                         itinTimes: timesOutput,
                                                         savedEvents: savedEvents,
-                                                        checked: [0, 0, 0, 0, 0, 0, 0], //reset the checkboxes to being unchecked
-                                                        eliminated: [0, 0, 0, 0, 0, 0, 0], //reset the checkboxes for the eliminated slots
+                                                        checked: tempCheckedState, //reset the checkboxes to being unchecked
+                                                        eliminated: tempEliminatedState, //reset the checkboxes for the eliminated slots
                                                         eliminatedEvents: eliminatedEvents,
                                                         totalCost: optimItinerary.totalCost,
                                                         loading: false,
@@ -1581,6 +1601,7 @@ function isDate(d) {
 // Returns true if locally stored data is "stale" or user input a different location therefore new API calls
 // need to be made
 function determineAPICallBool(myStorage_in, date_in, today_in, latLon_in, radius_in, eventType_in) {
+    var doApiCalls = false;
     if (myStorage_in) { //} && indexDBcompat_in) {
 
         var isToday;
@@ -1690,16 +1711,25 @@ function determineAPICallBool(myStorage_in, date_in, today_in, latLon_in, radius
 
         // Return the proper flag
         if (dateTimeIsStale || latLonIsDifferent || radiusIsDifferent || eventTypeSearchTermIsDifferent) {
-            return true; // do the API calls!
+            doApiCalls = true;
+            //return true; // do the API calls!
         }
         else {
-            return false; // don't the API calls because data is already stored locally and a previous
+            doApiCalls = false;
+            //return false; // don't the API calls because data is already stored locally and a previous
             // API call was made
         }
     }
     else {
-        return true; // do the API calls!
+        doApiCalls = true;
+        // do the API calls!
     }
+    var determineAPICallObj = {
+        doApiCallsFlag: doApiCalls,
+        eventTypeSearchTermIsDifferent: eventTypeSearchTermIsDifferent,
+        radiusIsDifferent: radiusIsDifferent,
+    }
+    return determineAPICallObj;
 }
 
 

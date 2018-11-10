@@ -102,7 +102,7 @@ class MoreOptions extends Component {
                 </div>
                 <div>
                     <FormControl>
-                        <InputLabel>Event Type</InputLabel>
+                        <InputLabel>{CONSTANTS.EVENT_CUSTOMIZATION_STRING}</InputLabel>
                         <Select
                         value={this.state.eventType}
                         onChange={this.handleEventTypeChange}>
