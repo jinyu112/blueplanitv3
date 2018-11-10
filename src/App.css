@@ -659,7 +659,7 @@ button.close {
 }
 
 .actions button {
-    margin: 10px;
+    margin: 10px 0;
 }
 
 .showActions {
@@ -676,7 +676,8 @@ button.close {
 .ItinEvents .showActions::before {
     width: 4px;
     height: 25%;
-    background-color: #ececec;
+    max-height: calc(220px + 2em);
+    background-color:  #ececec;
     display: block;
     content: '';
     position: absolute;
@@ -685,10 +686,15 @@ button.close {
     margin-left: -3em;
 }
 
+.ItinEvents .showActions:last-child::before {
+    max-height: 220px;
+}
+
+
 .itinRowContent::after {
-    width: 18px;
-    height: 18px;
-    margin-left: -73px;
+    width: 22px;
+    height: 22px;
+    margin-left: -76px;
     margin-top: 3px;
     background-color: #ececec;
     position: absolute;
@@ -697,7 +703,7 @@ button.close {
     display: block;
     color: #fff;
     text-align: center;
-    border: 1px solid transparent;
+    border: 4px solid #fafafa;
     border-radius: 12px;
     transition: all .25s linear;
 }
@@ -733,4 +739,10 @@ button.close {
 
 .displayInline {
     display: inline;
+}
+
+.takeSpace {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
 }

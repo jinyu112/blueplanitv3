@@ -55,6 +55,7 @@ import Card from '@material-ui/core/Card';
 
 import CONSTANTS from '../constants.js';
 import DescDialog from './descDialog.js'
+import Icon from "@material-ui/core/Icon/Icon";
 
 
 
@@ -1185,40 +1186,52 @@ class Userinput extends Component {
         if (!this.state.showMoreInfo[i]) {
           moreInfoStyles.push(HIDDEN);
         }
-        var lock_icon = lock
+        var lock_icon = <Icon>lock</Icon>;
         if (!this.state.checked[i]) {
-          lock_icon = unlock;
+          lock_icon = <Icon>lock_open</Icon>;
         }
 
-        var elim_icon = light
+        var elim_icon = <Icon>add</Icon>;
+        var elimToolTipStr = CONSTANTS.ADD_TOOLTIP_STR;
         if (!this.state.eliminated[i]) {
-          elim_icon = dark;
+          elim_icon = <Icon>block</Icon>;
+          elimToolTipStr =  CONSTANTS.X_TOOLTIP_STR;
         }
 
         var key = 'tbody-' + i;
-        var id = 'checkbox-' + i;
-        var elim_id = 'elim-' + i;
-        var eventNum = i;
-        var description = this.state.resultsArray[i].description;
-        var num_words_desc = 0;
-        var descDialog = null;
+        let id = 'checkbox-' + i;
+        let elim_id = 'elim-' + i;
+        let description = this.state.resultsArray[i].description;
+        let num_words_desc = 0;
+        let num_words_name = 0;
+        let descDialog = null;
         if(description) {
             num_words_desc = description.split(/\W+/).length;
             if(num_words_desc > 10) {
                 descDialog = <DescDialog eventname={this.state.resultsArray[i].name} open={this.state.descDialogOpen[i]} eventDesc={description} handleClose={this.handleClickDescClose}></DescDialog>;
             }
         }
+        let name = this.state.resultsArray[i].name;
+        let truncate_name = 0;
+        if(name) {
+            num_words_name = name.split(/\W+/).length;
+            if(num_words_name > 8) {
+                let result = this.state.resultsArray[i].name.split(/\W+/).slice(0,7).join(" ");
+                truncate_name = result + ' ...';
+                truncate_name = <TooltipMat placement="top" title={name}><span>{truncate_name}</span></TooltipMat>
+            }
+        }
 
         indents.push(
             <Card className="showActions" key={key}>
                 <div className="itinRowContent">
-                    <div className="resultsName  icon-name itinEventCol3">
+                    <div className="resultsName icon-name itinEventCol3">
                         <div className="justify-end"><a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a></div>
 
                         <div>
                             <span className="align">
-                                {this.state.resultsArray[i].url === "" ? <strong>this.state.resultsArray[i].name</strong> :
-                                    <strong><a href={this.state.resultsArray[i].url} target='_blank'>{this.state.resultsArray[i].name} </a></strong> }
+                                {this.state.resultsArray[i].url === "" ? <strong>{ truncate_name ? truncate_name : name }</strong> :
+                                    <strong><a href={this.state.resultsArray[i].url} target='_blank'>{ truncate_name ? truncate_name : name }</a></strong> }
                                 {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
 
                             </span>
@@ -1248,19 +1261,19 @@ class Userinput extends Component {
                             </div>
 
                             <div className="actions">
-                                <Button variant="outlined" color="primary">
-                                    <label htmlFor={id}>
+                                <Button variant="" color="primary">
+                                    <label className="takeSpace" htmlFor={id}>
                                         <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
-                                            <img alt="lock icon" className="lock" src={lock_icon} />
+                                            {lock_icon}
                                         </TooltipMat>
                                     </label>
                                     <input  className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
                                 </Button>
 
-                                <Button variant="outlined" color="secondary">
-                                    <label htmlFor={elim_id}>
-                                        <TooltipMat placement="top" title={CONSTANTS.X_TOOLTIP_STR}>
-                                            <img alt="eliminate icon" className="elim" src={elim_icon} />
+                                <Button color="secondary">
+                                    <label className="takeSpace" htmlFor={elim_id}>
+                                        <TooltipMat placement="top" title={elimToolTipStr}>
+                                            {elim_icon}
                                         </TooltipMat>
                                     </label>
                                     <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
