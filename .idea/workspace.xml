@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b78e854a-19c3-4229-9fdc-0c735578a9bf" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/userinput.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/userinput.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/constants.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -40,13 +37,13 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="css" value="581" />
+          <entry key="css" value="623" />
           <entry key="js" value="858" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="CSS" value="581" />
+          <entry key="CSS" value="623" />
           <entry key="JavaScript" value="858" />
         </counts>
       </usages-collector>
@@ -62,8 +59,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/components/userinput.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1350">
-                  <caret line="121" column="4" lean-forward="true" selection-start-line="121" selection-start-column="4" selection-end-line="121" selection-end-column="4" />
+                <state relative-caret-position="235">
+                  <caret line="1224" column="15" selection-start-line="1224" selection-start-column="8" selection-end-line="1224" selection-end-column="15" />
                   <folding>
                     <element signature="e#0#40#0" expanded="true" />
                   </folding>
@@ -87,8 +84,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/App.css">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="198">
-                  <caret line="693" selection-start-line="693" selection-end-line="708" selection-end-column="1" />
+                <state relative-caret-position="235">
+                  <caret line="669" column="26" selection-start-line="669" selection-start-column="26" selection-end-line="669" selection-end-column="26" />
                 </state>
               </provider>
             </entry>
@@ -123,6 +120,8 @@
       <find>before</find>
       <find>add</find>
       <find>style</find>
+      <find>indents</find>
+      <find>rowcon</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -208,12 +207,12 @@
       <workItem from="1541728308924" duration="402000" />
       <workItem from="1541728908893" duration="3332000" />
       <workItem from="1541813753028" duration="8000" />
-      <workItem from="1541813787956" duration="6503000" />
+      <workItem from="1541813787956" duration="6936000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10245000" />
+    <option name="totallyTimeSpent" value="10678000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -267,8 +266,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/components/userinput.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1350">
-          <caret line="121" column="4" lean-forward="true" selection-start-line="121" selection-start-column="4" selection-end-line="121" selection-end-column="4" />
+        <state relative-caret-position="235">
+          <caret line="1224" column="15" selection-start-line="1224" selection-start-column="8" selection-end-line="1224" selection-end-column="15" />
           <folding>
             <element signature="e#0#40#0" expanded="true" />
           </folding>
@@ -277,8 +276,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/App.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="693" selection-start-line="693" selection-end-line="708" selection-end-column="1" />
+        <state relative-caret-position="235">
+          <caret line="669" column="26" selection-start-line="669" selection-start-column="26" selection-end-line="669" selection-end-column="26" />
         </state>
       </provider>
     </entry>
