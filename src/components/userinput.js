@@ -128,7 +128,8 @@ class Userinput extends Component {
         this.handleMealFilter = this.handleMealFilter.bind(this);
         this.handleResetFilter = this.handleResetFilter.bind(this);
         this.handleUpdateUserFoodCost = this.handleUpdateUserFoodCost.bind(this);
-        this.handleUpdateUserEventCost = this.handleUpdateUserEventCost.bind(this);        
+        this.handleUpdateUserEventCost = this.handleUpdateUserEventCost.bind(this);
+        this.handleUpdateEventTypeSearch = this.handleUpdateEventTypeSearch.bind(this);   
     }
 
     handleTabState(e) {
@@ -470,7 +471,6 @@ class Userinput extends Component {
             if (indexDBcompat && myStorage) {
                 idb_keyval.set('apiData', allApiData)
                     .then(function (e) {
-                        console.log("food default cost update successful!")
                     }.bind(this))
                     .catch(err => console.log('It failed in handleUpdateUserFoodCost!', err));
             }
@@ -497,7 +497,6 @@ class Userinput extends Component {
             if (indexDBcompat && myStorage) {
                 idb_keyval.set('apiData', allApiData)
                     .then(function (e) {
-                        console.log("event default cost update successful!")
                     }.bind(this))
                     .catch(err => console.log('It failed in handleUpdateUsereventCost!', err));
             }
@@ -813,7 +812,7 @@ class Userinput extends Component {
                                         }
 
                                         // Determine whether or not API calls need to be made
-                                        doAPICallsFlag = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, this.state.searchRadius);
+                                        doAPICallsFlag = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, this.state.searchRadius, this.state.eventType);
 
                                         if (doAPICallsFlag || clearApiData || !indexDBcompat) {
 
@@ -1581,7 +1580,7 @@ function isDate(d) {
 
 // Returns true if locally stored data is "stale" or user input a different location therefore new API calls
 // need to be made
-function determineAPICallBool(myStorage_in, date_in, today_in, latLon_in, radius_in) {
+function determineAPICallBool(myStorage_in, date_in, today_in, latLon_in, radius_in, eventType_in) {
     if (myStorage_in) { //} && indexDBcompat_in) {
 
         var isToday;
@@ -1673,9 +1672,24 @@ function determineAPICallBool(myStorage_in, date_in, today_in, latLon_in, radius
             radiusIsDifferent = true;
         }
 
+        // Check for different event type search terms (user selects specific stuff to search for in the events)
+        var eventTypeSearchTermIsDifferent = false;
+        // If the field localStoredEventType is NOT null, check if it's different from the current localStoredEventType input from user
+        if (null !== myStorage_in.getItem('localStoredEventType')) {
+            if ((myStorage_in.getItem('localStoredEventType')).localeCompare(eventType_in) !== 0) { // 0 indicates the strings are exact matches
+                myStorage_in.setItem('localStoredEventType', eventType_in);
+                eventTypeSearchTermIsDifferent = true;
+            }
+        }
+        // If the field localStoredRadius is null, set it equal to current lat lon location
+        else {
+            myStorage_in.setItem('localStoredEventType', eventType_in);
+            eventTypeSearchTermIsDifferent = true;
+        }
+
 
         // Return the proper flag
-        if (dateTimeIsStale || latLonIsDifferent || radiusIsDifferent) {
+        if (dateTimeIsStale || latLonIsDifferent || radiusIsDifferent || eventTypeSearchTermIsDifferent) {
             return true; // do the API calls!
         }
         else {
@@ -2069,6 +2083,7 @@ function countAndFilterFoodApiData(allApiData, mealFilterFlags, priceFilterRange
 function updateAllFoodCosts(userFoodCost, allApiData) {
 // This function sets all food costs to userFoodCost unless it is 0. If it is zero, the food costs
 // will be the default yelp costs found in the constants file
+    if (allApiData !== null && allApiData !== undefined && !misc.isObjEmpty(allApiData)) {
     var tempLen = allApiData.yelpBreakfastItemsGlobal.length;
     for (var i = 0; i < tempLen; i++) {
         if (userFoodCost === 0) {
@@ -2099,6 +2114,7 @@ function updateAllFoodCosts(userFoodCost, allApiData) {
             allApiData.yelpDinnerItemsGlobal[i].cost = userFoodCost;
         }
     }
+}
 
     return allApiData;
 }
@@ -2106,6 +2122,7 @@ function updateAllFoodCosts(userFoodCost, allApiData) {
 function updateAllEventCosts(userEventCost, allApiData) {
 // This function sets all event costs that were not specifically set by the event api to whatever the user
 // chooses.
+if (allApiData !== null && allApiData !== undefined && !misc.isObjEmpty(allApiData)) {
     for (var i = 0; i < CONSTANTS.NUM_OF_EVENT_APIS; i++) { // cycle through meetup -> google places
         for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots
             var eventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]];
@@ -2122,7 +2139,7 @@ function updateAllEventCosts(userEventCost, allApiData) {
 
         }
     }
-
+}
     return allApiData;
 }
 

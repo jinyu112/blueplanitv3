@@ -57,6 +57,7 @@ class MoreOptions extends Component {
         this.setState({ 
             foodCost: 0.0,
             eventCost: 0.0,
+            eventType: 0,
          });
     }
 
