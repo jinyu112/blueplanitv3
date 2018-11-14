@@ -656,10 +656,21 @@ button.close {
     z-index: 1;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1em;
+    margin: 0 10px;
 }
 
 .actions button {
     margin: 10px 0;
+
+}
+
+.lock-button {
+    background-color: #007bff!important;
+}
+
+.elim-button {
+    background-color: #fc2a24!important;
 }
 
 .showActions {
@@ -667,10 +678,11 @@ button.close {
     color: #666!important;
     transition: all .25s linear;
     box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
-    border: 1px solid #838383;
 }
 
-
+.costPanel label {
+    margin-bottom: 0px!important;
+}
 
 .showActions:hover {
     box-shadow: -3px 6px 17px 0px rgba(0,0,0,0.4);
@@ -678,8 +690,8 @@ button.close {
 
 .ItinEvents .showActions::before {
     width: 4px;
-    height: 25%;
-    max-height: calc(220px + 2em);
+    height: 50%;
+    max-height: calc(220px + 3em);
     background-color:  #ececec;
     display: block;
     content: '';
@@ -697,7 +709,7 @@ button.close {
 .itinRowContent::after {
     width: 22px;
     height: 22px;
-    margin-left: -76px;
+    margin-left: -81px;
     margin-top: 3px;
     background-color: #ececec;
     position: absolute;

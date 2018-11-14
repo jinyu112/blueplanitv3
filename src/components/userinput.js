@@ -315,6 +315,7 @@ class Userinput extends Component {
         this.state.eliminatedEvents.push(i_checkbox);
       }
       eliminated[i_checkbox] = 1;
+
       var tempNoneObj;
       if (i_checkbox === 1 || i_checkbox === 3 || i_checkbox === 5) {
         tempNoneObj = CONSTANTS.NONE_ITEM;
@@ -331,11 +332,15 @@ class Userinput extends Component {
     // If the checkbox is unchecked, find and remove the checkbox index from the states
     else {
       var index = this.state.eliminatedEvents.indexOf(i_checkbox);
+      let checked = this.state.checked.slice();
       // from 0 to 6 inclusive
       if (index > -1) {
         this.state.eliminatedEvents.splice(index, 1);
+        this.state.savedEvents.splice(index, 1);
         eliminated[i_checkbox] = 0;
-        this.setState({ eliminated: eliminated });
+        checked[i_checkbox] = 0;
+
+        this.setState({ eliminated: eliminated, checked: checked });
       }
     }
   }
@@ -1244,7 +1249,7 @@ class Userinput extends Component {
                         </div>
 
                     </div>
-                    <div className="itinEventCol4 edit-cost text-success">
+                    <div className="itinEventCol4 edit-cost text-warning">
                         <div className="costPanel">
                             <div className="edit-cost-cont">
                                 <EditCostComponent
@@ -1261,7 +1266,7 @@ class Userinput extends Component {
                             </div>
 
                             <div className="actions">
-                                <Button variant="" color="primary">
+                                <Button className="lock-button" variant="contained" color="primary">
                                     <label className="takeSpace" htmlFor={id}>
                                         <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
                                             {lock_icon}
@@ -1270,7 +1275,7 @@ class Userinput extends Component {
                                     <input  className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
                                 </Button>
 
-                                <Button color="secondary">
+                                <Button className="elim-button" variant="contained" color="secondary">
                                     <label className="takeSpace" htmlFor={elim_id}>
                                         <TooltipMat placement="top" title={elimToolTipStr}>
                                             {elim_icon}
