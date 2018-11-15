@@ -128,6 +128,7 @@ module.exports = {
     NAV_EVENT_TAB_ID: "nav-events-tab",
     NAV_FOOD_TAB_ID: "nav-food-tab",
     NAV_USER_TAB_ID: "nav-add-tab",
+    NAV_MOREOPTIONS_TAB_ID: "nav-moreoptions-tab",
     RADIUS_FILTER_STR: "Choose search radius",
     START_TIME_FILTER_SUB_HEADER: 'Start Time',
     END_TIME_FILTER_SUB_HEADER: 'End Time',

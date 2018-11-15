@@ -506,8 +506,10 @@ class Userinput extends Component {
 
     handleUpdateEventTypeSearch(e) {
         this.setState({
-            eventType:e,
+            eventType: e,
+            tabState: CONSTANTS.NAV_EVENT_TAB_ID,
         })
+        this.handleSubmit(e);
     }
 
     handleMoreInfo(e) {
@@ -686,7 +688,12 @@ class Userinput extends Component {
     }
 
     handleSubmit(e) {
-        e.preventDefault();
+        try {
+            e.preventDefault();
+        }
+        catch(err) {
+            //do nothing            
+        }
 
         console.clear();
         // Handle empty budget inputs
@@ -1432,10 +1439,35 @@ class Userinput extends Component {
 
         var columnSize = 'col-md-5';
         var eventsContent = ['tab-content', 'col-md-7', 'itinerary'];
-        // if(!eventsContent.includes('hidden')) {
-        //     columnSize = 'col-md-5';
-        // }
+
         var itinContent = ['mapsfix', 'itinerary', columnSize];
+
+        // Handle tab classes dynamically. Also, whenever handleUpdateEventTypeSearch is called, reset the tab to the event tab
+        var genericTabsClass = ['itinerary', 'tab-pane', 'fade'];
+        var eventsTabsClass = genericTabsClass.slice();
+        var restaurantsTabsClass = genericTabsClass.slice();
+        var moreOptionsTabsClass = genericTabsClass.slice();
+
+        var genericLinkClass = ['nav-item', 'nav-link'];
+        var eventsLinkClass = genericLinkClass.slice();        
+        var restaurantsLinkClass = genericLinkClass.slice();
+        var moreOptionsLinkClass = genericLinkClass.slice();
+
+        if (this.state.tabState.localeCompare(CONSTANTS.NAV_EVENT_TAB_ID) === 0) {
+            eventsTabsClass.push('show');
+            eventsTabsClass.push('active');
+            eventsLinkClass.push('active');
+        }
+        else if (this.state.tabState.localeCompare(CONSTANTS.NAV_FOOD_TAB_ID) === 0) {
+            restaurantsTabsClass.push('show');
+            restaurantsTabsClass.push('active');
+            restaurantsLinkClass.push('active');
+        }
+        else {
+            moreOptionsTabsClass.push('show');
+            moreOptionsTabsClass.push('active');
+            moreOptionsLinkClass.push('active');
+        }
 
         return (
             <div className="Userinput">
@@ -1505,11 +1537,11 @@ class Userinput extends Component {
 
                         {/* All data gets shown here (api data, and user added data) */}
                         <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                            <a onClick={this.handleTabState} className="nav-item nav-link active" id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
-                            <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
-                            <a onClick={this.handleTabState} className="nav-item nav-link" id={CONSTANTS.NAV_USER_TAB_ID} data-toggle="tab" href="#nav-add" role="tab" aria-controls="nav-add" aria-selected="false"> More Options</a>
+                            <a onClick={this.handleTabState} className={eventsLinkClass.join(' ')} id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
+                            <a onClick={this.handleTabState} className={restaurantsLinkClass.join(' ')} id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
+                            <a onClick={this.handleTabState} className={moreOptionsLinkClass.join(' ')} id={CONSTANTS.NAV_MOREOPTIONS_TAB_ID} data-toggle="tab" href="#nav-moreoptions" role="tab" aria-controls="nav-moreoptions" aria-selected="false"> More Options</a>
                         </div>
-                        <div className="itinerary tab-pane fade show active" id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
+                        <div className={eventsTabsClass.join(' ')} id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
 
                             {<MultiResultDisplay apiData={eventsMultiResults}
                                 displayCategory={1} //events
@@ -1526,7 +1558,7 @@ class Userinput extends Component {
 
                         </div>
 
-                        <div className="itinerary tab-pane fade" id="nav-food" role="tabpanel" aria-labelledby="nav-options-tab">
+                        <div className={restaurantsTabsClass.join(' ')} id="nav-food" role="tabpanel" aria-labelledby="nav-options-tab">
                             {<MultiResultDisplay apiData={foodMultiResults}
                                 displayCategory={0} //restaurants
                                 pageNumber={this.state.foodPageNumber}
@@ -1542,7 +1574,7 @@ class Userinput extends Component {
                         </div>
 
 
-                        <div className="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="nav-add-tab">
+                        <div className={moreOptionsTabsClass.join(' ')} id="nav-moreoptions" role="tabpanel" aria-labelledby="nav-moreoptions-tab">
                             {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost} 
                             updateUserEventCost={this.handleUpdateUserEventCost}
                             updateEventTypeSearch={this.handleUpdateEventTypeSearch}
