@@ -1474,43 +1474,55 @@ class Userinput extends Component {
       <div className="Userinput">
           <div className="banner">
             <AppBar position="static">
-              <Toolbar>
-                <Typography variant="title" color="inherit" className={styles.flex}>
-                  Blue Planit
-                </Typography>
-                <form onSubmit={this.handleSubmit}>
-                  <div>
-                    <div className="row inputsRow">
-                      <div className="col-md-4 form-group mb-2">
-                      <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                        <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" placeholder="Where are you going?" />
-                        </TooltipMat>
-                      </div>
-                      <div className="col-md-2 form-group mb-2 datePickerWrapper">
-                        <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
-                      </div>
-                      <div className="col-md-2 form-group mb-2">
-                        <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
-                      </div>
-                      <div className="col-md-2 form-group mb-2">
-                      <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
-                        <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
-                        </TooltipMat>
-                      </div>
-                      <div className="col-md-2 form-group mb-2">
-                      <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
-                        <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
-                        </TooltipMat>
-                      </div>
-                      <div className="col-md-2 search-btn">
-                          <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
-                                <Button variant="contained" color="secondary" type="submit">
-                                        GO!
-                                </Button>
-                          </TooltipMat>
-                      </div>
-                    </div>
-                  </div>
+                <div>
+                    Blue Planit
+                </div>
+                <div className="headerText">
+                    <h1>Let Us Plan So You Can Explore</h1>
+
+                </div>
+                <Toolbar>
+                    <form onSubmit={this.handleSubmit}>
+                      <div>
+                        <div className=" inputsRow">
+                           <div className="inputContainers">
+                              <div className="form-group mb-2">
+                                  <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
+                                    <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" placeholder="Where are you going?" />
+                                  </TooltipMat>
+                              </div>
+                           </div>
+                            <div className="inputContainers">
+                              <div className="form-group mb-2 datePickerWrapper">
+                                <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
+                              </div>
+                            </div>
+                            <div className="inputContainers">
+                              <div className="form-group mb-2">
+                                <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
+                              </div>
+                            </div>
+                            <div className="inputContainers">
+                              <div className="form-group mb-2">
+                              <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
+                                <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                                </TooltipMat>
+                              </div>
+                                <div className="form-group mb-2">
+                                    <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
+                                        <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
+                                    </TooltipMat>
+                                </div>
+                            </div>
+                            <div className="inputContainers search-btn">
+                              <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
+                                    <Button variant="contained" color="secondary" type="submit">
+                                            GO!
+                                    </Button>
+                              </TooltipMat>
+                          </div>
+                        </div>
+                     </div>
                 </form>
               </Toolbar>
             </AppBar>

@@ -101,7 +101,15 @@
     width: 100%;
     padding: 0.4rem 1rem;
 }
+.inputContainers {
+    background-color: rgba(255,255,255,0.3);
+    padding: 1em 3em;
+    border-radius: 10px;
+}
 
+form {
+    width: 100%;
+}
 .options{
     width: 100%;
     margin-top: 20px;
@@ -185,7 +193,9 @@ tbody:hover {
 .inputsRow {
     padding: 0.1em 0.5em;
     margin: auto!important;
-
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 20px;
 }
 
 input[name="location"] {
@@ -789,7 +799,8 @@ header::before {
     opacity: 0.6;
 }
 
-header::before:hover,
-header:focus {
-    transform: scale(1.2);
+.headerText h1 {
+    font-size: 3em;
+    font-weight: 900;
+    color: #212529;
 }
