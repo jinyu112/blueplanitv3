@@ -40,10 +40,6 @@ import meetup_logo from '../images/meetup_logo.png';
 import eventbrite_logo from '../images/eventbrite_logo.png';
 import seatgeek_logo from '../images/seatgeek_logo.png';
 import globe from '../images/globe.png';
-import lock from '../images/lock.png';
-import unlock from '../images/unlock.png';
-import dark from '../images/dark.png';
-import light from '../images/light.png';
 
 //DRAWER IMPORTS
 import classNames from 'classnames';
@@ -1476,12 +1472,9 @@ class Userinput extends Component {
     }
     return (
       <div className="Userinput">
-          <div className={styles.root}>
+          <div className="banner">
             <AppBar position="static">
               <Toolbar>
-                <IconButton className={styles.menuButton} color="inherit" aria-label="Menu">
-                  <MenuIcon />
-                </IconButton>
                 <Typography variant="title" color="inherit" className={styles.flex}>
                   Blue Planit
                 </Typography>

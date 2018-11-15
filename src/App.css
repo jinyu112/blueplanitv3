@@ -761,3 +761,35 @@ button.close {
     height: 100%;
     cursor: pointer;
 }
+
+.banner {
+    flex-grow: 1;
+}
+
+header {
+    height:420px;
+    background-color: transparent!important;
+}
+.MuiPaper-elevation4-27 {
+    box-shadow: none!important;
+}
+
+header::before {
+    background-image: url('./images/banner.jpg');
+    background-size: cover;
+    background-position: right bottom;
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    opacity: 0.6;
+}
+
+header::before:hover,
+header:focus {
+    transform: scale(1.2);
+}
