@@ -54,8 +54,7 @@ import CONSTANTS from '../constants.js'
 
 //https://developers.google.com/maps/documentation/geocoding/usage-and-billing
 //0-100k queries = $5 per 1k queries
-var geocoder = require('geocoder'); 
-
+var geocoder = require('geocoder');
 
 class Userinput extends Component {
     constructor(props) {
@@ -129,7 +128,7 @@ class Userinput extends Component {
         this.handleResetFilter = this.handleResetFilter.bind(this);
         this.handleUpdateUserFoodCost = this.handleUpdateUserFoodCost.bind(this);
         this.handleUpdateUserEventCost = this.handleUpdateUserEventCost.bind(this);
-        this.handleUpdateEventTypeSearch = this.handleUpdateEventTypeSearch.bind(this);   
+        this.handleUpdateEventTypeSearch = this.handleUpdateEventTypeSearch.bind(this);
     }
 
     handleTabState(e) {
@@ -692,7 +691,7 @@ class Userinput extends Component {
             e.preventDefault();
         }
         catch(err) {
-            //do nothing            
+            //do nothing
         }
 
         console.clear();
@@ -938,7 +937,7 @@ class Userinput extends Component {
                                                     var tempCheckedState = [0, 0, 0, 0, 0, 0, 0];
                                                     var tempEliminatedState = [0, 0, 0, 0, 0, 0, 0];
                                                     // Carry over the saved/eliminated itinerary items if api calls are performed because of
-                                                    // a change in search radius or a change in event type 
+                                                    // a change in search radius or a change in event type
                                                     if (doAPICallsObj.eventTypeSearchTermIsDifferent ||
                                                         doAPICallsObj.radiusIsDifferent) {
                                                             tempCheckedState = this.state.checked;
@@ -1449,7 +1448,7 @@ class Userinput extends Component {
         var moreOptionsTabsClass = genericTabsClass.slice();
 
         var genericLinkClass = ['nav-item', 'nav-link'];
-        var eventsLinkClass = genericLinkClass.slice();        
+        var eventsLinkClass = genericLinkClass.slice();
         var restaurantsLinkClass = genericLinkClass.slice();
         var moreOptionsLinkClass = genericLinkClass.slice();
 
@@ -1575,7 +1574,7 @@ class Userinput extends Component {
 
 
                         <div className={moreOptionsTabsClass.join(' ')} id="nav-moreoptions" role="tabpanel" aria-labelledby="nav-moreoptions-tab">
-                            {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost} 
+                            {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost}
                             updateUserEventCost={this.handleUpdateUserEventCost}
                             updateEventTypeSearch={this.handleUpdateEventTypeSearch}
                             currentFoodCost={this.state.userFoodCost}
@@ -2149,7 +2148,7 @@ function updateAllFoodCosts(userFoodCost, allApiData) {
     var tempLen = allApiData.yelpBreakfastItemsGlobal.length;
     for (var i = 0; i < tempLen; i++) {
         if (userFoodCost === 0) {
-            allApiData.yelpBreakfastItemsGlobal[i].cost = 
+            allApiData.yelpBreakfastItemsGlobal[i].cost =
             CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpBreakfastItemsGlobal[i].numDollarSigns-1];
         }
         else {
@@ -2159,7 +2158,7 @@ function updateAllFoodCosts(userFoodCost, allApiData) {
     tempLen = allApiData.yelpLunchItemsGlobal.length;
     for (var i = 0; i < tempLen; i++) {
         if (userFoodCost === 0) {
-            allApiData.yelpLunchItemsGlobal[i].cost = 
+            allApiData.yelpLunchItemsGlobal[i].cost =
             CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpLunchItemsGlobal[i].numDollarSigns-1];
         }
         else {
@@ -2169,7 +2168,7 @@ function updateAllFoodCosts(userFoodCost, allApiData) {
     tempLen = allApiData.yelpDinnerItemsGlobal.length;
     for (var i = 0; i < tempLen; i++) {
         if (userFoodCost === 0) {
-            allApiData.yelpDinnerItemsGlobal[i].cost = 
+            allApiData.yelpDinnerItemsGlobal[i].cost =
                 CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpDinnerItemsGlobal[i].numDollarSigns - 1];
         }
         else {
