@@ -64,6 +64,10 @@ class MealFilter extends React.Component {
         lunch: true,
         dinner: true,
         all: true,
+        prevBreakfast: true,
+        prevLunch: true,
+        prevDinner: true,
+        prevAll: true,
     };
 
     handleClick = (filter_state) => {
@@ -73,6 +77,17 @@ class MealFilter extends React.Component {
         this.setState(objectState);
     };
 
+    handleClickOutside(event) {
+        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+            this.setState({
+                open: false,
+                breakfast: this.state.prevBreakfast,
+                lunch: this.state.prevLunch,
+                dinner: this.state.prevDinner,
+                all: this.state.prevAll,
+            });
+        }
+    }
 
     handleChange = name => event => {
         this.setState({ [name]: event.target.checked }, function () {
@@ -117,6 +132,10 @@ class MealFilter extends React.Component {
         this.props.setMealFilterFlags(mealFilterFlags);
         this.setState({
             open: false,
+            prevBreakfast: this.state.breakfast,
+            prevLunch: this.state.lunch,
+            prevDinner: this.state.dinner,
+            prevAll: this.state.all,
         })
     };
 
@@ -129,6 +148,23 @@ class MealFilter extends React.Component {
         var buttonClasses = ['apiBtn'];
 
         this.state.value != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+
+        if (this.props.apiCalls) {
+            this.props.handleResetFilter();
+        }
+
+        // reset filter when the api calls happen
+        if (this.props.apiCalls) {
+            this.setState({
+                value: true,
+                breakfast: true,
+                lunch: true,
+                dinner: true,
+                all: true,
+            });
+            var mealFilterFlags = [true, true, true, true];
+            this.props.setMealFilterFlags(mealFilterFlags);
+        }
 
         return (
             <div ref={this.setWrapperRef}>

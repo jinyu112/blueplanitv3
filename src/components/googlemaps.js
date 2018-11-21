@@ -1,9 +1,24 @@
 import '../maps.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Map, InfoWindow, Marker, GoogleApiWrapper, google} from 'google-maps-react';
+import {Map, InfoWindow, Marker, GoogleApiWrapper, } from 'google-maps-react';
 import React, { Component } from 'react';
 import CONSTANTS from '../constants.js'
 
+//https://cloud.google.com/maps-platform/pricing/
+// Can I still use google maps platform for free?
+// Yes. When you enable billing, you get $200 free usage every month for Maps, Routes, or Places. 
+// Based on the millions of users using our APIs today, most of them can continue to use Google Maps 
+// Platform for free with this credit.
+
+// What is the pricing after I exceed the $200 monthly free credit?
+// You only pay for what you use. You can review rates and access your spending any time in your 
+// Google Cloud Platform Console, where you can also set daily quotas to protect against unexpected 
+// increases. You can also set billing alerts to receive email notifications when charges reach a preset 
+// threshold determined by you.
+
+// Jin: Looks like for each map load there is a per-load cost.
+//https://developers.google.com/maps/documentation/javascript/usage-and-billing
+//0-100k queries (map loads) = $7 per 1k queries
 export class MapContainer extends Component {
     constructor(props) {
         super(props);
@@ -96,5 +111,5 @@ const maps = {
 }
 
 export default GoogleApiWrapper({
-  apiKey: process.env.REACT_GOOGLE_API_KEY,
+  apiKey: process.env.REACT_APP_GOOGLE_API_KEY,
 })(MapContainer)

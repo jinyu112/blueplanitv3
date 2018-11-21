@@ -11,17 +11,17 @@ import Typography from '@material-ui/core/Typography';
 import CONSTANTS from '../constants.js'
 
 const styles = theme => ({
-  root: {
-    position: 'relative',
-  },
-  paper: {
-    position: 'absolute',
-    top: 175,
-    left: 33,
-    width: '25%',
-    padding: '1em',
-    'z-index': 9999
-  }
+    root: {
+        position: 'relative',
+    },
+    paper: {
+        position: 'absolute',
+        top: 175,
+        left: 33,
+        width: '25%',
+        padding: '1em',
+        'z-index': 9999
+    }
 });
 
 class ClickAway extends React.Component {
@@ -36,94 +36,108 @@ class ClickAway extends React.Component {
     state = {
         openRadius: false,
         value: this.props.maxDistance,
+        prevRadius: this.props.maxDistance,
         maxDistanceValue: this.props.maxDistance,
         prevMaxDistanceValue: -1.0,
+        doApiCallState: true,
+        prevDoApiCallState: true,
     };
 
     componentDidMount() {
-       document.addEventListener('mousedown', this.handleClickOutside);
-     }
+        document.addEventListener('mousedown', this.handleClickOutside);
+    }
 
-     componentWillUnmount() {
-       document.removeEventListener('mousedown', this.handleClickOutside);
-     }
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside);
+    }
 
-     setWrapperRef(node) {
-      this.wrapperRef = node;
+    setWrapperRef(node) {
+        this.wrapperRef = node;
     }
 
     /**
      * Alert if clicked on outside of element
      */
     handleClickOutside(event) {
-      if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
-        this.setState({openRadius:false});
-      }
+        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+            this.setState({ 
+                openRadius: false,
+                value: this.state.prevRadius,
+            });
+        }
     }
 
 
-  handleClick = (filter_state) => {
-    var objectState = {};
-    var currentState = this.state[filter_state];
-    objectState[filter_state] = !currentState;
-    this.setState(objectState);
-  };
-
-  handleClickAway = (props) => {
-  this.setState({
-      openRadius: false,
-    });
-  };
-
-  handleChange = (event, value) => {
-    this.setState({ value });
-    
-    //change result display here
-  };
-
-  handleApply = (props) => {
-this.props.setDistance(this.state.value)
-this.setState({
-  openRadius: false,
-})
+    handleClick = (filter_state) => {
+        var objectState = {};
+        var currentState = this.state[filter_state];
+        objectState[filter_state] = !currentState;
+        this.setState(objectState);
     };
 
-  render() {
-    const { classes } = this.props;
-    const { openRadius } = this.state
-    const { value } = this.state;
-    var disabled = this.props.resultsPresent;
+    handleClickAway = (props) => {
+        this.setState({
+            openRadius: false,
+            value: this.state.prevRadius,
+        });
+    };
 
-    var buttonClasses = ['radiusBtn'];
+    handleChange = (event, value) => {
+        this.setState({ value });
 
-    this.state.value != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['radiusBtn'];
-this.state.maxDistanceValue = this.props.maxDistance;
-var displayValue = this.state.value;
-if (this.state.prevMaxDistanceValue !== this.state.maxDistanceValue) {
-  displayValue = this.state.maxDistanceValue;
-  this.state.value = this.state.maxDistanceValue;
-  this.state.prevMaxDistanceValue = this.state.maxDistanceValue;
-}
+        //change result display here
+    };
 
-    return (
-        <div ref={this.setWrapperRef}>
-        <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('openRadius')}>{displayValue + ' miles'}</Button>
-            {openRadius ? (
-              <Paper className={classes.paper}>
-            <Typography id="label">{CONSTANTS.RADIUS_FILTER_STR}</Typography>
-            <Slider value={value} min={0} max={this.props.maxDistance} step={1} onChange={this.handleChange}/>
-            <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
-              Apply
+    handleApply = (props) => {
+        this.props.setDistance(this.state.value)
+        this.setState({
+            openRadius: false,
+            prevRadius: this.state.value,
+        })
+    };
+
+    render() {
+        const { classes } = this.props;
+        const { openRadius } = this.state
+        const { value } = this.state;
+        var disabled = this.props.resultsPresent;
+
+        var buttonClasses = ['radiusBtn'];
+
+        this.state.value != 0 ? buttonClasses.push('activeStatebtn') : buttonClasses = ['radiusBtn'];
+        this.state.maxDistanceValue = this.props.maxDistance;
+        var displayValue = this.state.value;
+
+        if (this.props.apiCalls) {
+            this.props.handleResetFilter();
+        }
+
+        if (this.state.prevMaxDistanceValue !== this.state.maxDistanceValue ||
+            this.props.apiCalls) {
+            displayValue = this.state.maxDistanceValue;
+            this.state.value = this.state.maxDistanceValue;
+            this.state.prevMaxDistanceValue = this.state.maxDistanceValue;                     
+        }
+
+        return (
+            <div ref={this.setWrapperRef}>
+                <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('openRadius')}>{displayValue + ' miles'}</Button>
+                {openRadius ? (
+                    <Paper className={classes.paper}>
+                        <Typography id="label">{CONSTANTS.RADIUS_FILTER_STR}</Typography>
+                        <Slider value={value} min={0} max={this.props.maxDistance} step={1} onChange={this.handleChange} />
+                        <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
+                            Apply
             </Button>
-            </Paper>
-            ) : null}
-        </div>
-    );
-  }
+                    </Paper>
+                ) : null}
+            </div>
+        );
+    }
 }
 
 ClickAway.propTypes = {
-  classes: PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(ClickAway);

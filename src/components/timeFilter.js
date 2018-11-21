@@ -63,6 +63,8 @@ class TimeSlider extends React.Component {
         min: CONSTANTS.ABS_TIMEFILTER_MIN,
         max: CONSTANTS.ABS_TIMEFILTER_MAX,
         value: [CONSTANTS.DEFAULT_TIMEFILTER_MIN, CONSTANTS.DEFAULT_TIMEFILTER_MAX],
+        prevMin: CONSTANTS.ABS_TIMEFILTER_MIN,
+        prevMax: CONSTANTS.ABS_TIMEFILTER_MAX,
         timeRange: ['12:00 AM', '11:59 PM'],
     };
 
@@ -83,7 +85,10 @@ class TimeSlider extends React.Component {
      */
     handleClickOutside(event) {
         if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
-            this.setState({ open: false });
+            this.setState({ 
+                open: false, 
+                value: [this.state.prevMin, this.state.prevMax],
+            },this.setTimeRange);
         }
     }
 
@@ -97,7 +102,8 @@ class TimeSlider extends React.Component {
     handleClickAway = (props) => {
         this.setState({
             open: false,
-        });
+            value: [this.state.prevMin, this.state.prevMax],
+        }, this.setTimeRange);
     };
 
     onSliderChange = (value) => {
@@ -156,7 +162,9 @@ class TimeSlider extends React.Component {
         this.props.setTimeRange([minTimeFloat, maxTimeFloat])
         this.setState({
             open: false,
-            value: [this.state.value[0], this.state.value[1]]
+            value: [this.state.value[0], this.state.value[1]],
+            prevMin: this.state.value[0],
+            prevMax: this.state.value[1],
         })
     };
 
@@ -166,6 +174,8 @@ class TimeSlider extends React.Component {
             open: false,
             min: CONSTANTS.ABS_TIMEFILTER_MIN,
             max: CONSTANTS.ABS_TIMEFILTER_MAX,
+            prevMin: CONSTANTS.ABS_TIMEFILTER_MIN,
+            prevMax: CONSTANTS.ABS_TIMEFILTER_MAX,
             value: [CONSTANTS.DEFAULT_TIMEFILTER_MIN, CONSTANTS.DEFAULT_TIMEFILTER_MAX],
             timeRange: ['12:00 AM', '11:59 PM'],
         })
@@ -185,6 +195,22 @@ class TimeSlider extends React.Component {
             active = false;
         }
         active ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+
+        if (this.props.apiCalls) {
+            this.props.handleResetFilter();
+        }
+    
+        // reset filter when the api calls happen
+        if (this.props.apiCalls) {
+            this.props.setTimeRange([CONSTANTS.ABS_TIMEFILTER_MIN, CONSTANTS.ABS_TIMEFILTER_MAX,])
+            this.setState({
+                open: false,
+                min: CONSTANTS.ABS_TIMEFILTER_MIN,
+                max: CONSTANTS.ABS_TIMEFILTER_MAX,
+                value: [CONSTANTS.DEFAULT_TIMEFILTER_MIN, CONSTANTS.DEFAULT_TIMEFILTER_MAX],
+                timeRange: ['12:00 AM', '11:59 PM'],
+            })
+        }
 
         return (
             <div ref={this.setWrapperRef}>

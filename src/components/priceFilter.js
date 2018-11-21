@@ -59,6 +59,8 @@ class PriceSlider extends React.Component {
         open: false,
         min: CONSTANTS.DEFAULT_PRICEFILTER_MIN,
         max: CONSTANTS.DEFAULT_PRICEFILTER_MAX,
+        prevMin: CONSTANTS.DEFAULT_PRICEFILTER_MIN,
+        prevMax: CONSTANTS.DEFAULT_PRICEFILTER_MAX,
         value: [CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX,],
     };
 
@@ -79,7 +81,10 @@ class PriceSlider extends React.Component {
      */
     handleClickOutside(event) {
         if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
-            this.setState({ open: false });
+            this.setState({ 
+                open: false,
+                value: [this.state.prevMin, this.state.prevMax],
+            });
         }
     }
 
@@ -93,6 +98,7 @@ class PriceSlider extends React.Component {
     handleClickAway = (props) => {
         this.setState({
             open: false,
+            value: [this.state.prevMin, this.state.prevMax],
         });
     };
 
@@ -106,7 +112,9 @@ class PriceSlider extends React.Component {
         this.props.setPriceRange(this.state.value)
         this.setState({
             open: false,
-            value: [this.state.value[0], this.state.value[1]]
+            value: [this.state.value[0], this.state.value[1]],
+            prevMin: this.state.value[0],
+            prevMax: this.state.value[1],
         })
     };
 
@@ -128,6 +136,22 @@ class PriceSlider extends React.Component {
         var buttonClasses = ['apiBtn'];
 
         (this.state.value[0] != 0 || this.state.value[1] != 500) ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
+
+        if (this.props.apiCalls) {
+            this.props.handleResetFilter();
+        }
+    
+        // reset filter when the api calls happen
+        if (this.props.apiCalls) {
+            this.props.setPriceRange([CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX,])
+            this.setState({
+                open: false,
+                min: CONSTANTS.DEFAULT_PRICEFILTER_MIN,
+                max: CONSTANTS.DEFAULT_PRICEFILTER_MAX,
+                value: [CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX,],
+            })
+        }
+
 
         return (
             <div ref={this.setWrapperRef}>

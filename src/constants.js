@@ -28,6 +28,13 @@ module.exports = {
         'yelpDinnerItemsGlobal',
         // 'yelpEventsGlobal', //currently commented because not using yelpevents
     ],
+    EVENTTYPE_SEARCHKEYS: [
+        'All Types of Events',
+        'Party/Night Life',
+        'Sports/Outdoor Activities',
+        'Tourism',
+        'Arts/Museums/Music',
+    ],
     NUM_RESULTS_PER_PAGE: 6,
     NONE_ITEM_EVENT: {
         name: "None/Free Itinerary Slot",
@@ -122,6 +129,7 @@ module.exports = {
     NAV_EVENT_TAB_ID: "nav-events-tab",
     NAV_FOOD_TAB_ID: "nav-food-tab",
     NAV_USER_TAB_ID: "nav-add-tab",
+    NAV_MOREOPTIONS_TAB_ID: "nav-moreoptions-tab",
     RADIUS_FILTER_STR: "Choose search radius",
     START_TIME_FILTER_SUB_HEADER: 'Start Time',
     END_TIME_FILTER_SUB_HEADER: 'End Time',
@@ -135,4 +143,13 @@ module.exports = {
     ABS_TIMEFILTER_MAX:2400,
     NOON: 1200,
     TIME_FILTER_STEP: 100,
+    NOTIF_DISMISS_TIME_MS: 1500, //ms
+    MOREOPT_MAXFOODPRICE: 500,
+    MOREOPT_FOODPRICESTEP: 5,
+    MOREOPT_FOODSTRING: "How Much You Want to Spend on Each Meal",
+    MOREOPT_MAXEVENTPRICE: 500,
+    MOREOPT_EVENTPRICESTEP: 5,
+    MOREOPT_EVENTSTRING: "How Much You Want to Spend on Each Event",    
+    DEFAULT_YELP_COSTS: [10,30,60,100],
+    EVENT_CUSTOMIZATION_STRING: "Event Search Customization",
 }
