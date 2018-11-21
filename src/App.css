@@ -31,19 +31,32 @@
     background: white;
 }
 
+/*.textInput {*/
+    /*background-color: transparent;*/
+    /*border: none;*/
+    /*transition: .2s;*/
+    /*margin: 0;*/
+    /*font-size: 16px;*/
+    /*outline: none;*/
+    /*line-height: 0.8;*/
+    /*-webkit-font-smoothing: antialiased;*/
+    /*width: 100%;*/
+    /*border-radius: 2px;*/
+    /*line-height: 2em;*/
+/*}*/
+
 .textInput {
-    background-color: white;
+    background-color: transparent;
     border: none;
     transition: .2s;
-    margin: 0;
-    font-size: 16px;
-    padding: 0.8rem 1rem;
-    outline: none;
-    line-height: 0.8;
-    -webkit-font-smoothing: antialiased;
-    width: 100%;
-    border-radius: 2px;
+    width: 100% !important;
+    height: 48px !important;
+    display: table !important;
+    border-radius: 4px !important;
+    font-size: 17px!important;
 }
+
+
 
 .submitButton {
     background-color: #5fcf80;
@@ -102,9 +115,22 @@
     padding: 0.4rem 1rem;
 }
 .inputContainers {
-    background-color: rgba(255,255,255,0.3);
-    padding: 1em 3em;
+    /*background-color: rgba(255,255,255,0.2);*/
+    background-color: rgba(255,255,255,0.5);
+    padding: 24px 32px;
     border-radius: 10px;
+    text-align: left;
+    font-family: 'Roboto'!important;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.06) !important;
+}
+
+.inputContainers h6 {
+    font-weight: 700;
+    font-size: 16px !important;
+}
+
+.react-datepicker-wrapper, .react-datepicker__input-container {
+    width: 100%;
 }
 
 form {
@@ -196,10 +222,7 @@ tbody:hover {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-gap: 20px;
-}
-
-input[name="location"] {
-    padding-left: 20px;
+    color: rgb(72, 72, 72);
 }
 
 .loader {
@@ -796,11 +819,18 @@ header::before {
     width: 100%;
     height: 100%;
     z-index: -2;
-    opacity: 0.6;
+    opacity: 1.6;
 }
 
 .headerText h1 {
     font-size: 3em;
     font-weight: 900;
     color: #212529;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
 }

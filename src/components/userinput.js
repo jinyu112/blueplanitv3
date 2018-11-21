@@ -131,7 +131,7 @@ class Userinput extends Component {
             searchRadius: CONSTANTS.DEFAULT_SEARCH_RADIUS_MI,
             location: 'San Francisco, CA',
             resultsArray: [],
-            startDate: moment(),
+            startDate: '',
             savedEvents: [], // actual indices of the user saved events
             eliminatedEvents: [], // indices of the user eliminated itinerary slots (0-6)
             checked: [0, 0, 0, 0, 0, 0, 0], // for displaying checked or unchecked in user saved events
@@ -1658,27 +1658,33 @@ class Userinput extends Component {
                         <div className=" inputsRow">
                            <div className="inputContainers">
                               <div className="form-group mb-2">
+                                  <h6>WHERE ARE YOU HEADED?</h6>
                                   <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                    <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" placeholder="Where are you going?" />
+                                    <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" />
                                   </TooltipMat>
                               </div>
                            </div>
                             <div className="inputContainers">
-                              <div className="form-group mb-2 datePickerWrapper">
-                                <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
-                              </div>
+                                <h6>PICK YOUR DATES</h6>
+                                <div className="form-group mb-2 datePickerWrapper">
+                                    <DatePicker autocomplete="off" required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
+                                 </div>
                             </div>
                             <div className="inputContainers">
+                                <h6>HOW FAR? </h6>
                               <div className="form-group mb-2">
                                 <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
                               </div>
                             </div>
                             <div className="inputContainers">
-                              <div className="form-group mb-2">
-                              <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
-                                <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
-                                </TooltipMat>
-                              </div>
+                                <h6>WHAT'S YOUR BUDGET?</h6>
+                                {
+                                    // <div className="form-group mb-2">
+                                    // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
+                                    // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                                    // </TooltipMat>
+                                    // </div>
+                                }
                                 <div className="form-group mb-2">
                                     <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
                                         <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
