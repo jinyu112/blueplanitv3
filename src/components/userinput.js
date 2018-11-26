@@ -1645,15 +1645,15 @@ class Userinput extends Component {
       <div className="Userinput">
           <div className="banner">
             <AppBar position="static">
-                <div>
-                    Blue Planit
+                <div className="topNavBar">
+                    <span className="nav-bar-logo">Blue</span> Planit
                 </div>
                 <div className="headerText">
                     <h1>Let Us Plan So You Can Explore</h1>
 
                 </div>
                 <Toolbar>
-                    <form onSubmit={this.handleSubmit}>
+                    <form autoComplete="off" onSubmit={this.handleSubmit}>
                       <div>
                         <div className=" inputsRow">
                            <div className="inputContainers">
@@ -1667,7 +1667,7 @@ class Userinput extends Component {
                             <div className="inputContainers">
                                 <h6>PICK YOUR DATES</h6>
                                 <div className="form-group mb-2 datePickerWrapper">
-                                    <DatePicker autocomplete="off" required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
+                                    <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
                                  </div>
                             </div>
                             <div className="inputContainers">
@@ -1691,7 +1691,7 @@ class Userinput extends Component {
                                     </TooltipMat>
                                 </div>
                             </div>
-                            <div className="inputContainers search-btn">
+                            <div className=" search-btn">
                               <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
                                     <Button variant="contained" color="secondary" type="submit">
                                             GO!
