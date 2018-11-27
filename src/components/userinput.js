@@ -1655,7 +1655,7 @@ class Userinput extends Component {
                 <Toolbar>
                     <form autoComplete="off" onSubmit={this.handleSubmit}>
                       <div>
-                        <div className=" inputsRow">
+                        <div className="inputsRow">
                            <div className="inputContainers">
                               <div className="form-group mb-2">
                                   <h6>WHERE ARE YOU HEADED?</h6>
