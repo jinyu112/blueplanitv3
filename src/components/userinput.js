@@ -1649,7 +1649,10 @@ class Userinput extends Component {
                     <span className="nav-bar-logo">Blue</span> Planit
                 </div>
                 <div className="headerText">
-                    <h1>Let Us Plan So You Can Explore</h1>
+                    <h1>{CONSTANTS.BANNER_TEXT.FIRST}</h1>
+                    <h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>
+                </div>
+                <div className="headerCopy">
 
                 </div>
                 <Toolbar>
@@ -1691,10 +1694,10 @@ class Userinput extends Component {
                                     </TooltipMat>
                                 </div>
                             </div>
-                            <div className=" search-btn">
+                            <div className="search-btn">
                               <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
                                     <Button variant="contained" color="secondary" type="submit">
-                                            GO!
+                                        {CONSTANTS.SEARCH_BUTTON_STR}
                                     </Button>
                               </TooltipMat>
                           </div>

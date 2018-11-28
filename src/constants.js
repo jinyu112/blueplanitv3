@@ -152,4 +152,9 @@ module.exports = {
     MOREOPT_EVENTSTRING: "How Much You Want to Spend on Each Event",    
     DEFAULT_YELP_COSTS: [10,30,60,100],
     EVENT_CUSTOMIZATION_STRING: "Event Search Customization",
+    SEARCH_BUTTON_STR: 'Plan!',
+    BANNER_TEXT: {
+        FIRST: 'Let Us Plan So ',
+        LAST: ' You Can Explore'
+    },
 }
