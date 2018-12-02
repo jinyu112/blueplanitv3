@@ -814,8 +814,6 @@ button.close {
 header {
     height:420px;
     background-color: transparent!important;
-}
-.MuiPaper-elevation4-27 {
     box-shadow: none!important;
 }
 
