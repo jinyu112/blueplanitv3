@@ -104,7 +104,7 @@ module.exports = {
     TODAYDATE: new Date(Date.now()),
     MAX_BUDGET_DEFAULT: 9999.0,
     MIN_BUDGET_DEFAULT: 0.0,
-    DEFAULT_SEARCH_RADIUS_MI: 50, //miles
+    DEFAULT_SEARCH_RADIUS_MI: 10, //miles
     APPROX_EVENT_COST_STR: "Default cost. Check event link for actual cost.",
     APPROX_YELPRESTAURANT_COST_STR: "Default meal cost. Enter desired price.",
     LOCATION_TOOLTIP_STR: "Enter an city, address, or zip code that you want to explore!",
@@ -152,6 +152,10 @@ module.exports = {
     MOREOPT_EVENTSTRING: "How Much You Want to Spend on Each Event",    
     DEFAULT_YELP_COSTS: [10,30,60,100],
     EVENT_CUSTOMIZATION_STRING: "Event Search Customization",
+    HEADER_WHERE_STR: "WHERE ARE YOU HEADED?",
+    HEADER_WHEN_STR: "PICK YOUR DATE",
+    HEADER_RADIUS_STR: "HOW FAR?",
+    HEADER_BUDGET_STR: "WHAT'S YOUR BUDGET?",
     SEARCH_BUTTON_STR: 'Plan it',
     BANNER_TEXT: {
         FIRST: 'Let Us Plan So ',

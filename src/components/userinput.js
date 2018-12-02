@@ -41,12 +41,7 @@ import eventbrite_logo from '../images/eventbrite_logo.png';
 import seatgeek_logo from '../images/seatgeek_logo.png';
 import globe from '../images/globe.png';
 
-//DRAWER IMPORTS
-import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Card from '@material-ui/core/Card';
 
 import CONSTANTS from '../constants.js';
@@ -58,65 +53,46 @@ import Icon from "@material-ui/core/Icon/Icon";
 //0-100k queries = $5 per 1k queries
 var geocoder = require('geocoder');
 
-const drawerWidth = 940;
-
 const styles = theme => ({
-  root: {
-    flexGrow: 1,
-  },
-  appFrame: {
-    height: 430,
-    zIndex: 1,
-    overflow: 'hidden',
-    position: 'relative',
-    display: 'flex',
-    width: '100%',
-  },
-  menuButton: {
-    marginLeft: 12,
-    marginRight: 20,
-  },
-  hide: {
-    display: 'none',
-  },
-  drawerPaper: {
-    position: 'relative',
-    width: drawerWidth,
-  },
-  drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: '0 8px',
-    ...theme.mixins.toolbar,
-  },
-  content: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing.unit * 3,
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  'content-left': {
-    marginLeft: -drawerWidth,
-  },
-  'content-right': {
-    marginRight: -drawerWidth,
-  },
-  contentShift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  'contentShift-left': {
-    marginLeft: 0,
-  },
-  'contentShift-right': {
-    marginRight: 0,
-  },
+    root: {
+        flexGrow: 1,
+    },
+    appFrame: {
+        height: 430,
+        zIndex: 1,
+        overflow: 'hidden',
+        position: 'relative',
+        display: 'flex',
+        width: '100%',
+    },
+    menuButton: {
+        marginLeft: 12,
+        marginRight: 20,
+    },
+    hide: {
+        display: 'none',
+    },
+    content: {
+        flexGrow: 1,
+        backgroundColor: theme.palette.background.default,
+        padding: theme.spacing.unit * 3,
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+    },
+    contentShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    'contentShift-left': {
+        marginLeft: 0,
+    },
+    'contentShift-right': {
+        marginRight: 0,
+    },
 });
 
 class Userinput extends Component {
@@ -163,10 +139,7 @@ class Userinput extends Component {
             eventFilterFlags: [1, 1, 1, 1, 1], // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
             apiCalls: true,
 
-            //Events drawer
-            openDrawer: false,
-            anchor: 'left',
-            mapItin: 'itinerary',
+            mapOrResultsState: 'maps',
 
             //Event description
             descDialogOpen: [false, false, false, false, false, false, false],
@@ -244,38 +217,38 @@ class Userinput extends Component {
         });
     }
 
-  // Returned filter data from the api filter
-  handleApiFilter(e) {
-    this.setState({
-      eventFilterFlags: e, // array of 1s and 0s indicating which api sources are selected (order matters)
-      pageNumber: 1,
-      foodPageNumber: 1,
-    });
-  }
+    // Returned filter data from the api filter
+    handleApiFilter(e) {
+        this.setState({
+            eventFilterFlags: e, // array of 1s and 0s indicating which api sources are selected (order matters)
+            pageNumber: 1,
+            foodPageNumber: 1,
+        });
+    }
 
-  // Returned filter data from the meal filter
-  handleMealFilter(e) {
-    this.setState({
-      mealFilterFlags: e, // array of true/false flags [breakfast lunch dinner all
-      foodPageNumber: 1,      
-    });
-  }
+    // Returned filter data from the meal filter
+    handleMealFilter(e) {
+        this.setState({
+            mealFilterFlags: e, // array of true/false flags [breakfast lunch dinner all
+            foodPageNumber: 1,
+        });
+    }
 
-  // Returned filter data from the price filter
-  handlePriceFilter(e) {
-    this.setState({
-      priceFilterRange: e, //[min max]
-      pageNumber: 1,
-      foodPageNumber: 1,
-    });
-  }
+    // Returned filter data from the price filter
+    handlePriceFilter(e) {
+        this.setState({
+            priceFilterRange: e, //[min max]
+            pageNumber: 1,
+            foodPageNumber: 1,
+        });
+    }
 
-  handleTimeFilter(e) {
-    this.setState({
-      timeFilterRange: e, //[min max]
-      pageNumber: 1,
-    });
-  }
+    handleTimeFilter(e) {
+        this.setState({
+            timeFilterRange: e, //[min max]
+            pageNumber: 1,
+        });
+    }
 
     // This function resets the filters when the api calls occur
     handleResetFilter() {
@@ -318,41 +291,41 @@ class Userinput extends Component {
         // each checkbox corresponds to an item in the itinerary
         var i_checkbox = parseInt(e.target.value, 10);
 
-    // If the checkbox is checked, add the checkbox index to the states
-    let eliminated = this.state.eliminated.slice();
-    if (e.target.checked) {
-      if (!misc.include(this.state.eliminatedEvents, i_checkbox)) { // if i_checkbox is not already in the eliminatedEvents array
-        this.state.eliminatedEvents.push(i_checkbox);
-      }
-      eliminated[i_checkbox] = 1;
-      var tempNoneObj;
-      if (i_checkbox === 1 || i_checkbox === 3 || i_checkbox === 5) {
-        tempNoneObj = CONSTANTS.NONE_ITEM;
-      }
-      else {
-        tempNoneObj = CONSTANTS.NONE_ITEM_EVENT;
-      }
-      tempNoneObj.other = i_checkbox;
-      tempNoneObj.cost = 0.0;
+        // If the checkbox is checked, add the checkbox index to the states
+        let eliminated = this.state.eliminated.slice();
+        if (e.target.checked) {
+            if (!misc.include(this.state.eliminatedEvents, i_checkbox)) { // if i_checkbox is not already in the eliminatedEvents array
+                this.state.eliminatedEvents.push(i_checkbox);
+            }
+            eliminated[i_checkbox] = 1;
+            var tempNoneObj;
+            if (i_checkbox === 1 || i_checkbox === 3 || i_checkbox === 5) {
+                tempNoneObj = CONSTANTS.NONE_ITEM;
+            }
+            else {
+                tempNoneObj = CONSTANTS.NONE_ITEM_EVENT;
+            }
+            tempNoneObj.other = i_checkbox;
+            tempNoneObj.cost = 0.0;
 
-      this.handleUpdateItinerary(tempNoneObj);
-      this.setState({ eliminated: eliminated });
-    }
-    // If the checkbox is unchecked, find and remove the checkbox index from the states
-    else {
-      var index = this.state.eliminatedEvents.indexOf(i_checkbox);
-      let checked = this.state.checked.slice();
-      // from 0 to 6 inclusive
-      if (index > -1) {
-        this.state.eliminatedEvents.splice(index, 1);
-        this.state.savedEvents.splice(index, 1);
-        eliminated[i_checkbox] = 0;
-        checked[i_checkbox] = 0;
+            this.handleUpdateItinerary(tempNoneObj);
+            this.setState({ eliminated: eliminated });
+        }
+        // If the checkbox is unchecked, find and remove the checkbox index from the states
+        else {
+            var index = this.state.eliminatedEvents.indexOf(i_checkbox);
+            let checked = this.state.checked.slice();
+            // from 0 to 6 inclusive
+            if (index > -1) {
+                this.state.eliminatedEvents.splice(index, 1);
+                this.state.savedEvents.splice(index, 1);
+                eliminated[i_checkbox] = 0;
+                checked[i_checkbox] = 0;
 
-        this.setState({ eliminated: eliminated, checked: checked });
-      }
+                this.setState({ eliminated: eliminated, checked: checked });
+            }
+        }
     }
-  }
 
     handleExpand(e) {
         this.setState(prevState => ({
@@ -481,24 +454,9 @@ class Userinput extends Component {
         })
     }
 
-  //EVENT DRAWER FUNCTIONS
-  handleDrawerOpen = () => {
-      this.setState({ openDrawer: true });
-  };
-
-  handleDrawerClose = () => {
-      this.setState({ openDrawer: false });
-  };
-
-  handleChangeAnchor = event => {
-      this.setState({
-          anchor: event.target.value,
-      });
-  };
-
-  // handles what happens when user selects a event/itinerary item from the comprehensive displayed results
-  // to add to the itinerary, or when "x" is clicked or when user adds an event
-  handleUpdateItinerary(itinObj_in) {
+    // handles what happens when user selects a event/itinerary item from the comprehensive displayed results
+    // to add to the itinerary, or when "x" is clicked or when user adds an event
+    handleUpdateItinerary(itinObj_in) {
 
         // only go through this logic if the itinerary is populated (ts the if statement to check)
         if (this.state.resultsArray.length > 0 && this.state.resultsArray !== null && this.state.resultsArray !== undefined) {
@@ -785,7 +743,7 @@ class Userinput extends Component {
         try {
             e.preventDefault();
         }
-        catch(err) {
+        catch (err) {
             //do nothing
         }
 
@@ -950,12 +908,12 @@ class Userinput extends Component {
                                                 // keep the saved events only if the call redo is from event type or radius change
                                                 if (doAPICallsObj.eventTypeSearchTermIsDifferent ||
                                                     doAPICallsObj.radiusIsDifferent) {
-                                                        if (this.state.savedEvents.length > 0 && null !== myStorage.getItem('prevBestItinerarySavedObjects')) {
-                                                            var bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
-                                                            savedEvents = this.state.savedEvents.map(Number);
-                                                        }
-                                                        eliminatedEvents = this.state.eliminatedEvents;
+                                                    if (this.state.savedEvents.length > 0 && null !== myStorage.getItem('prevBestItinerarySavedObjects')) {
+                                                        var bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
+                                                        savedEvents = this.state.savedEvents.map(Number);
                                                     }
+                                                    eliminatedEvents = this.state.eliminatedEvents;
+                                                }
 
                                                 // Preprocess data for genetic algo
                                                 var dataForGA = processAPIDataForGA(data.data,
@@ -965,9 +923,9 @@ class Userinput extends Component {
                                                     this.state.userAddedEvents);
 
                                                 if (this.state.userFoodCost !== 0) {
-                                                    data.data = updateAllFoodCosts(this.state.userFoodCost,data.data);
+                                                    data.data = updateAllFoodCosts(this.state.userFoodCost, data.data);
                                                 }
-                                                data.data = updateAllEventCosts(this.state.userEventCost,data.data);
+                                                data.data = updateAllEventCosts(this.state.userEventCost, data.data);
 
                                                 // Do optimization to find locally "best" itinerary
                                                 var optimItinerary = genAlgo.doGA(dataForGA, this.state.budgetmax, this.state.budgetmin, eliminatedEvents);
@@ -1037,7 +995,7 @@ class Userinput extends Component {
                                                         doAPICallsObj.radiusIsDifferent) {
                                                             tempCheckedState = this.state.checked;
                                                             tempEliminatedState = this.state.eliminated;
-                                                        }
+                                                    }
                                                     this.setState({
                                                         resultsArray: resultsArrayOutput,
                                                         itinTimes: timesOutput,
@@ -1246,38 +1204,38 @@ class Userinput extends Component {
 
 
     handleShowItin() {
-        this.setState({mapItin: 'itinerary'})
+        this.setState({ mapOrResultsState: 'results' })
     }
 
     handleShowMap() {
-        this.setState({mapItin: 'maps'})
+        this.setState({ mapOrResultsState: 'maps' })
     }
 
     handleClickDescOpen(e) {
-        var button_id= e.target.id;
+        var button_id = e.target.id;
         var eventNum = button_id.substr(button_id.length - 1);
 
         const dialogStates = this.state.descDialogOpen;
 
         dialogStates[eventNum] = true;
 
-        this.setState({descDialogOpen: dialogStates})
+        this.setState({ descDialogOpen: dialogStates })
     }
 
     handleClickDescClose(e) {
 
-        const dialogStates = [false,false,false,false,false,false,false];
+        const dialogStates = [false, false, false, false, false, false, false];
 
-        this.setState({descDialogOpen: dialogStates})
+        this.setState({ descDialogOpen: dialogStates })
     }
 
-  render() {
-    // console.log("userinput render function!")
-    var formStyles = ['form-body'];
-    var optionStyles = ['more-options', 'form-body'];
-    const ITINCONTAINER_STYLE = 'itinContainer';
-    const HIDDEN = 'hidden';
-    const OPEN = 'open';
+    render() {
+        // console.log("userinput render function!")
+        var formStyles = ['form-body'];
+        var optionStyles = ['more-options', 'form-body'];
+        const ITINCONTAINER_STYLE = 'itinContainer';
+        const HIDDEN = 'hidden';
+        const OPEN = 'open';
 
         var origins = {
             yelp: yelp_logo,
@@ -1289,28 +1247,29 @@ class Userinput extends Component {
         var ITINERARY_LENGTH = this.state.resultsArray.length;
         const { term, budgetmax, budgetmin, location } = this.state;
         var indents = [];
+        var itinSideInfo = [];
 
-    if(this.state.resultsArray.length > 0) {
-        // Form the itinerary results display
-        for (var i = 0; i < ITINERARY_LENGTH; i++) {
-          var origin = this.state.resultsArray[i].origin;
-          var moreInfoStyles = [];
-          moreInfoStyles.push(ITINCONTAINER_STYLE);
+        if (this.state.resultsArray.length > 0) {
+            // Form the itinerary results display
+            for (var i = 0; i < ITINERARY_LENGTH; i++) {
+                var origin = this.state.resultsArray[i].origin;
+                var moreInfoStyles = [];
+                moreInfoStyles.push(ITINCONTAINER_STYLE);
 
-        if (!this.state.showMoreInfo[i]) {
-          moreInfoStyles.push(HIDDEN);
-        }
-        var lock_icon = <Icon>lock</Icon>;
-        if (!this.state.checked[i]) {
-          lock_icon = <Icon>lock_open</Icon>;
-        }
+                if (!this.state.showMoreInfo[i]) {
+                    moreInfoStyles.push(HIDDEN);
+                }
+                var lock_icon = <Icon>lock</Icon>;
+                if (!this.state.checked[i]) {
+                    lock_icon = <Icon>lock_open</Icon>;
+                }
 
-        var elim_icon = <Icon>add</Icon>;
-        var elimToolTipStr = CONSTANTS.ADD_TOOLTIP_STR;
-        if (!this.state.eliminated[i]) {
-          elim_icon = <Icon>block</Icon>;
-          elimToolTipStr =  CONSTANTS.X_TOOLTIP_STR;
-        }
+                var elim_icon = <Icon>add</Icon>;
+                var elimToolTipStr = CONSTANTS.ADD_TOOLTIP_STR;
+                if (!this.state.eliminated[i]) {
+                    elim_icon = <Icon>block</Icon>;
+                    elimToolTipStr = CONSTANTS.X_TOOLTIP_STR;
+                }
 
         var key = 'tbody-' + i;
         let id = 'checkbox-' + i;
@@ -1336,83 +1295,87 @@ class Userinput extends Component {
             }
         }
 
-        indents.push(
-            <Card className="showActions" key={key}>
-                <div className="itinRowContent">
-                    <div className="resultsName icon-name itinEventCol3">
-                        <div className="justify-end"><a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a></div>
+        var dataNumAttribute = i + 1;
 
-                        <div>
-                            <span className="align">
-                                {this.state.resultsArray[i].url === "" ? <strong>{ truncate_name ? truncate_name : name }</strong> :
-                                    <strong><a href={this.state.resultsArray[i].url} target='_blank'>{ truncate_name ? truncate_name : name }</a></strong> }
-                                {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
+                indents.push(
+                    <div>
+                        <Card className="showActions" key={key}>
+                            <div className="itinRowContent" data-number={dataNumAttribute}>
+                                <div className="resultsName icon-name itinEventCol3">
+                                    <div className="justify-end"><a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a></div>
 
-                            </span>
-                            <div>
-                                <span>
-                                    { this.state.itinTimes[i] == 'Food' ? <div className="displayInline"><i className="fas fa-utensils"></i></div> : <span className="boldIt">{this.state.itinTimes[i]}</span>  } { num_words_desc > 10 ? <div><Button id={'open-'+i} className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}><span id={'open-span-' + i}>Read More</span></Button></div> : description === 0 || !description ? '' : '- ' + description }
-                                </span>
-                                {descDialog}
+                                    <div>
+                                        <span className="align">
+                                            {this.state.resultsArray[i].url === "" ? <strong>{truncate_name ? truncate_name : name}</strong> :
+                                                <strong><a href={this.state.resultsArray[i].url} target='_blank'>{truncate_name ? truncate_name : name}</a></strong>}
+                                            {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
+
+                                        </span>
+                                        <div>
+                                            <span>
+                                                {this.state.itinTimes[i] == 'Food' ? <div className="displayInline"><i className="fas fa-utensils"></i></div> : <span className="boldIt">{this.state.itinTimes[i]}</span>} {num_words_desc > 10 ? <div><Button id={'open-' + i} className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}><span id={'open-span-' + i}>Read More</span></Button></div> : description === 0 || !description ? '' : '- ' + description}
+                                            </span>
+                                            {descDialog}
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div className="itinEventCol4 edit-cost text-warning">
+                                    <div className="costPanel">
+                                        <div className="edit-cost-cont">
+                                            <EditCostComponent
+                                                name={this.state.resultsArray[i].name}
+                                                cost={this.state.resultsArray[i].cost}
+                                                handleCostChange={this.handleEventCostChange}
+                                                i_resultsArray={i}
+                                                origin={this.state.resultsArray[i].origin}
+                                            />
+                                            <ApproxCostToolTip
+                                                approxCostFlag={this.state.resultsArray[i].approximateFee}
+                                                origin={this.state.resultsArray[i].origin}
+                                            />
+                                        </div>
+
+                                        <div className="actions">
+                                            <Button className="lock-button" variant="contained" color="primary">
+                                                <label className="takeSpace" htmlFor={id}>
+                                                    <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
+                                                        {lock_icon}
+                                                    </TooltipMat>
+                                                </label>
+                                                <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
+                                            </Button>
+
+                                            <Button className="elim-button" variant="contained" color="secondary">
+                                                <label className="takeSpace" htmlFor={elim_id}>
+                                                    <TooltipMat placement="top" title={elimToolTipStr}>
+                                                        {elim_icon}
+                                                    </TooltipMat>
+                                                </label>
+                                                <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-                        </div>
-
-                    </div>
-                    <div className="itinEventCol4 edit-cost text-warning">
-                        <div className="costPanel">
-                            <div className="edit-cost-cont">
-                                <EditCostComponent
-                                    name={this.state.resultsArray[i].name}
-                                    cost={this.state.resultsArray[i].cost}
-                                    handleCostChange={this.handleEventCostChange}
-                                    i_resultsArray={i}
+                            <div className={moreInfoStyles.join(' ')}>
+                                <MoreInfoView desc={this.state.resultsArray[i].description}
+                                    phone={this.state.resultsArray[i].phone}
+                                    address={this.state.resultsArray[i].address}
+                                    duration={this.state.resultsArray[i].duration}
+                                    otherInfo={this.state.resultsArray[i].other}
                                     origin={this.state.resultsArray[i].origin}
-                                />
-                                <ApproxCostToolTip
-                                    approxCostFlag={this.state.resultsArray[i].approximateFee}
-                                    origin={this.state.resultsArray[i].origin}
+                                    thumbnail={this.state.resultsArray[i].thumbnail}
+                                    url={this.state.resultsArray[i].url}
+                                    approxFeeFlag={this.state.resultsArray[i].approximateFee}
+                                    defaultDurationFlag={this.state.resultsArray[i].defaultDuration}
                                 />
                             </div>
-
-                            <div className="actions">
-                                <Button className="lock-button" variant="contained" color="primary">
-                                    <label className="takeSpace" htmlFor={id}>
-                                        <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
-                                            {lock_icon}
-                                        </TooltipMat>
-                                    </label>
-                                    <input  className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
-                                </Button>
-
-                                <Button className="elim-button" variant="contained" color="secondary">
-                                    <label className="takeSpace" htmlFor={elim_id}>
-                                        <TooltipMat placement="top" title={elimToolTipStr}>
-                                            {elim_icon}
-                                        </TooltipMat>
-                                    </label>
-                                    <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
-                                </Button>
-                            </div>
-                        </div>
+                        </Card>
                     </div>
-
-                </div>
-                <div className={moreInfoStyles.join(' ')}>
-                    <MoreInfoView desc={this.state.resultsArray[i].description}
-                        phone={this.state.resultsArray[i].phone}
-                        address={this.state.resultsArray[i].address}
-                        duration={this.state.resultsArray[i].duration}
-                        otherInfo={this.state.resultsArray[i].other}
-                        origin={this.state.resultsArray[i].origin}
-                        thumbnail={this.state.resultsArray[i].thumbnail}
-                        url={this.state.resultsArray[i].url}
-                        approxFeeFlag={this.state.resultsArray[i].approximateFee}
-                        defaultDurationFlag={this.state.resultsArray[i].defaultDuration}
-                    />
-                </div>
-            </Card>
-        );
-      }
+                );
+            }
 
             // The Total cost display
             var messageObject;
@@ -1421,14 +1384,14 @@ class Userinput extends Component {
                 messageObject = {
                     textArray: CONSTANTS.EXCEEDED_BUDGET_TEXT,
                     boldIndex: 0,
-                }
+                };
                 totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
             }
             else if (this.state.totalCost < this.state.budgetmin) {
                 messageObject = {
                     textArray: CONSTANTS.LESS_THAN_MINBUDGET_TEXT,
                     boldIndex: 0,
-                }
+                };
                 totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
             }
             else {
@@ -1457,7 +1420,7 @@ class Userinput extends Component {
                             }
                         </tbody>
                     </table>
-                </div>)
+                </div>);
 
                 var goAgainButton = [];
 
@@ -1551,94 +1514,80 @@ class Userinput extends Component {
 
         //Construct all filtered data into an object for the GA
         if (!misc.isObjEmpty(this.state.allApiData)) {
-            var numMeetupEvents = eventsMultiResults[2].Event1.length +eventsMultiResults[2].Event2.length +eventsMultiResults[2].Event3.length +eventsMultiResults[2].Event4.length;
-            var numEventbriteEvents = eventsMultiResults[0].Event1.length +eventsMultiResults[0].Event2.length +eventsMultiResults[0].Event3.length +eventsMultiResults[0].Event4.length;
-            var numSeatgeekEvents = eventsMultiResults[3].Event1.length +eventsMultiResults[3].Event2.length +eventsMultiResults[3].Event3.length +eventsMultiResults[3].Event4.length;
-            var numGooglePlaces = eventsMultiResults[1].Event1.length +eventsMultiResults[1].Event2.length +eventsMultiResults[1].Event3.length +eventsMultiResults[1].Event4.length;
-        this.state.filteredApiData = {
-            meetupItemsGlobal: eventsMultiResults[2],
-            eventbriteGlobal: eventsMultiResults[0],
-            seatgeekItemsGlobal: eventsMultiResults[3],
-            googlePlacesGlobal: eventsMultiResults[1],
-            yelpBreakfastItemsGlobal: foodMultiResults[0],
-            yelpLunchItemsGlobal: foodMultiResults[1],
-            yelpDinnerItemsGlobal: foodMultiResults[2],
-            numDataPoints: {
-                numMeetupEvents: numMeetupEvents,
-                numYelpEvents: 0,
-                numEventbriteEvents: numEventbriteEvents,
-                numSeatgeekEvents: numSeatgeekEvents,
-                numGooglePlaces: numGooglePlaces,
-                numYelpBreakfastPlaces: foodMultiResults[0].length,
-                numYelpLunchPlaces: foodMultiResults[1].length,
-                numYelpDinnerPlaces: foodMultiResults[2].length,
-                numOfEvents: numMeetupEvents+numEventbriteEvents+numSeatgeekEvents+numGooglePlaces,
-                numOfFoodPlaces: foodMultiResults[0].length+foodMultiResults[1].length+foodMultiResults[2].length,
+            var numMeetupEvents = eventsMultiResults[2].Event1.length + eventsMultiResults[2].Event2.length + eventsMultiResults[2].Event3.length + eventsMultiResults[2].Event4.length;
+            var numEventbriteEvents = eventsMultiResults[0].Event1.length + eventsMultiResults[0].Event2.length + eventsMultiResults[0].Event3.length + eventsMultiResults[0].Event4.length;
+            var numSeatgeekEvents = eventsMultiResults[3].Event1.length + eventsMultiResults[3].Event2.length + eventsMultiResults[3].Event3.length + eventsMultiResults[3].Event4.length;
+            var numGooglePlaces = eventsMultiResults[1].Event1.length + eventsMultiResults[1].Event2.length + eventsMultiResults[1].Event3.length + eventsMultiResults[1].Event4.length;
+            this.state.filteredApiData = {
+                meetupItemsGlobal: eventsMultiResults[2],
+                eventbriteGlobal: eventsMultiResults[0],
+                seatgeekItemsGlobal: eventsMultiResults[3],
+                googlePlacesGlobal: eventsMultiResults[1],
+                yelpBreakfastItemsGlobal: foodMultiResults[0],
+                yelpLunchItemsGlobal: foodMultiResults[1],
+                yelpDinnerItemsGlobal: foodMultiResults[2],
+                numDataPoints: {
+                    numMeetupEvents: numMeetupEvents,
+                    numYelpEvents: 0,
+                    numEventbriteEvents: numEventbriteEvents,
+                    numSeatgeekEvents: numSeatgeekEvents,
+                    numGooglePlaces: numGooglePlaces,
+                    numYelpBreakfastPlaces: foodMultiResults[0].length,
+                    numYelpLunchPlaces: foodMultiResults[1].length,
+                    numYelpDinnerPlaces: foodMultiResults[2].length,
+                    numOfEvents: numMeetupEvents + numEventbriteEvents + numSeatgeekEvents + numGooglePlaces,
+                    numOfFoodPlaces: foodMultiResults[0].length + foodMultiResults[1].length + foodMultiResults[2].length,
+                }
             }
         }
-    }
-
-        const styles = {
-            root: {
-                flexGrow: 1,
-            },
-            flex: {
-                flexGrow: 1,
-            },
-            menuButton: {
-                marginLeft: -12,
-                marginRight: 20,
-            },
-        };
-
-    //EVENTS DRAWER
 
     const { classes, theme } = this.props;
-    const { anchor, openDrawer } = this.state;
-    // var columnSize = 'col-md-12';
-    // var eventsContent = ['tab-content', 'col-md-7', 'itinerary', 'hidden'];
-    // if(!eventsContent.includes('hidden')) {
-    //     columnSize = 'col-md-5';
-    // }
-    // var itinContent = ['mapsfix', 'itinerary', columnSize];
 
-    var eventsContent = ['tab-content', 'itinerary'];
-    // if(!eventsContent.includes('hidden')) {
-    //     columnSize = 'col-md-5';
-    // }
-    var itinContent = ['mapsfix', 'itinerary'];
+        // Handling itinerary div width when results presented
+        var itinContent = ['mapsfix', 'itinerary'];
+        if (this.state.resultsArray.length > 0) { //if there are itinerary results set the div width to 8 columns
+            itinContent.push('col-md-7');
+        }
+        else {
+            itinContent.push('col-md-12'); // else set the div width to 12 columns (100% of the element by definition)
+        }
 
-    var onlyItin = ['itinDiv','clearfix','hidden'];
-    if(this.state.mapItin == 'itinerary' && this.state.resultsArray.length > 0) {
-        onlyItin.pop();
-    }
+        // Handle switching views between the results and the map
+        var mapAndResultsContent = ['mapAndResults', 'clearfix', 'hidden'];
+        if (this.state.mapOrResultsState.localeCompare('results') === 0 && this.state.resultsArray.length > 0) {
+            mapAndResultsContent.pop();
+        }
 
-    // Handle tab classes dynamically. Also, whenever handleUpdateEventTypeSearch is called, reset the tab to the event tab
-    var genericTabsClass = ['itinerary', 'tab-pane', 'fade'];
-    var eventsTabsClass = genericTabsClass.slice();
-    var restaurantsTabsClass = genericTabsClass.slice();
-    var moreOptionsTabsClass = genericTabsClass.slice();
+        // Itinerary div css classes
+        var onlyItin = ['itinDiv', 'clearfix'];
+        var mapAndResultsDiv = ['col-md-5','clearfix'];
 
-    var genericLinkClass = ['nav-item', 'nav-link'];
-    var eventsLinkClass = genericLinkClass.slice();
-    var restaurantsLinkClass = genericLinkClass.slice();
-    var moreOptionsLinkClass = genericLinkClass.slice();
+        // Handle tab classes dynamically. Also, whenever handleUpdateEventTypeSearch is called, reset the tab to the event tab
+        var genericTabsClass = ['itinerary', 'tab-pane', 'fade'];
+        var eventsTabsClass = genericTabsClass.slice();
+        var restaurantsTabsClass = genericTabsClass.slice();
+        var moreOptionsTabsClass = genericTabsClass.slice();
 
-    if (this.state.tabState.localeCompare(CONSTANTS.NAV_EVENT_TAB_ID) === 0) {
-        eventsTabsClass.push('show');
-        eventsTabsClass.push('active');
-        eventsLinkClass.push('active');
-    }
-    else if (this.state.tabState.localeCompare(CONSTANTS.NAV_FOOD_TAB_ID) === 0) {
-        restaurantsTabsClass.push('show');
-        restaurantsTabsClass.push('active');
-        restaurantsLinkClass.push('active');
-    }
-    else {
-        moreOptionsTabsClass.push('show');
-        moreOptionsTabsClass.push('active');
-        moreOptionsLinkClass.push('active');
-    }
+        var genericLinkClass = ['nav-item', 'nav-link'];
+        var eventsLinkClass = genericLinkClass.slice();
+        var restaurantsLinkClass = genericLinkClass.slice();
+        var moreOptionsLinkClass = genericLinkClass.slice();
+
+        if (this.state.tabState.localeCompare(CONSTANTS.NAV_EVENT_TAB_ID) === 0) {
+            eventsTabsClass.push('show');
+            eventsTabsClass.push('active');
+            eventsLinkClass.push('active');
+        }
+        else if (this.state.tabState.localeCompare(CONSTANTS.NAV_FOOD_TAB_ID) === 0) {
+            restaurantsTabsClass.push('show');
+            restaurantsTabsClass.push('active');
+            restaurantsLinkClass.push('active');
+        }
+        else {
+            moreOptionsTabsClass.push('show');
+            moreOptionsTabsClass.push('active');
+            moreOptionsLinkClass.push('active');
+        }
 
     return (
       <div className="Userinput">
@@ -1660,26 +1609,26 @@ class Userinput extends Component {
                         <div className="inputsRow">
                            <div className="inputContainers">
                               <div className="form-group mb-2">
-                                  <h6>WHERE ARE YOU HEADED?</h6>
+                                  <h6>{CONSTANTS.HEADER_WHERE_STR}</h6>
                                   <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
                                     <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" />
                                   </TooltipMat>
                               </div>
                            </div>
                             <div className="inputContainers">
-                                <h6>PICK YOUR DATES</h6>
+                                <h6>{CONSTANTS.HEADER_WHEN_STR}</h6>
                                 <div className="form-group mb-2 datePickerWrapper">
                                     <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
                                  </div>
                             </div>
                             <div className="inputContainers">
-                                <h6>HOW FAR? </h6>
+                                <h6>{CONSTANTS.HEADER_RADIUS_STR}</h6>
                               <div className="form-group mb-2">
                                 <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
                               </div>
                             </div>
                             <div className="inputContainers">
-                                <h6>WHAT'S YOUR BUDGET?</h6>
+                                <h6>{CONSTANTS.HEADER_BUDGET_STR}</h6>
                                 {
                                     // <div className="form-group mb-2">
                                     // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
@@ -1708,40 +1657,25 @@ class Userinput extends Component {
           </div>
         {/* <Filters/> */}
 
+        {this.state.resultsArray.length > 0 ?
+            <div className="mapAndResultsActions" key="toggleItin">
+                <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
+                <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
+            </div> : ''
+        }
 
-          { this.state.resultsArray.length > 0 ? <IconButton
-          color="inherit"
-          aria-label="Open drawer"
-          onClick={this.handleDrawerOpen}
-          className={classNames(classes.menuButton, openDrawer && classes.hide)}
-        >
-          <MenuIcon />
-        </IconButton> : '' }
-
-        <div className="row eventsCont apidata">
-            <Drawer
-            variant="persistent"
-            anchor={anchor}
-            open={openDrawer}
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            >
-                <div className={classes.drawerHeader}>
-                  <IconButton onClick={this.handleDrawerClose}>
-                    {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                  </IconButton>
-                </div>
-          <div className={eventsContent.join(' ')}>
-          <div  className="filters-div">
-              <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
-              setDistance={this.handleFilterRadius}></DistanceFilter>
-              <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
-              {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
-              <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
-              <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
-              <PriceFilter setPriceRange={this.handlePriceFilter} ></PriceFilter>
-          </div>
+                <div className="row eventsCont apidata">
+                    <div className={mapAndResultsDiv.join(' ')}>
+                    <div className={mapAndResultsContent.join(' ')}>
+                        <div className="filters-div">
+                            <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
+                                setDistance={this.handleFilterRadius}></DistanceFilter>
+                            <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
+                            {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
+                                <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
+                                <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
+                            <PriceFilter setPriceRange={this.handlePriceFilter} ></PriceFilter>
+                        </div>
 
 
 
@@ -1784,60 +1718,49 @@ class Userinput extends Component {
                         </div>
 
 
-              <div className={moreOptionsTabsClass.join(' ')} id="nav-moreoptions" role="tabpanel" aria-labelledby="nav-moreoptions-tab">
-                  {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost}
+                        <div className={moreOptionsTabsClass.join(' ')} id="nav-moreoptions" role="tabpanel" aria-labelledby="nav-moreoptions-tab">
+                            {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost}
                                 updateUserEventCost={this.handleUpdateUserEventCost}
                                 updateEventTypeSearch={this.handleUpdateEventTypeSearch}
                                 currentFoodCost={this.state.userFoodCost}
-                                currentEventCost={this.state.userEventCost}/>}
-                </div>
-            </div>
-           </Drawer>
-
-          {/* ITINERARY CONTENT */}
-          <main
-            className={classNames(classes.content, classes[`content-${anchor}`], {
-              [classes.contentShift]: openDrawer,
-              [classes[`contentShift-${anchor}`]]: openDrawer,
-            })}
-          >
-              <div className={itinContent.join(' ')}>
-                {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
-                {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
-
-                  <div>
-                    {this.state.resultsArray.length > 0 ?
-                      <div className="itinActions" key="toggleItin">
-                          <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Itinerary</Button>
-                          <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
-                      </div> : ''
-                    }
-
-                    <div className={onlyItin.join(' ')}>
-                        <div className="ItinEvents clearfix">
-                            {indents}
-                        </div>
-                        <div className="itinFooter">
-                            {this.state.loading === false ? <div className="totalCost">
-                              {total}
-                            </div> : ''}
-
-                            {this.state.loading === false ? <div>
-                              {goAgainButton}</div>
-                              : ''}
+                                currentEventCost={this.state.userEventCost} />}
                         </div>
                     </div>
+                    <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray} center={this.state.center} />
+                    </div>
 
-                  </div>}
-              </div>
-              <GoogleApiWrapper show={this.state.mapItin} results={this.state.resultsArray} center={this.state.center} />
+                    {/* ITINERARY CONTENT */}
+                    <main className={itinContent.join(' ')}>
+                        <div>
+                            {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
+                            {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
 
-          </main>
-        </div>
-        <div >
-            {<Footer/>}
-        </div>
-      </div>
+                                <div>
+
+                                    <div className={onlyItin.join(' ')}>
+                                        <div className="ItinEvents clearfix">
+                                            {indents}
+                                        </div>
+                                        <div className="itinFooter">
+                                            {this.state.loading === false ? <div className="totalCost">
+                                                {total}
+                                            </div> : ''}
+
+                                            {this.state.loading === false ? <div>
+                                                {goAgainButton}</div>
+                                                : ''}
+                                        </div>
+                                    </div>
+
+                                </div>}
+                        </div>
+
+                    </main>
+                </div>
+                <div >
+                    {<Footer />}
+                </div>
+            </div>
 
         )
     }
@@ -2375,65 +2298,65 @@ function countAndFilterFoodApiData(allApiData, mealFilterFlags, priceFilterRange
 }
 
 function updateAllFoodCosts(userFoodCost, allApiData) {
-// This function sets all food costs to userFoodCost unless it is 0. If it is zero, the food costs
-// will be the default yelp costs found in the constants file
+    // This function sets all food costs to userFoodCost unless it is 0. If it is zero, the food costs
+    // will be the default yelp costs found in the constants file
     if (allApiData !== null && allApiData !== undefined && !misc.isObjEmpty(allApiData)) {
-    var tempLen = allApiData.yelpBreakfastItemsGlobal.length;
-    for (var i = 0; i < tempLen; i++) {
-        if (userFoodCost === 0) {
-            allApiData.yelpBreakfastItemsGlobal[i].cost =
-            CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpBreakfastItemsGlobal[i].numDollarSigns-1];
+        var tempLen = allApiData.yelpBreakfastItemsGlobal.length;
+        for (var i = 0; i < tempLen; i++) {
+            if (userFoodCost === 0) {
+                allApiData.yelpBreakfastItemsGlobal[i].cost =
+                    CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpBreakfastItemsGlobal[i].numDollarSigns - 1];
+            }
+            else {
+                allApiData.yelpBreakfastItemsGlobal[i].cost = userFoodCost;
+            }
         }
-        else {
-            allApiData.yelpBreakfastItemsGlobal[i].cost = userFoodCost;
+        tempLen = allApiData.yelpLunchItemsGlobal.length;
+        for (var i = 0; i < tempLen; i++) {
+            if (userFoodCost === 0) {
+                allApiData.yelpLunchItemsGlobal[i].cost =
+                    CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpLunchItemsGlobal[i].numDollarSigns - 1];
+            }
+            else {
+                allApiData.yelpLunchItemsGlobal[i].cost = userFoodCost;
+            }
+        }
+        tempLen = allApiData.yelpDinnerItemsGlobal.length;
+        for (var i = 0; i < tempLen; i++) {
+            if (userFoodCost === 0) {
+                allApiData.yelpDinnerItemsGlobal[i].cost =
+                    CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpDinnerItemsGlobal[i].numDollarSigns - 1];
+            }
+            else {
+                allApiData.yelpDinnerItemsGlobal[i].cost = userFoodCost;
+            }
         }
     }
-    tempLen = allApiData.yelpLunchItemsGlobal.length;
-    for (var i = 0; i < tempLen; i++) {
-        if (userFoodCost === 0) {
-            allApiData.yelpLunchItemsGlobal[i].cost =
-            CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpLunchItemsGlobal[i].numDollarSigns-1];
-        }
-        else {
-            allApiData.yelpLunchItemsGlobal[i].cost = userFoodCost;
-        }
-    }
-    tempLen = allApiData.yelpDinnerItemsGlobal.length;
-    for (var i = 0; i < tempLen; i++) {
-        if (userFoodCost === 0) {
-            allApiData.yelpDinnerItemsGlobal[i].cost =
-                CONSTANTS.DEFAULT_YELP_COSTS[allApiData.yelpDinnerItemsGlobal[i].numDollarSigns - 1];
-        }
-        else {
-            allApiData.yelpDinnerItemsGlobal[i].cost = userFoodCost;
-        }
-    }
-}
 
     return allApiData;
 }
 
 function updateAllEventCosts(userEventCost, allApiData) {
-// This function sets all event costs that were not specifically set by the event api to whatever the user
-// chooses.
-if (allApiData !== null && allApiData !== undefined && !misc.isObjEmpty(allApiData)) {
-    for (var i = 0; i < CONSTANTS.NUM_OF_EVENT_APIS; i++) { // cycle through meetup -> google places
-        for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots
-            var eventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]];
-            if (eventObj) {
-                var lenEvents = eventObj.length;
-                for (var iEvent = 0; iEvent < lenEvents; iEvent++) {
-                    var singleEventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]][iEvent];
-                    if (singleEventObj.approximateFee) { // only update the cost if the event's cost is currently an approximate (ie not set by the api or not accurate)
-                        allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]][iEvent].cost
-                            = userEventCost;
+    // This function sets all event costs that were not specifically set by the event api to whatever the user
+    // chooses.
+    if (allApiData !== null && allApiData !== undefined && !misc.isObjEmpty(allApiData)) {
+        for (var i = 0; i < CONSTANTS.NUM_OF_EVENT_APIS; i++) { // cycle through meetup -> google places
+            for (var j = 0; j < CONSTANTS.NUM_OF_EVENT_SLOTS; j++) { // cycle through event1 -> event4 itinerary slots
+                var eventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]];
+                if (eventObj) {
+                    var lenEvents = eventObj.length;
+                    for (var iEvent = 0; iEvent < lenEvents; iEvent++) {
+                        var singleEventObj = allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]][iEvent];
+                        if (singleEventObj.approximateFee) { // only update the cost if the event's cost is currently an approximate (ie not set by the api or not accurate)
+                            allApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[j * 2]][iEvent].cost
+                                = userEventCost;
+                        }
                     }
                 }
-            }
 
+            }
         }
     }
-}
     return allApiData;
 }
 

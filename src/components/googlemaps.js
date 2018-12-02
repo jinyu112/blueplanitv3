@@ -69,6 +69,7 @@ export class MapContainer extends Component {
                     <Marker key={key} onClick={this.onMarkerClick}
                         name={this.props.results[i].name}
                         position={this.props.results[i].location}
+                        title={(i+1).toString()}
                     />
                 );
                 markers.push(
@@ -88,7 +89,9 @@ export class MapContainer extends Component {
         const mapClasses  = ['maps', 'hidden'];
 
         if(this.props.show == 'maps') {
+            if (this.props.results.length>0) {
             mapClasses.pop();
+            }
         };
 
         return (
