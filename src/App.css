@@ -51,10 +51,11 @@
     border: none;
     transition: .2s;
     width: 100% !important;
-    height: 48px !important;
+    height: 36px !important;
+    height: 36px !important;
     display: table !important;
     border-radius: 4px !important;
-    font-size: 17px!important;
+    font-size: 14px!important;
 }
 
 
@@ -107,7 +108,6 @@
 }
 
 .search-btn {
-    text-align: left;
     margin-top: 2px;
 }
 
@@ -117,10 +117,10 @@
 }
 
 .search-btn button {
-    background-color: #ffc107!important;
+    background-color: #0066d2!important;
     width: 80%;
     height: 100%;
-    font-size: 1.4em;
+    font-size: 14px;
     font-family: "Open Sans";
     border-radius: 10px;
     font-weight: 700;
@@ -128,7 +128,7 @@
 .inputContainers {
     /*background-color: rgba(255,255,255,0.2);*/
     background-color: rgba(255,255,255,0.5);
-    padding: 18px 15px 0;
+    padding: 12px 11px 0;
     border-radius: 10px;
     text-align: left;
     font-family: 'Open Sans'!important;
@@ -137,7 +137,7 @@
 
 .inputContainers h6 {
     font-weight: 700;
-    font-size: 16px !important;
+    font-size: 14px !important;
 }
 
 .react-datepicker-wrapper, .react-datepicker__input-container {
@@ -547,17 +547,12 @@ button.close {
 
 .footer {
     border: 10px;
-    padding-top: 10%;
-    padding-bottom: 5%;
-    padding-left: 5%;
-    padding-right: 5%;
     font-size: 12px;
-    /* border-top: solid #222;
-    border-top-width: 1px; */
+    padding-bottom: 2em;
 }
 
 .apidata {
-    padding-bottom: 5%;
+    padding-bottom: 2em;
 }
 
 .modal-body {
@@ -808,7 +803,7 @@ button.close {
 
 .banner {
     flex-grow: 1;
-    width: 1380px;
+    width: 1140px;
     margin: auto;
 }
 
@@ -836,7 +831,7 @@ header::before {
 }
 
 .headerText h1 {
-    font-size: 56px;
+    font-size: 2.5em;
     font-weight: 600;
     line-height: 0.7;
     /*color: #212529;*/
@@ -857,8 +852,9 @@ input:-webkit-autofill:active {
 
 .topNavBar {
     text-transform: uppercase;
-    font-size: 36px;
+    font-size: 1.8em;
     text-align: left;
+    display: inline;
 }
 .nav-bar-logo {
     font-weight: 700;
@@ -867,3 +863,49 @@ input:-webkit-autofill:active {
 .MuiToolbar-gutters-49 {
     padding: 0px !important;
 }
+
+.footer ul {
+    text-decoration: none;
+    list-style: none;
+    text-align: left;
+    margin: auto;
+    width: 100%;
+    font-size: 12px;
+}
+.footer ul > li:first-child {
+    margin-bottom: 1em;
+}
+.footer-2 li:nth-child(3), .footer-2 li:nth-child(4) {
+    padding-bottom: 10px;
+}
+
+.footer img {
+    max-width: 50%;
+}
+
+.yelp-item img {
+    margin-top: 8px;
+    max-width: 42%;
+}
+.hover-item {
+    transition: 500ms;
+}
+.hover-item:hover {
+    transform: scale(1.2);
+}
+
+.footer li {
+    font-size: 1.2em;
+}
+
+.social-icons li {
+    display: inline-block;
+    margin-right: 1em!important;
+}
+
+.social-icons img {
+    max-width: 22px;
+}
+
+.mb-2 {}
+margin=bottom: none;

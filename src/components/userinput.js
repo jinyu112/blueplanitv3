@@ -26,7 +26,6 @@ import Footer from './footer.js';
 import TooltipMat from '@material-ui/core/Tooltip';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -1330,8 +1329,8 @@ class Userinput extends Component {
         let truncate_name = 0;
         if(name) {
             num_words_name = name.split(/\W+/).length;
-            if(num_words_name > 8) {
-                let result = this.state.resultsArray[i].name.split(/\W+/).slice(0,7).join(" ");
+            if(num_words_name > 9) {
+                let result = this.state.resultsArray[i].name.split(/\W+/).slice(0,10).join(" ");
                 truncate_name = result + ' ...';
                 truncate_name = <TooltipMat placement="top" title={name}><span>{truncate_name}</span></TooltipMat>
             }
@@ -1710,14 +1709,14 @@ class Userinput extends Component {
         {/* <Filters/> */}
 
 
-        <IconButton
+          { this.state.resultsArray.length > 0 ? <IconButton
           color="inherit"
           aria-label="Open drawer"
           onClick={this.handleDrawerOpen}
           className={classNames(classes.menuButton, openDrawer && classes.hide)}
         >
           <MenuIcon />
-        </IconButton>
+        </IconButton> : '' }
 
         <div className="row eventsCont apidata">
             <Drawer
