@@ -8,6 +8,7 @@ import googleplaces from '../images/googleplaces.png';
 import eventbrite from '../images/eventbrite.png';
 import instagram from '../images/instagram-logo.png';
 import facebook from '../images/facebook-logo.png';
+import youtube from '../images/youtube.png';
 
 export class Footer extends Component {
     constructor(props) {
@@ -44,6 +45,7 @@ export class Footer extends Component {
                     <li><strong>CONNECT WITH US</strong></li>
                     <li className="hover-item"><img src={facebook}/></li>
                     <li className="hover-item"><img src={instagram}/></li>
+                    <li className="hover-item"><img src={youtube}/></li>
                 </ul>
             </div>
               <div className="col-md-2">
