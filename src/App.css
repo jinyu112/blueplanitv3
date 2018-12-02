@@ -907,5 +907,6 @@ input:-webkit-autofill:active {
     max-width: 22px;
 }
 
-.mb-2 {}
-margin=bottom: none;
+.mb-2 {
+    margin-bottom: none;
+}
