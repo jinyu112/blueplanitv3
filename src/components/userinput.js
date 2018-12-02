@@ -140,7 +140,7 @@ class Userinput extends Component {
             eventFilterFlags: [1, 1, 1, 1, 1], // ordered left to right: meetup, eventbrite, seatgeek, google places, select/unselect all options
             apiCalls: true,
 
-            mapOrResultsState: 'results',
+            mapOrResultsState: 'maps',
 
             //Event description
             descDialogOpen: [false, false, false, false, false, false, false],
@@ -1299,7 +1299,6 @@ class Userinput extends Component {
 
                 indents.push(
                     <div>
-                        {/* <div>asdf</div> */}
                         <Card className="showActions" key={key}>
                             <div className="itinRowContent" data-number={dataNumAttribute}>
                                 <div className="resultsName icon-name itinEventCol3">

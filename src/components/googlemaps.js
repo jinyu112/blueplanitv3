@@ -89,7 +89,9 @@ export class MapContainer extends Component {
         const mapClasses  = ['maps', 'hidden'];
 
         if(this.props.show == 'maps') {
+            if (this.props.results.length>0) {
             mapClasses.pop();
+            }
         };
 
         return (
