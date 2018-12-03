@@ -27,8 +27,6 @@ import TooltipMat from '@material-ui/core/Tooltip';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import DistanceFilter from './distanceFilter.js';
 import ApiFilter from './apiFilter.js';
 import TimeFilter from './timeFilter.js';
@@ -48,52 +46,9 @@ import CONSTANTS from '../constants.js';
 import DescDialog from './descDialog.js'
 import Icon from "@material-ui/core/Icon/Icon";
 
-
 //https://developers.google.com/maps/documentation/geocoding/usage-and-billing
 //0-100k queries = $5 per 1k queries
 var geocoder = require('geocoder');
-
-const styles = theme => ({
-    root: {
-        flexGrow: 1,
-    },
-    appFrame: {
-        height: 430,
-        zIndex: 1,
-        overflow: 'hidden',
-        position: 'relative',
-        display: 'flex',
-        width: '100%',
-    },
-    menuButton: {
-        marginLeft: 12,
-        marginRight: 20,
-    },
-    hide: {
-        display: 'none',
-    },
-    content: {
-        flexGrow: 1,
-        backgroundColor: theme.palette.background.default,
-        padding: theme.spacing.unit * 3,
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-    },
-    contentShift: {
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    },
-    'contentShift-left': {
-        marginLeft: 0,
-    },
-    'contentShift-right': {
-        marginRight: 0,
-    },
-});
 
 class Userinput extends Component {
     constructor(props) {
@@ -140,6 +95,8 @@ class Userinput extends Component {
             apiCalls: true,
 
             mapOrResultsState: 'maps',
+            //Height of Itinerary Div
+            itinHeight: 0,
 
             //Event description
             descDialogOpen: [false, false, false, false, false, false, false],
@@ -1229,6 +1186,13 @@ class Userinput extends Component {
         this.setState({ descDialogOpen: dialogStates })
     }
 
+    componentDidMount() {
+        const itinHeight = this.itineraryDiv.clientHeight;
+        this.setState({ itinHeight: itinHeight }, console.log(this.state.itinHeight));
+
+
+    }
+
     render() {
         // console.log("userinput render function!")
         var formStyles = ['form-body'];
@@ -1544,13 +1508,13 @@ class Userinput extends Component {
     const { classes, theme } = this.props;
 
         // Handling itinerary div width when results presented
-        var itinContent = ['mapsfix', 'itinerary'];
-        if (this.state.resultsArray.length > 0) { //if there are itinerary results set the div width to 8 columns
-            itinContent.push('col-md-7');
-        }
-        else {
-            itinContent.push('col-md-12'); // else set the div width to 12 columns (100% of the element by definition)
-        }
+        var itinContent = ['main','mapsfix', 'itinerary'];
+        // if (this.state.resultsArray.length > 0) { //if there are itinerary results set the div width to 8 columns
+        //     itinContent.push('col-md-7');
+        // }
+        // else {
+        //     itinContent.push('col-md-12'); // else set the div width to 12 columns (100% of the element by definition)
+        // }
 
         // Handle switching views between the results and the map
         var mapAndResultsContent = ['mapAndResults', 'clearfix', 'hidden'];
@@ -1560,7 +1524,7 @@ class Userinput extends Component {
 
         // Itinerary div css classes
         var onlyItin = ['itinDiv', 'clearfix'];
-        var mapAndResultsDiv = ['col-md-5','clearfix'];
+        var mapAndResultsDiv = ['clearfix', 'mapAndResultsDiv','sidebar'];
 
         // Handle tab classes dynamically. Also, whenever handleUpdateEventTypeSearch is called, reset the tab to the event tab
         var genericTabsClass = ['itinerary', 'tab-pane', 'fade'];
@@ -1603,7 +1567,7 @@ class Userinput extends Component {
                 <div className="headerCopy">
 
                 </div>
-                <Toolbar>
+                <Toolbar className="toolbar">
                     <form autoComplete="off" onSubmit={this.handleSubmit}>
                       <div>
                         <div className="inputsRow">
@@ -1648,119 +1612,123 @@ class Userinput extends Component {
                                         {CONSTANTS.SEARCH_BUTTON_STR}
                                     </Button>
                               </TooltipMat>
-                          </div>
+                            </div>
                         </div>
                      </div>
                 </form>
               </Toolbar>
             </AppBar>
           </div>
-        {/* <Filters/> */}
-
-        {this.state.resultsArray.length > 0 ?
-            <div className="mapAndResultsActions" key="toggleItin">
-                <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
-                <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
-            </div> : ''
-        }
-
-                <div className="row eventsCont apidata">
-                    <div className={mapAndResultsDiv.join(' ')}>
-                    <div className={mapAndResultsContent.join(' ')}>
-                        <div className="filters-div">
-                            <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
-                                setDistance={this.handleFilterRadius}></DistanceFilter>
-                            <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
-                            {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
-                                <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
-                                <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
-                            <PriceFilter setPriceRange={this.handlePriceFilter} ></PriceFilter>
-                        </div>
-
-
-
-                        {/* All data gets shown here (api data, and user added data) */}
-                        <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                            <a onClick={this.handleTabState} className={eventsLinkClass.join(' ')} id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
-                            <a onClick={this.handleTabState} className={restaurantsLinkClass.join(' ')} id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
-                            <a onClick={this.handleTabState} className={moreOptionsLinkClass.join(' ')} id={CONSTANTS.NAV_MOREOPTIONS_TAB_ID} data-toggle="tab" href="#nav-moreoptions" role="tab" aria-controls="nav-moreoptions" aria-selected="false"> More Options</a>
-                        </div>
-                        <div className={eventsTabsClass.join(' ')} id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
-
-                            {<MultiResultDisplay apiData={eventsMultiResults}
-                                displayCategory={1} //events
-                                pageNumber={this.state.pageNumber}
-                                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
-                                priceFilterRange={this.state.priceFilterRange}
-                                maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
-                                minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
-                                eventFilterFlags={this.state.eventFilterFlags}
-                                filterRadius={this.state.filterRadius}
-                                maxRadius={this.state.searchRadiusForFilterCompare}
-                                tabState={this.state.tabState} />}
-                            {pages}
-
-                        </div>
-
-                        <div className={restaurantsTabsClass.join(' ')} id="nav-food" role="tabpanel" aria-labelledby="nav-options-tab">
-                            {<MultiResultDisplay apiData={foodMultiResults}
-                                displayCategory={0} //restaurants
-                                pageNumber={this.state.foodPageNumber}
-                                AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
-                                priceFilterRange={this.state.priceFilterRange}
-                                maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
-                                minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
-                                eventFilterFlags={this.state.eventFilterFlags}
-                                filterRadius={this.state.filterRadius}
-                                maxRadius={this.state.searchRadiusForFilterCompare}
-                                tabState={this.state.tabState} />}
-                            {foodPages}
-                        </div>
+          <div className="content-parent-div clearfix">
+              <div className="row">
+                  {this.state.resultsArray.length > 0 ?
+                      <div className="col-md-12 mapAndResultsActions" key="toggleItin">
+                          <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
+                          <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
+                      </div> : ''
+                  }
+              </div>
+              <div className="wrapper eventsCont apidata">
+                  <div className={mapAndResultsDiv.join(' ')}>
+                      <div className={mapAndResultsContent.join(' ')}>
+                          <div className="filters-div">
+                              <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
+                                              setDistance={this.handleFilterRadius}></DistanceFilter>
+                              <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
+                              {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
+                                  <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
+                                  <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
+                              <PriceFilter setPriceRange={this.handlePriceFilter} ></PriceFilter>
+                          </div>
 
 
-                        <div className={moreOptionsTabsClass.join(' ')} id="nav-moreoptions" role="tabpanel" aria-labelledby="nav-moreoptions-tab">
-                            {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost}
-                                updateUserEventCost={this.handleUpdateUserEventCost}
-                                updateEventTypeSearch={this.handleUpdateEventTypeSearch}
-                                currentFoodCost={this.state.userFoodCost}
-                                currentEventCost={this.state.userEventCost} />}
-                        </div>
-                    </div>
-                    <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray} center={this.state.center} />
-                    </div>
 
-                    {/* ITINERARY CONTENT */}
-                    <main className={itinContent.join(' ')}>
-                        <div>
-                            {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
-                            {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
+                          {/* All data gets shown here (api data, and user added data) */}
+                          <div className="nav nav-tabs" id="nav-tab" role="tablist">
+                              <a onClick={this.handleTabState} className={eventsLinkClass.join(' ')} id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab" aria-controls="nav-events" aria-selected="true">Events and Places</a>
+                              <a onClick={this.handleTabState} className={restaurantsLinkClass.join(' ')} id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab" aria-controls="nav-food" aria-selected="false"> Restaurants</a>
+                              <a onClick={this.handleTabState} className={moreOptionsLinkClass.join(' ')} id={CONSTANTS.NAV_MOREOPTIONS_TAB_ID} data-toggle="tab" href="#nav-moreoptions" role="tab" aria-controls="nav-moreoptions" aria-selected="false"> More Options</a>
+                          </div>
+                          <div className={eventsTabsClass.join(' ')} id="nav-events" role="tabpanel" aria-labelledby="nav-options-tab">
 
-                                <div>
+                              {<MultiResultDisplay apiData={eventsMultiResults}
+                                                   displayCategory={1} //events
+                                                   pageNumber={this.state.pageNumber}
+                                                   AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
+                                                   priceFilterRange={this.state.priceFilterRange}
+                                                   maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
+                                                   minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
+                                                   eventFilterFlags={this.state.eventFilterFlags}
+                                                   filterRadius={this.state.filterRadius}
+                                                   maxRadius={this.state.searchRadiusForFilterCompare}
+                                                   tabState={this.state.tabState} />}
+                              {pages}
 
-                                    <div className={onlyItin.join(' ')}>
-                                        <div className="ItinEvents clearfix">
-                                            {indents}
-                                        </div>
-                                        <div className="itinFooter">
-                                            {this.state.loading === false ? <div className="totalCost">
-                                                {total}
-                                            </div> : ''}
+                          </div>
 
-                                            {this.state.loading === false ? <div>
-                                                {goAgainButton}</div>
-                                                : ''}
-                                        </div>
-                                    </div>
+                          <div className={restaurantsTabsClass.join(' ')} id="nav-food" role="tabpanel" aria-labelledby="nav-options-tab">
+                              {<MultiResultDisplay apiData={foodMultiResults}
+                                                   displayCategory={0} //restaurants
+                                                   pageNumber={this.state.foodPageNumber}
+                                                   AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
+                                                   priceFilterRange={this.state.priceFilterRange}
+                                                   maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
+                                                   minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
+                                                   eventFilterFlags={this.state.eventFilterFlags}
+                                                   filterRadius={this.state.filterRadius}
+                                                   maxRadius={this.state.searchRadiusForFilterCompare}
+                                                   tabState={this.state.tabState} />}
+                              {foodPages}
+                          </div>
 
-                                </div>}
-                        </div>
 
-                    </main>
-                </div>
-                <div >
-                    {<Footer />}
-                </div>
-            </div>
+                          <div className={moreOptionsTabsClass.join(' ')} id="nav-moreoptions" role="tabpanel" aria-labelledby="nav-moreoptions-tab">
+                              {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost}
+                                            updateUserEventCost={this.handleUpdateUserEventCost}
+                                            updateEventTypeSearch={this.handleUpdateEventTypeSearch}
+                                            currentFoodCost={this.state.userFoodCost}
+                                            currentEventCost={this.state.userEventCost} />}
+                          </div>
+                      </div>
+                      <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray} center={this.state.center} />
+                  </div>
+
+                  {/* ITINERARY CONTENT */}
+                  <main className={itinContent.join(' ')}>
+                      <div>
+                          {this.state.resultsArray.length === 0 && this.state.loading === false ? <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img alt="globe" src={globe}></img></div> : ' '}
+                          {this.state.loading === true ? <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader><h5>Searching...</h5></div> :
+
+                              <div>
+
+                                  <div className={onlyItin.join(' ')}  ref={ (itineraryDiv) => { this.itineraryDiv = itineraryDiv } }>
+                                      <div className="ItinEvents clearfix">
+                                          {indents}
+                                      </div>
+                                      <div className="itinFooter">
+                                          {this.state.loading === false ? <div className="totalCost">
+                                              {total}
+                                          </div> : ''}
+
+                                          {this.state.loading === false ? <div>
+                                                  {goAgainButton}</div>
+                                              : ''}
+                                      </div>
+                                  </div>
+
+                              </div>}
+                      </div>
+
+                  </main>
+              </div>
+
+          </div>
+          <div>
+              {/*{<Footer />}*/}
+          </div>
+
+        </div>
+
 
         )
     }
@@ -2367,4 +2335,4 @@ Userinput.propTypes = {
 
 Userinput.defaultProps = {}
 
-export default withStyles(styles, { withTheme: true })(Userinput);
+export default Userinput;
