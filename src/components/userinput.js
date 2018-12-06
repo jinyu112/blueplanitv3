@@ -703,7 +703,7 @@ class Userinput extends Component {
         catch (err) {
             //do nothing
         }
-
+        this.setState( { resultsArray: [] } );
         console.clear();
         // Handle empty budget inputs
         if (!this.state.budgetmax || isNaN(this.state.budgetmax) || this.state.budgetmax === undefined) {
@@ -1524,7 +1524,12 @@ class Userinput extends Component {
 
         // Itinerary div css classes
         var onlyItin = ['itinDiv', 'clearfix'];
-        var mapAndResultsDiv = ['clearfix', 'mapAndResultsDiv','sidebar'];
+        var mapAndResultsDiv = ['clearfix', 'mapAndResultsDiv','sidebar', 'hidden'];
+        if(this.state.resultsArray.length > 0) {
+            mapAndResultsDiv.pop();
+        } else {
+
+        }
 
         // Handle tab classes dynamically. Also, whenever handleUpdateEventTypeSearch is called, reset the tab to the event tab
         var genericTabsClass = ['itinerary', 'tab-pane', 'fade'];
@@ -1620,7 +1625,7 @@ class Userinput extends Component {
             </AppBar>
           </div>
           <div className="content-parent-div clearfix">
-              <div className="row">
+              <div className="row marginRowFix">
                   {this.state.resultsArray.length > 0 ?
                       <div className="col-md-12 mapAndResultsActions" key="toggleItin">
                           <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>

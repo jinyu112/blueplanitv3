@@ -382,13 +382,10 @@ tbody:hover {
     margin-top: 60px;
     color: #cbcbcb;
     font-size: 3em;
-    width: 50%;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .greeting img {
-    width: 40%;
+    width: 30%;
     opacity: 0.2;
 }
 
