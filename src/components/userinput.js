@@ -25,6 +25,7 @@ import EmailModal from './emailModal.js';
 import Footer from './footer.js';
 import TooltipMat from '@material-ui/core/Tooltip';
 import AppBar from '@material-ui/core/AppBar';
+import AppBarCollapsed from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import DistanceFilter from './distanceFilter.js';
@@ -1561,78 +1562,82 @@ class Userinput extends Component {
     return (
       <div className="Userinput">
           <div className="banner">
-            <AppBar position="static">
-                <div className="topNavBar">
-                    <span className="nav-bar-logo">Blue</span> Planit
-                </div>
-                <div className="headerText">
-                    <h1>{CONSTANTS.BANNER_TEXT.FIRST}</h1>
-                    <h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>
-                </div>
-                <div className="headerCopy">
-
-                </div>
-                <Toolbar className="toolbar">
-                    <form autoComplete="off" onSubmit={this.handleSubmit}>
-                      <div>
-                        <div className="inputsRow">
-                           <div className="inputContainers">
-                              <div className="form-group mb-2">
-                                  <h6>{CONSTANTS.HEADER_WHERE_STR}</h6>
-                                  <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                    <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" />
-                                  </TooltipMat>
-                              </div>
-                           </div>
-                            <div className="inputContainers">
-                                <h6>{CONSTANTS.HEADER_WHEN_STR}</h6>
-                                <div className="form-group mb-2 datePickerWrapper">
-                                    <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
-                                 </div>
-                            </div>
-                            <div className="inputContainers">
-                                <h6>{CONSTANTS.HEADER_RADIUS_STR}</h6>
-                              <div className="form-group mb-2">
-                                <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
-                              </div>
-                            </div>
-                            <div className="inputContainers">
-                                <h6>{CONSTANTS.HEADER_BUDGET_STR}</h6>
-                                {
-                                    // <div className="form-group mb-2">
-                                    // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
-                                    // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
-                                    // </TooltipMat>
-                                    // </div>
-                                }
-                                <div className="form-group mb-2">
-                                    <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
-                                        <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
-                                    </TooltipMat>
-                                </div>
-                            </div>
-                            <div className="search-btn">
-                              <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
-                                    <Button variant="contained" color="secondary" type="submit">
-                                        {CONSTANTS.SEARCH_BUTTON_STR}
-                                    </Button>
-                              </TooltipMat>
-                            </div>
+              {
+                  this.state.resultsArray.length === 0 ?
+                  <AppBar position="static">
+                        <div className="topNavBar">
+                            <span className="nav-bar-logo">Blue</span> Planit
                         </div>
-                     </div>
-                </form>
-              </Toolbar>
-            </AppBar>
+                        <div className="headerText">
+                            <h1>{CONSTANTS.BANNER_TEXT.FIRST}</h1>
+                            <h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>
+                        </div>
+                        <Toolbar className="toolbar">
+                          <form autoComplete="off" onSubmit={this.handleSubmit}>
+                              <div>
+                                  <div className="inputsRow">
+                                      <div className="inputContainers">
+                                          <div className="form-group mb-2">
+                                              <h6>{CONSTANTS.HEADER_WHERE_STR}</h6>
+                                              <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
+                                                  <input required id="location" className="textInput" type="text" name="location" /*value={location}*/ onChange={this.handleChange} autoComplete="address-level2" />
+                                              </TooltipMat>
+                                          </div>
+                                      </div>
+                                      <div className="inputContainers">
+                                          <h6>{CONSTANTS.HEADER_WHEN_STR}</h6>
+                                          <div className="form-group mb-2 datePickerWrapper">
+                                              <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
+                                          </div>
+                                      </div>
+                                      <div className="inputContainers">
+                                          <h6>{CONSTANTS.HEADER_RADIUS_STR}</h6>
+                                              <div className="form-group mb-2">
+                                                  <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
+                                              </div>
+                                      </div>
+                                      <div className="inputContainers">
+                                          <h6>{CONSTANTS.HEADER_BUDGET_STR}</h6>
+                                          {
+                                              // <div className="form-group mb-2">
+                                              // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
+                                              // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                                              // </TooltipMat>
+                                              // </div>
+                                          }
+                                          <div className="form-group mb-2">
+                                              <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
+                                                <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
+                                              </TooltipMat>
+                                          </div>
+                                      </div>
+                                      <div className="search-btn">
+                                          <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
+                                              <Button variant="contained" color="secondary" type="submit">
+                                              {CONSTANTS.SEARCH_BUTTON_STR}
+                                              </Button>
+                                          </TooltipMat>
+                                      </div>
+                                  </div>
+                               </div>
+                          </form>
+                        </Toolbar>
+                  </AppBar>
+                      :
+                  <div className="topNavBar fixedNav">
+                      <span className="nav-bar-logo">Blue</span> Planit
+                      {this.state.resultsArray.length > 0 ?
+                          <div className="col-md-12 mapAndResultsActions" key="toggleItin">
+                              <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
+                              <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
+                          </div> : ''
+                      }
+                  </div>
+
+              }
+
           </div>
           <div className="content-parent-div clearfix">
-              <div className="row marginRowFix">
-                  {this.state.resultsArray.length > 0 ?
-                      <div className="col-md-12 mapAndResultsActions" key="toggleItin">
-                          <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
-                          <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
-                      </div> : ''
-                  }
-              </div>
               <div className="wrapper eventsCont apidata">
                   <div className={mapAndResultsDiv.join(' ')}>
                       <div className={mapAndResultsContent.join(' ')}>
