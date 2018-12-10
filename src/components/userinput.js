@@ -80,6 +80,7 @@ class Userinput extends Component {
             foodPageNumber: 1,
             showModal: false,
             tabState: CONSTANTS.NAV_EVENT_TAB_ID,
+            cityName: '',
 
             //Settings
             userFoodCost: 0, // a blanket cost set to food defined by the user in the settings/more options function
@@ -794,7 +795,7 @@ class Userinput extends Component {
 
                 // Geocoding to convert user location input into lat/lon
                 geocoder.geocode(this.state.location, function (err, data_latlon) {
-
+                var cityName = '';
                     if (data_latlon) {
                         if (data_latlon.results && data_latlon.results.length > 0 && insideBudget) {
 
@@ -815,7 +816,7 @@ class Userinput extends Component {
 
                                         var dataLength = data_city.results.length;
                                         var city = this.state.location;
-
+                                        cityName = data_city.results[5].formatted_address;
                                         // find the city portion of the data
                                         for (var i = 0; i < dataLength; i++) {
                                             if (data_city.results[i].types) {
@@ -922,6 +923,7 @@ class Userinput extends Component {
                                                         allApiData: data.data,
                                                         pageNumber: 1,
                                                         foodPageNumber: 1,
+                                                        cityName: cityName,
                                                     });
                                                 }
                                                 else { // GA produced an optimal itinerary. Display results
@@ -968,6 +970,7 @@ class Userinput extends Component {
                                                         allApiData: data.data,
                                                         pageNumber: 1,
                                                         foodPageNumber: 1,
+                                                        cityName: cityName,
                                                     });
 
                                                     this.setState(prevState => ({
@@ -1088,6 +1091,7 @@ class Userinput extends Component {
                                                             showMoreInfo: [false, false, false, false, false, false, false],
                                                             message: messageStrObj,
                                                             allApiData: val,
+                                                            cityName: cityName,
                                                         });
                                                     }
                                                     else { // GA produced an optimal itinerary. Display results
@@ -1130,6 +1134,7 @@ class Userinput extends Component {
                                                             showMoreInfo: [false, false, false, false, false, false, false],
                                                             message: messageStrObj,
                                                             allApiData: val,
+                                                            cityName: cityName,
                                                         });
                                                     }
 
@@ -1517,6 +1522,12 @@ class Userinput extends Component {
         //     itinContent.push('col-md-12'); // else set the div width to 12 columns (100% of the element by definition)
         // }
 
+        //Banner versus fixed banner
+        var banner = ['banner'];
+        if(this.state.resultsArray.length > 0) {
+            banner.push('fixedBanner');
+        }
+
         // Handle switching views between the results and the map
         var mapAndResultsContent = ['mapAndResults', 'clearfix', 'hidden'];
         if (this.state.mapOrResultsState.localeCompare('results') === 0 && this.state.resultsArray.length > 0) {
@@ -1558,10 +1569,10 @@ class Userinput extends Component {
             moreOptionsTabsClass.push('active');
             moreOptionsLinkClass.push('active');
         }
-
+        console.log(this.state);
     return (
       <div className="Userinput">
-          <div className="banner">
+          <div className={banner.join(' ')}>
               {
                   this.state.resultsArray.length === 0 ?
                   <AppBar position="static">
@@ -1624,10 +1635,24 @@ class Userinput extends Component {
                         </Toolbar>
                   </AppBar>
                       :
-                  <div className="topNavBar fixedNav">
-                      <span className="nav-bar-logo">Blue</span> Planit
+                  <div className="row topNavBar fixedNav">
+                      <div className="col-md-2">
+                          <span className="nav-bar-logo">Blue</span> Planit
+                      </div>
+                      <div className="col-md-6">
+                          <div className="">
+                              <div className="">
+                                  <div className="searchIcon">
+                                      <Icon>search</Icon>
+                                  </div>
+                                  <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
+                                      <input required id="location" className="fixedTextInput" type="text" name="location" value={this.state.cityName} onChange={this.handleChange} autoComplete="address-level2" />
+                                  </TooltipMat>
+                              </div>
+                          </div>
+                      </div>
                       {this.state.resultsArray.length > 0 ?
-                          <div className="col-md-12 mapAndResultsActions" key="toggleItin">
+                          <div className="col-md-4 mapAndResultsActions" key="toggleItin">
                               <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
                               <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
                           </div> : ''
