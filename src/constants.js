@@ -161,4 +161,5 @@ module.exports = {
         FIRST: 'Let Us Plan So ',
         LAST: ' You Can Explore'
     },
+    ITIN_CARD_DESC_STR_LENGTH: 120,
 }

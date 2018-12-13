@@ -28,7 +28,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+import DeleteIcon from'@material-ui/icons/Delete';
 import DistanceFilter from './distanceFilter.js';
 import ApiFilter from './apiFilter.js';
 import TimeFilter from './timeFilter.js';
@@ -1278,7 +1278,14 @@ class Userinput extends Component {
         let num_words_desc = 0;
         let num_words_name = 0;
         let descDialog = null;
+        var  shortenedDesc = description;
+        var isShortDescHTML = false;
+
         if(description) {
+            shortenedDesc = shortenedDesc.substring(0,CONSTANTS.ITIN_CARD_DESC_STR_LENGTH) + '...';
+            if (shortenedDesc.substring(0,1).localeCompare('<') === 0) {
+                isShortDescHTML = true;
+            }
             num_words_desc = description.split(/\W+/).length;
             if(num_words_desc > 10) {
                 descDialog = <DescDialog eventname={this.state.resultsArray[i].name} open={this.state.descDialogOpen[i]} eventDesc={description} handleClose={this.handleClickDescClose}></DescDialog>;
@@ -1290,7 +1297,7 @@ class Userinput extends Component {
             num_words_name = name.split(/\W+/).length;
             if(num_words_name > 9) {
                 let result = this.state.resultsArray[i].name.split(/\W+/).slice(0,10).join(" ");
-                truncate_name = result + ' ...';
+                truncate_name = result + '...';
                 truncate_name = <TooltipMat placement="top" title={name}><span>{truncate_name}</span></TooltipMat>
             }
         }
@@ -1299,11 +1306,33 @@ class Userinput extends Component {
 
                 indents.push(
                     <div>
-                        <Card className="showActions" key={key}>
+                        <div className="showActions" key={key}>
+                        <div className="actions">
+                            <div className="actionButtonDiv">
+                            <Button className="lock-button" >
+                                <label className="takeSpace" htmlFor={id}>
+                                    <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
+                                        {lock_icon}
+                                    </TooltipMat>
+                                </label>
+                                <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
+                            </Button>
+                            </div>
+
+                            <div className="actionButtonDiv">
+                            <Button className="elim-button" variant="contained" color="secondary">
+                                <label className="takeSpace" htmlFor={elim_id}>
+                                    <TooltipMat placement="top" title={elimToolTipStr}>
+                                        {elim_icon}
+                                    </TooltipMat>
+                                </label>
+                                <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
+                            </Button>
+                            </div>
+                        </div>
+
                             <div className="itinRowContent" data-number={dataNumAttribute}>
                                 <div className="resultsName icon-name itinEventCol3">
-                                    <div className="justify-end"><a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a></div>
-
                                     <div>
                                         <span className="align">
                                             {this.state.resultsArray[i].url === "" ? <strong>{truncate_name ? truncate_name : name}</strong> :
@@ -1313,7 +1342,34 @@ class Userinput extends Component {
                                         </span>
                                         <div>
                                             <span>
-                                                {this.state.itinTimes[i] == 'Food' ? <div className="displayInline"><i className="fas fa-utensils"></i></div> : <span className="boldIt">{this.state.itinTimes[i]}</span>} {num_words_desc > 10 ? <div><Button id={'open-' + i} className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}><span id={'open-span-' + i}>Read More</span></Button></div> : description === 0 || !description ? '' : '- ' + description}
+
+                                                {this.state.itinTimes[i] == 'Food' ? 
+                                                    <div className="displayInline">
+                                                    <i className="fas fa-utensils"></i>
+                                                    </div>
+                                                    : <span className="boldIt">{this.state.itinTimes[i]}</span>
+                                                 } 
+
+                                                {
+                                                    num_words_desc > 10 ? '' : (description === 0 || !description) ? '' : '- ' + description
+                                                }    
+                                                {                                           
+                                                <div className="itinShortDesc">
+                                                    {
+                                                        ((this.state.resultsArray[i].origin.localeCompare(CONSTANTS.ORIGINS_EB) === 0 ||
+                                                        this.state.resultsArray[i].origin.localeCompare(CONSTANTS.ORIGINS_MU) === 0) && !isShortDescHTML) ? shortenedDesc : ''
+                                                    }
+                                                    
+                                                </div>
+                                                }
+                                                {
+                                                    num_words_desc > 10 ? 
+                                                    <div>
+                                                        <Button id={'open-' + i} className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}>
+                                                            <span id={'open-span-' + i}>Read More</span>
+                                                        </Button>
+                                                    </div> : ''
+                                                }
                                             </span>
                                             {descDialog}
                                         </div>
@@ -1330,35 +1386,23 @@ class Userinput extends Component {
                                                 i_resultsArray={i}
                                                 origin={this.state.resultsArray[i].origin}
                                             />
-                                            <ApproxCostToolTip
+                                            {/* <ApproxCostToolTip
                                                 approxCostFlag={this.state.resultsArray[i].approximateFee}
                                                 origin={this.state.resultsArray[i].origin}
-                                            />
+                                            /> */}
                                         </div>
 
-                                        <div className="actions">
-                                            <Button className="lock-button" variant="contained" color="primary">
-                                                <label className="takeSpace" htmlFor={id}>
-                                                    <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
-                                                        {lock_icon}
-                                                    </TooltipMat>
-                                                </label>
-                                                <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
-                                            </Button>
-
-                                            <Button className="elim-button" variant="contained" color="secondary">
-                                                <label className="takeSpace" htmlFor={elim_id}>
-                                                    <TooltipMat placement="top" title={elimToolTipStr}>
-                                                        {elim_icon}
-                                                    </TooltipMat>
-                                                </label>
-                                                <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
-                                            </Button>
-                                        </div>
                                     </div>
                                 </div>
 
+                            
                             </div>
+                            <div className="justify-end">
+                                    <a href={this.state.resultsArray[i].url} >
+                                    <img className="origin-logo" alt="" src={origins[origin]} />
+                                    </a>
+                                    </div>
+
                             <div className={moreInfoStyles.join(' ')}>
                                 <MoreInfoView desc={this.state.resultsArray[i].description}
                                     phone={this.state.resultsArray[i].phone}
@@ -1372,7 +1416,7 @@ class Userinput extends Component {
                                     defaultDurationFlag={this.state.resultsArray[i].defaultDuration}
                                 />
                             </div>
-                        </Card>
+                        </div>
                     </div>
                 );
             }
