@@ -1246,9 +1246,18 @@ class Userinput extends Component {
         var ITINERARY_LENGTH = this.state.resultsArray.length;
         const { term, budgetmax, budgetmin, location } = this.state;
         var indents = [];
-        var itinSideInfo = [];
 
         if (this.state.resultsArray.length > 0) {
+            // Calculate distances between locations in itinerary
+            var distances = calcItineraryDistancesFromLocation2Location(this.state.resultsArray);
+            var iFirstValidLocation = 0; // index of first itinerary item that has a valid lat long location
+            for (var i = 0; i < distances.length; i++) {
+                if (distances[i] !== -1.0) {
+                    iFirstValidLocation = i;
+                    break;
+                }
+            }
+
             // Form the itinerary results display
             for (var i = 0; i < ITINERARY_LENGTH; i++) {
                 var origin = this.state.resultsArray[i].origin;
@@ -1270,6 +1279,11 @@ class Userinput extends Component {
                     elimToolTipStr = CONSTANTS.X_TOOLTIP_STR;
                 }
 
+
+        // Itinerary header
+        var itinHeadLocationStr = misc.capFirstLetter(this.state.location);
+
+        // Itinerary
         var key = 'tbody-' + i;
         let id = 'checkbox-' + i;
         let elim_id = 'elim-' + i;
@@ -1322,6 +1336,7 @@ class Userinput extends Component {
                     num_words_desc={num_words_desc}
                     description={description}
                     origin={this.state.resultsArray[i].origin}
+                    distance_from_input_location={this.state.resultsArray[i].distance_from_input_location}
                     isShortDescHTML={isShortDescHTML}
                     shortenedDesc={shortenedDesc}
                     descDialog={descDialog}
@@ -1331,6 +1346,9 @@ class Userinput extends Component {
                     handleEliminate={this.handleEliminate}
                     handleClickDescOpen={this.handleClickDescOpen}
                     handleEventCostChange={this.handleEventCostChange}
+                    distances={distances}
+                    resultsArray={this.state.resultsArray}
+                    iFirstValidLocation={iFirstValidLocation}
                     />
                 );
             }
@@ -1697,7 +1715,12 @@ class Userinput extends Component {
                                 <div>
 
                                     <div className={onlyItin.join(' ')}>
-                                        <div className="ItinEvents clearfix">
+                                        {this.state.resultsArray.length === 0 && this.state.loading === false ? '' : 
+                                            <div className="itinHeader">
+                                            {itinHeadLocationStr}
+                                            </div>
+                                        }
+                                        <div className="itinEvents clearfix">
                                             {indents}
                                         </div>
                                         <div className="itinFooter">
@@ -2317,6 +2340,61 @@ function updateAllEventCosts(userEventCost, allApiData) {
         }
     }
     return allApiData;
+}
+
+function calcItineraryDistancesFromLocation2Location(resultsArray_in) {
+    var len = resultsArray_in.length;
+    var distances = [];
+    var firstLocationFlag = true;
+    var negative1 = -1.0;
+
+    if (len > 0) {        
+        var latlongprev = {
+            lat: 0.0,
+            lng: 0.0,
+        };
+        var latlongcurr = {
+            lat: 0.0,
+            lng: 0.0,
+        };
+        for (var i = 0; i <len; i++) {
+
+            if (firstLocationFlag) {
+                if (resultsArray_in[i].origin.localeCompare(CONSTANTS.ORIGINS_EB) !== 0 && 
+                    resultsArray_in[i].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+                    firstLocationFlag = false;
+                    distances.push(resultsArray_in[i].distance_from_input_location);
+                    latlongprev = resultsArray_in[i].location;
+                }
+                else {
+                    distances.push(negative1)
+                }
+            }
+            else if (!firstLocationFlag) {
+                if (resultsArray_in[i].origin.localeCompare(CONSTANTS.ORIGINS_EB) === 0 ||
+                    resultsArray_in[i].origin.localeCompare(CONSTANTS.ORIGINS_NONE) === 0) {
+                    distances.push(negative1);
+                }
+                else {
+                    latlongcurr = resultsArray_in[i].location;
+                    distances.push(misc.getDistanceFromLatLonInKm(latlongprev.lat, latlongprev.lng,
+                        latlongcurr.lat, latlongcurr.lng));
+                    latlongprev = resultsArray_in[i].location;
+                }
+            }
+            else {
+                distances.push(negative1);
+            }
+        }
+
+        console.log("distances: ")
+        console.log(resultsArray_in)
+        console.log(distances)
+        return distances;
+    }
+    else {
+        return -1;
+    }
 }
 
 Userinput.propTypes = {

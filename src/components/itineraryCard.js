@@ -3,134 +3,13 @@ import CONSTANTS from '../constants.js'
 import Button from '@material-ui/core/Button';
 import TooltipMat from '@material-ui/core/Tooltip';
 import EditCostComponent from './editCostComponent.js';
+import misc from '../miscfuncs/misc.js'
+import { isNullOrUndefined } from 'util';
 
 class ItineraryCard extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            height: 0
-          }
-
-        // <div>
-        //                 <div className="showActions" key={key} id={"itinCard" + i}>
-        //                 <div className="actions">
-        //                     <div className="actionButtonDiv">
-        //                     <Button className="lock-button" >
-        //                         <label className="takeSpace" htmlFor={id}>
-        //                             <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
-        //                                 {lock_icon}
-        //                             </TooltipMat>
-        //                         </label>
-        //                         <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
-        //                     </Button>
-        //                     </div>
-
-        //                     <div className="actionButtonDiv">
-        //                     <Button className="elim-button" variant="contained" color="secondary">
-        //                         <label className="takeSpace" htmlFor={elim_id}>
-        //                             <TooltipMat placement="top" title={elimToolTipStr}>
-        //                                 {elim_icon}
-        //                             </TooltipMat>
-        //                         </label>
-        //                         <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
-        //                     </Button>
-        //                     </div>
-        //                 </div>
-
-        //                     <div className="itinRowContent" data-number={dataNumAttribute}>
-        //                         <div className="resultsName icon-name itinEventCol3">
-        //                             <div>
-        //                                 <span className="align">
-        //                                     {this.state.resultsArray[i].url === "" ? <strong>{truncate_name ? truncate_name : name}</strong> :
-        //                                         <strong><a href={this.state.resultsArray[i].url} target='_blank'>{truncate_name ? truncate_name : name}</a></strong>}
-        //                                     {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
-
-        //                                 </span>
-        //                                 <div>
-        //                                     <span>
-
-        //                                         {this.state.itinTimes[i] == 'Food' ? 
-        //                                             <div className="displayInline">
-        //                                             <i className="fas fa-utensils"></i>
-        //                                             </div>
-        //                                             : <span className="boldIt">{this.state.itinTimes[i]}</span>
-        //                                          } 
-
-        //                                         {
-        //                                             num_words_desc > 10 ? '' : (description === 0 || !description) ? '' : '- ' + description
-        //                                         }    
-        //                                         {                                           
-        //                                         <div className="itinShortDesc">
-        //                                             {
-        //                                                 ((this.state.resultsArray[i].origin.localeCompare(CONSTANTS.ORIGINS_EB) === 0 ||
-        //                                                 this.state.resultsArray[i].origin.localeCompare(CONSTANTS.ORIGINS_MU) === 0) && !isShortDescHTML) ? shortenedDesc : ''
-        //                                             }
-                                                    
-        //                                         </div>
-        //                                         }
-        //                                         {
-        //                                             num_words_desc > 10 ? 
-        //                                             <div>
-        //                                                 <Button id={'open-' + i} className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}>
-        //                                                     <span id={'open-span-' + i}>Read More</span>
-        //                                                 </Button>
-        //                                             </div> : ''
-        //                                         }
-        //                                     </span>
-        //                                     {descDialog}
-        //                                 </div>
-        //                             </div>
-
-        //                         </div>
-        //                         <div className="itinEventCol4 edit-cost text-warning">
-        //                             <div className="costPanel">
-        //                                 <div className="edit-cost-cont">
-        //                                     <EditCostComponent
-        //                                         name={this.state.resultsArray[i].name}
-        //                                         cost={this.state.resultsArray[i].cost}
-        //                                         handleCostChange={this.handleEventCostChange}
-        //                                         i_resultsArray={i}
-        //                                         origin={this.state.resultsArray[i].origin}
-        //                                     />
-        //                                     {/* <ApproxCostToolTip
-        //                                         approxCostFlag={this.state.resultsArray[i].approximateFee}
-        //                                         origin={this.state.resultsArray[i].origin}
-        //                                     /> */}
-        //                                 </div>
-
-        //                             </div>
-        //                         </div>
-
-                            
-        //                     </div>
-        //                     <div className="justify-end">
-        //                             <a href={this.state.resultsArray[i].url} >
-        //                             <img className="origin-logo" alt="" src={origins[origin]} />
-        //                             </a>
-        //                             </div>
-
-        //                     <div className={moreInfoStyles.join(' ')}>
-        //                         <MoreInfoView desc={this.state.resultsArray[i].description}
-        //                             phone={this.state.resultsArray[i].phone}
-        //                             address={this.state.resultsArray[i].address}
-        //                             duration={this.state.resultsArray[i].duration}
-        //                             otherInfo={this.state.resultsArray[i].other}
-        //                             origin={this.state.resultsArray[i].origin}
-        //                             thumbnail={this.state.resultsArray[i].thumbnail}
-        //                             url={this.state.resultsArray[i].url}
-        //                             approxFeeFlag={this.state.resultsArray[i].approximateFee}
-        //                             defaultDurationFlag={this.state.resultsArray[i].defaultDuration}
-        //                         />
-        //                     </div>
-        //                 </div>
-        //             </div>
-
     }
-
-    componentDidMount() {
-        const height = this.divElement.clientHeight;
-        this.setState({ height });
-      }
 
     render() {
         var key=this.props.key;
@@ -156,13 +35,49 @@ class ItineraryCard extends Component {
         var cost = this.props.cost; //this.state.resultsArray[i].cost
         var origins = this.props.origins;
 
-        const beofre ={
-            before: this.state.height,
+        // Construct the distance from previous location string for display
+        var distances = this.props.distances.slice();
+        var distanceFromLast = distances[i];
+        if (distanceFromLast !== -1.0) {      
+            distanceFromLast = misc.round2NearestTenth(distances[i]);
         }
 
-        console.log("itineraryCard Height: " + this.state.height)
+        var distanceValueStr = distanceFromLast + CONSTANTS.DISTANCE_UNIT_STR;
+        var distanceFromLastStr = CONSTANTS.DISTANCE_FROM_PREV_LOC_STR;
+
+        if (i === this.props.iFirstValidLocation) {
+            distanceFromLastStr = CONSTANTS.DISTANCE_FROM_INPUT_STR;
+        }
+        else {
+            var lastValidLocation = -999;
+            // find last location with accurate location data
+            for (var ii = i-1; ii >= 0; ii--) {
+                if (distances[ii] !== -1.0) {
+                    lastValidLocation = ii + 1;
+                    break;
+                }
+            }
+            // This is here because eventbrite events dont have an accurate location
+            if (lastValidLocation !== -999) {
+                distanceFromLastStr = CONSTANTS.DISTANCE_FROM_ITH_LOC_STR + lastValidLocation + ":  ";
+            }
+        }
+
+        if (distanceFromLast !== 1.0) {
+            distanceValueStr = distanceValueStr +"s";
+        }
+
+        if (distanceFromLast === -1.0) {
+            distanceFromLastStr = CONSTANTS.NO_LOCATION_DATA;
+            if (origin.localeCompare(CONSTANTS.ORIGINS_NONE) === 0) {
+                distanceFromLastStr = '';
+            }
+            distanceValueStr = '';
+        }
+
         return (
-            <div ref={ (divElement) => this.divElement = divElement}>
+            <div ref={ (divElement) => this.divElement = divElement} className="itinCardContainerDiv">
+                <div className="itineraryLeftLine"></div>
                 <div className="showActions" key={key} id={"itinCard" + i}>
                     <div className="actions">
                         <div className="actionButtonDiv">
@@ -248,12 +163,14 @@ class ItineraryCard extends Component {
 
 
                     </div>
+                    <div className="itineraryCardBottomDiv">
+                    <div className="distanceFromLastDiv">{distanceFromLastStr}<b>{distanceValueStr}</b></div>
                     <div className="justify-end">
                         <a href={url} >
                             <img className="origin-logo" alt="" src={origins[origin]} />
                         </a>
                     </div>
-
+                    </div>
                 </div>
             </div>
         );

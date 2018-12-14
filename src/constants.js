@@ -104,7 +104,7 @@ module.exports = {
     TODAYDATE: new Date(Date.now()),
     MAX_BUDGET_DEFAULT: 9999.0,
     MIN_BUDGET_DEFAULT: 0.0,
-    DEFAULT_SEARCH_RADIUS_MI: 10, //miles
+    DEFAULT_SEARCH_RADIUS_MI: 5, //miles
     APPROX_EVENT_COST_STR: "Default cost. Check event link for actual cost.",
     APPROX_YELPRESTAURANT_COST_STR: "Default meal cost. Enter desired price.",
     LOCATION_TOOLTIP_STR: "Enter an city, address, or zip code that you want to explore!",
@@ -162,4 +162,10 @@ module.exports = {
         LAST: ' You Can Explore'
     },
     ITIN_CARD_DESC_STR_LENGTH: 120,
+    DISTANCE_FROM_PREV_LOC_STR: "Approx. distance from previous location:  ",
+    DISTANCE_FROM_ITH_LOC_STR: "Approx. distance from itinerary item ",
+    DISTANCE_FROM_INPUT_STR: "Approx. distance from input location:  ",
+    DISTANCE_UNIT_STR: " mile",
+    NO_LOCATION_DATA: "No accurate location. Please visit site for location."
+
 }
