@@ -8,7 +8,7 @@ import idb_keyval from 'idb-keyval'
 import GoogleApiWrapper from './googlemaps.js';
 import Loader from './reactloading.js';
 import DeleteUserEvent from './deleteUserEvent.js';
-import AddUserEvent from './addUserEvent.js';
+import ItineraryCard from './itineraryCard.js';
 import MoreInfoView from './moreInfoView.js';
 import EditCostComponent from './editCostComponent.js';
 import PaginationLink from './paginationLink.js'
@@ -28,7 +28,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from'@material-ui/icons/Delete';
 import DistanceFilter from './distanceFilter.js';
 import ApiFilter from './apiFilter.js';
 import TimeFilter from './timeFilter.js';
@@ -1305,119 +1304,34 @@ class Userinput extends Component {
         var dataNumAttribute = i + 1;
 
                 indents.push(
-                    <div>
-                        <div className="showActions" key={key}>
-                        <div className="actions">
-                            <div className="actionButtonDiv">
-                            <Button className="lock-button" >
-                                <label className="takeSpace" htmlFor={id}>
-                                    <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
-                                        {lock_icon}
-                                    </TooltipMat>
-                                </label>
-                                <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
-                            </Button>
-                            </div>
-
-                            <div className="actionButtonDiv">
-                            <Button className="elim-button" variant="contained" color="secondary">
-                                <label className="takeSpace" htmlFor={elim_id}>
-                                    <TooltipMat placement="top" title={elimToolTipStr}>
-                                        {elim_icon}
-                                    </TooltipMat>
-                                </label>
-                                <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
-                            </Button>
-                            </div>
-                        </div>
-
-                            <div className="itinRowContent" data-number={dataNumAttribute}>
-                                <div className="resultsName icon-name itinEventCol3">
-                                    <div>
-                                        <span className="align">
-                                            {this.state.resultsArray[i].url === "" ? <strong>{truncate_name ? truncate_name : name}</strong> :
-                                                <strong><a href={this.state.resultsArray[i].url} target='_blank'>{truncate_name ? truncate_name : name}</a></strong>}
-                                            {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
-
-                                        </span>
-                                        <div>
-                                            <span>
-
-                                                {this.state.itinTimes[i] == 'Food' ? 
-                                                    <div className="displayInline">
-                                                    <i className="fas fa-utensils"></i>
-                                                    </div>
-                                                    : <span className="boldIt">{this.state.itinTimes[i]}</span>
-                                                 } 
-
-                                                {
-                                                    num_words_desc > 10 ? '' : (description === 0 || !description) ? '' : '- ' + description
-                                                }    
-                                                {                                           
-                                                <div className="itinShortDesc">
-                                                    {
-                                                        ((this.state.resultsArray[i].origin.localeCompare(CONSTANTS.ORIGINS_EB) === 0 ||
-                                                        this.state.resultsArray[i].origin.localeCompare(CONSTANTS.ORIGINS_MU) === 0) && !isShortDescHTML) ? shortenedDesc : ''
-                                                    }
-                                                    
-                                                </div>
-                                                }
-                                                {
-                                                    num_words_desc > 10 ? 
-                                                    <div>
-                                                        <Button id={'open-' + i} className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}>
-                                                            <span id={'open-span-' + i}>Read More</span>
-                                                        </Button>
-                                                    </div> : ''
-                                                }
-                                            </span>
-                                            {descDialog}
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div className="itinEventCol4 edit-cost text-warning">
-                                    <div className="costPanel">
-                                        <div className="edit-cost-cont">
-                                            <EditCostComponent
-                                                name={this.state.resultsArray[i].name}
-                                                cost={this.state.resultsArray[i].cost}
-                                                handleCostChange={this.handleEventCostChange}
-                                                i_resultsArray={i}
-                                                origin={this.state.resultsArray[i].origin}
-                                            />
-                                            {/* <ApproxCostToolTip
-                                                approxCostFlag={this.state.resultsArray[i].approximateFee}
-                                                origin={this.state.resultsArray[i].origin}
-                                            /> */}
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            
-                            </div>
-                            <div className="justify-end">
-                                    <a href={this.state.resultsArray[i].url} >
-                                    <img className="origin-logo" alt="" src={origins[origin]} />
-                                    </a>
-                                    </div>
-
-                            <div className={moreInfoStyles.join(' ')}>
-                                <MoreInfoView desc={this.state.resultsArray[i].description}
-                                    phone={this.state.resultsArray[i].phone}
-                                    address={this.state.resultsArray[i].address}
-                                    duration={this.state.resultsArray[i].duration}
-                                    otherInfo={this.state.resultsArray[i].other}
-                                    origin={this.state.resultsArray[i].origin}
-                                    thumbnail={this.state.resultsArray[i].thumbnail}
-                                    url={this.state.resultsArray[i].url}
-                                    approxFeeFlag={this.state.resultsArray[i].approximateFee}
-                                    defaultDurationFlag={this.state.resultsArray[i].defaultDuration}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    <ItineraryCard
+                    key={key}
+                    cardIndex={i}
+                    itineraryCardId={id}
+                    lockIcon={lock_icon}
+                    elimIcon={elim_icon}
+                    itinCardCheckedState={this.state.checked[i]}
+                    itinCardElimState={this.state.eliminated[i]}
+                    elimId={elim_id}
+                    elimToolTipStr={elimToolTipStr}
+                    dataNumAttribute={dataNumAttribute}
+                    truncate_name={truncate_name}
+                    url={this.state.resultsArray[i].url}
+                    name={this.state.resultsArray[i].name}
+                    itinTime={this.state.itinTimes[i]}
+                    num_words_desc={num_words_desc}
+                    description={description}
+                    origin={this.state.resultsArray[i].origin}
+                    isShortDescHTML={isShortDescHTML}
+                    shortenedDesc={shortenedDesc}
+                    descDialog={descDialog}
+                    cost={this.state.resultsArray[i].cost}
+                    origins={origins}
+                    handleCheckbox={this.handleCheckbox}
+                    handleEliminate={this.handleEliminate}
+                    handleClickDescOpen={this.handleClickDescOpen}
+                    handleEventCostChange={this.handleEventCostChange}
+                    />
                 );
             }
 
@@ -1632,6 +1546,7 @@ class Userinput extends Component {
             moreOptionsTabsClass.push('active');
             moreOptionsLinkClass.push('active');
         }
+
 
     return (
       <div className="Userinput">
