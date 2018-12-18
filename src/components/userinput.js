@@ -105,6 +105,8 @@ class Userinput extends Component {
 
             //Homepage Form
             homepageFormClasses: ['extendedForm'],
+            homepageInputClasses: ['homepage', 'homepageLocInput'],
+            searchIconClasses: ['searchIcon'],
         };
         this.apiService = new ApiService();
         this.handleChange = this.handleChange.bind(this);
@@ -140,6 +142,8 @@ class Userinput extends Component {
         this.handleShowItin = this.handleShowItin.bind(this);
         this.handleShowMap = this.handleShowMap.bind(this);
         this.handleFormClick = this.handleFormClick.bind(this);
+        this.whereToRef = React.createRef();
+        this.searchIconRef = React.createRef();
     }
 
 
@@ -158,8 +162,11 @@ class Userinput extends Component {
 
     handleFormClick(e) {
         this.setState({
-            homepageFormClasses: ['extendedForm', 'extendedFormShow'],
-        });
+            homepageFormClasses: ['extendedFormShow'],
+            homepageInputClasses: ['homepage', 'homepageLocInput', 'extended'],
+            searchIconClasses: ['searchIcon', 'searchIconExtended'],
+            widthExtended: this.whereToRef.current.offsetWidth + this.searchIconRef.current.offsetWidth,
+        },console.log(this.state.widthExtended));
     }
 
     handleSearchRadius(e) {
@@ -1516,8 +1523,6 @@ class Userinput extends Component {
             }
         }
 
-    const { classes, theme } = this.props;
-
         // Handling itinerary div width when results presented
         var itinContent = ['main','mapsfix', 'itinerary'];
         // if (this.state.resultsArray.length > 0) { //if there are itinerary results set the div width to 8 columns
@@ -1577,7 +1582,8 @@ class Userinput extends Component {
 
         //Home Page Form
         var homepageFormClasses = this.state.homepageFormClasses;
-
+        var homepageInputClasses = this.state.homepageInputClasses;
+        var searchIconClasses = this.state.searchIconClasses;
 
     return (
       <div className="Userinput">
@@ -1596,12 +1602,14 @@ class Userinput extends Component {
                           <form autoComplete="off" onSubmit={this.handleSubmit}>
                                   <div className="inputsRow">
                                       <div className="inputContainers">
-                                          <div className="searchIcon">
-                                              <Icon>search</Icon>
+                                          <div>
+                                              <div ref={this.searchIconRef} className={searchIconClasses.join(' ')}>
+                                                  <Icon>search</Icon>
+                                              </div>
+                                              <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
+                                                  <input ref={this.whereToRef} required id="location" className="form-control" type="text" name="location" placeholder="Where To?" onClick={this.handleFormClick} onChange={this.handleChange} autoComplete="address-level2" />
+                                              </TooltipMat>
                                           </div>
-                                          <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                              <input required id="location" className="homepage homepageLocInput" type="text" name="location" placeholder="Where To?" onClick={this.handleFormClick} onChange={this.handleChange} autoComplete="address-level2" />
-                                          </TooltipMat>
                                       </div>
                                       <div className={homepageFormClasses.join(' ')}>
                                           <div className="inputContainers">
