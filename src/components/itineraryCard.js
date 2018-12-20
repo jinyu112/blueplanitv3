@@ -36,7 +36,7 @@ class ItineraryCard extends Component {
         var origins = this.props.origins;
         var resultsArray = this.props.resultsArray;
 
-        // Construct the distance from previous location string for display
+        // Construct the distance from previous location string and time to next distance string for display
         var distances = this.props.distances.slice();
         var distanceFromLast = distances[i];
         if (distanceFromLast !== -1.0) {      
@@ -46,12 +46,48 @@ class ItineraryCard extends Component {
         var distanceValueStr = distanceFromLast + CONSTANTS.DISTANCE_UNIT_STR;
         var distanceFromLastStr = CONSTANTS.DISTANCE_FROM_PREV_LOC_STR;
         var prevItinItemName = '';
+        var timeDifference = 0.0;
+        var timeDifferenceStr = '';
+
+        var nextValidLocation = -999;
+        var nextItinItemName = '';
+
+        // find next location with time data
+        if (resultsArray[i].origin.localeCompare(CONSTANTS.ORIGINS_YELP) !== 0 &&
+            resultsArray[i].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+            for (var ii = i + 1; ii < distances.length; ii++) {
+                if (resultsArray[ii].origin.localeCompare(CONSTANTS.ORIGINS_YELP) !== 0 &&
+                    resultsArray[ii].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+                    nextValidLocation = ii;
+                    break;
+                }
+            }
+        }
+
+        if (nextValidLocation !== -999) {
+            if (i !== distances.length) {
+                timeDifference = misc.getTimeDifference(resultsArray[i].time,resultsArray[nextValidLocation].time)                
+                timeDifferenceStr = misc.msToTime(timeDifference);
+                nextItinItemName = resultsArray[nextValidLocation].name;
+                var num_words_name = nextItinItemName.split(/\W+/).length;
+                if (num_words_name > 3) {
+                    nextItinItemName = resultsArray[nextValidLocation].name.split(/\W+/).slice(0, 4).join(" ");
+                    nextItinItemName = nextItinItemName + '...';
+                }
+                timeDifferenceStr = timeDifferenceStr + " until " + nextItinItemName + " starts.";
+            }
+        }
+        else {
+            timeDifference = 0.0;
+            timeDifferenceStr = '';
+        }
 
         if (i === this.props.iFirstValidLocation) {
             distanceFromLastStr = CONSTANTS.DISTANCE_FROM_INPUT_STR;
         }
         else {
             var lastValidLocation = -999;
+            
             // find last location with accurate location data
             for (var ii = i - 1; ii >= 0; ii--) {
                 if (distances[ii] !== -1.0) {
@@ -59,14 +95,16 @@ class ItineraryCard extends Component {
                     break;
                 }
             }
+
             if (lastValidLocation !== -999) {
-                prevItinItemName = this.props.resultsArray[lastValidLocation].name;
+                prevItinItemName = resultsArray[lastValidLocation].name;
                 var num_words_name = prevItinItemName.split(/\W+/).length;
                 if (num_words_name > 3) {
-                    prevItinItemName = this.props.resultsArray[lastValidLocation].name.split(/\W+/).slice(0,4).join(" ");
+                    prevItinItemName = resultsArray[lastValidLocation].name.split(/\W+/).slice(0, 4).join(" ");
                     prevItinItemName = prevItinItemName + '...';
                 }
             }
+
             // This is here because eventbrite events dont have an accurate location
             if (lastValidLocation !== -999) {
                 distanceFromLastStr = CONSTANTS.DISTANCE_FROM_ITH_LOC_STR + " ";                
@@ -87,8 +125,9 @@ class ItineraryCard extends Component {
         }
 
         return (
+            <div>
             <div ref={ (divElement) => this.divElement = divElement} className="itinCardContainerDiv">
-                <div className="itineraryLeftLine"></div>
+                <div className="itineraryLeftLine"></div>                
                 <div className="showActions" key={key} id={"itinCard" + i}>
                     <div className="actions">
                         <div className="actionButtonDiv">
@@ -128,11 +167,11 @@ class ItineraryCard extends Component {
                                             <div className="displayInline">
                                                 <i className="fas fa-utensils"></i>
                                             </div>
-                                            : <span className="boldIt">{itinTime}</span>
+                                            : <span className="boldIt"><b>{itinTime}</b></span>
                                         }
 
                                         {
-                                            num_words_desc > 10 ? '' : (description === 0 || !description) ? '' : '- ' + description
+                                            num_words_desc > 10 ? '' : (description === 0 || !description) ? '' : ' ' + description
                                         }
                                         {
                                             <div className="itinShortDesc">
@@ -183,6 +222,9 @@ class ItineraryCard extends Component {
                     </div>
                     </div>
                 </div>
+                
+            </div>
+            <div className="timeDifferenceDiv">{timeDifferenceStr}</div>
             </div>
         );
     }

@@ -115,5 +115,36 @@ module.exports = {
         return str_in = str_in.charAt(0).toUpperCase() + str_in.substr(1);
       },
 
+      getTimeDifference: function(start, end) {
+        var d1 = new Date(0);
+        d1.setHours(parseInt(start.toString().substr(0, 2), 10));
+        d1.setMinutes(parseInt(start.toString().substr(2, 2), 10));
+        var d2 = new Date(0);
+        d2.setHours(parseInt(end.toString().substr(0, 2), 10));
+        d2.setMinutes(parseInt(end.toString().substr(2, 2), 10));
+        return d2.getTime() - d1.getTime();
+      },
+
+      msToTime: function(duration) {
+        var milliseconds = parseInt((duration % 1000) / 100),
+          seconds = parseInt((duration / 1000) % 60),
+          minutes = parseInt((duration / (1000 * 60)) % 60),
+          hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+      
+        // hours = (hours < 10) ? "0" + hours : hours;
+        // minutes = (minutes < 10) ? "0" + minutes : minutes;
+        // seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+        var outputStr = '';
+        if (minutes === 0.0) {
+            outputStr = hours + " hours";
+        }
+        else 
+        {
+            outputStr = hours + " hours and " + minutes + " minutes";
+        }
+      
+        return outputStr;
+      }
       
 }

@@ -7,6 +7,7 @@ module.exports = {
     ORIGINS_SG: 'seatgeek',
     ORIGINS_NONE: 'noneitem',
     ORIGINS_USER: 'useradded',
+    FOODTIME_STR: 'Food',
     // keys/fields in the itinerary object
     EVENTKEYS: [
         'Event1',
