@@ -34,6 +34,7 @@ class ItineraryCard extends Component {
         var descDialog = this.props.descDialog;
         var cost = this.props.cost; //this.state.resultsArray[i].cost
         var origins = this.props.origins;
+        var resultsArray = this.props.resultsArray;
 
         // Construct the distance from previous location string for display
         var distances = this.props.distances.slice();
@@ -44,6 +45,7 @@ class ItineraryCard extends Component {
 
         var distanceValueStr = distanceFromLast + CONSTANTS.DISTANCE_UNIT_STR;
         var distanceFromLastStr = CONSTANTS.DISTANCE_FROM_PREV_LOC_STR;
+        var prevItinItemName = '';
 
         if (i === this.props.iFirstValidLocation) {
             distanceFromLastStr = CONSTANTS.DISTANCE_FROM_INPUT_STR;
@@ -51,15 +53,23 @@ class ItineraryCard extends Component {
         else {
             var lastValidLocation = -999;
             // find last location with accurate location data
-            for (var ii = i-1; ii >= 0; ii--) {
+            for (var ii = i - 1; ii >= 0; ii--) {
                 if (distances[ii] !== -1.0) {
-                    lastValidLocation = ii + 1;
+                    lastValidLocation = ii;
                     break;
+                }
+            }
+            if (lastValidLocation !== -999) {
+                prevItinItemName = this.props.resultsArray[lastValidLocation].name;
+                var num_words_name = prevItinItemName.split(/\W+/).length;
+                if (num_words_name > 3) {
+                    prevItinItemName = this.props.resultsArray[lastValidLocation].name.split(/\W+/).slice(0,4).join(" ");
+                    prevItinItemName = prevItinItemName + '...';
                 }
             }
             // This is here because eventbrite events dont have an accurate location
             if (lastValidLocation !== -999) {
-                distanceFromLastStr = CONSTANTS.DISTANCE_FROM_ITH_LOC_STR + lastValidLocation + ":  ";
+                distanceFromLastStr = CONSTANTS.DISTANCE_FROM_ITH_LOC_STR + " ";                
             }
         }
 
@@ -73,6 +83,7 @@ class ItineraryCard extends Component {
                 distanceFromLastStr = '';
             }
             distanceValueStr = '';
+            prevItinItemName = '';
         }
 
         return (
@@ -164,7 +175,7 @@ class ItineraryCard extends Component {
 
                     </div>
                     <div className="itineraryCardBottomDiv">
-                    <div className="distanceFromLastDiv">{distanceFromLastStr}<b>{distanceValueStr}</b></div>
+                    <div className="distanceFromLastDiv">{distanceFromLastStr}&nbsp;<a href={url}>{" " + prevItinItemName + " "}</a>&nbsp;<b>{distanceValueStr}</b></div>
                     <div className="justify-end">
                         <a href={url} >
                             <img className="origin-logo" alt="" src={origins[origin]} />

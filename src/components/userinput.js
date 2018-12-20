@@ -2386,10 +2386,6 @@ function calcItineraryDistancesFromLocation2Location(resultsArray_in) {
                 distances.push(negative1);
             }
         }
-
-        console.log("distances: ")
-        console.log(resultsArray_in)
-        console.log(distances)
         return distances;
     }
     else {
