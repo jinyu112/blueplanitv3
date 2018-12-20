@@ -112,7 +112,12 @@ class ItineraryCard extends Component {
         }
 
         if (distanceFromLast !== 1.0) {
-            distanceValueStr = distanceValueStr +"s";
+            if (i === this.props.iFirstValidLocation) {
+                distanceValueStr = distanceValueStr + "s ";
+            }
+            else {
+                distanceValueStr = distanceValueStr +"s from";
+            }
         }
 
         if (distanceFromLast === -1.0) {
@@ -214,7 +219,7 @@ class ItineraryCard extends Component {
 
                     </div>
                     <div className="itineraryCardBottomDiv">
-                    <div className="distanceFromLastDiv">{distanceFromLastStr}&nbsp;<a href={url}>{" " + prevItinItemName + " "}</a>&nbsp;<b>{distanceValueStr}</b></div>
+                    <div className="distanceFromLastDiv">{distanceFromLastStr}&nbsp;<b>{distanceValueStr}</b>&nbsp;<a href={url}>{" " + prevItinItemName + " "}</a>&nbsp;</div>
                     <div className="justify-end">
                         <a href={url} >
                             <img className="origin-logo" alt="" src={origins[origin]} />

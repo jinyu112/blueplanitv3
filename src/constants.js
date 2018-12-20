@@ -164,7 +164,7 @@ module.exports = {
     },
     ITIN_CARD_DESC_STR_LENGTH: 120,
     DISTANCE_FROM_PREV_LOC_STR: "Approx. distance from previous location:  ",
-    DISTANCE_FROM_ITH_LOC_STR: "Approx. distance from          ",
+    DISTANCE_FROM_ITH_LOC_STR: "About ",
     DISTANCE_FROM_INPUT_STR: "Approx. distance from input location:  ",
     DISTANCE_UNIT_STR: " mile",
     NO_LOCATION_DATA: "No accurate location. Please visit site for location."
