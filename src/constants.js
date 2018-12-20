@@ -156,7 +156,7 @@ module.exports = {
     HEADER_WHEN_STR: "PICK YOUR DATE",
     HEADER_RADIUS_STR: "HOW FAR?",
     HEADER_BUDGET_STR: "WHAT'S YOUR BUDGET?",
-    SEARCH_BUTTON_STR: 'Plan it',
+    SEARCH_BUTTON_STR: 'Search',
     BANNER_TEXT: {
         FIRST: 'Let Us Plan So ',
         LAST: ' You Can Explore'

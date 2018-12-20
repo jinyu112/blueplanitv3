@@ -141,7 +141,6 @@ class Userinput extends Component {
         this.handleClickDescClose = this.handleClickDescClose.bind(this);
         this.handleShowItin = this.handleShowItin.bind(this);
         this.handleShowMap = this.handleShowMap.bind(this);
-        this.handleFormClick = this.handleFormClick.bind(this);
         this.whereToRef = React.createRef();
         this.searchIconRef = React.createRef();
     }
@@ -160,14 +159,14 @@ class Userinput extends Component {
         this.setState(state);
     }
 
-    handleFormClick(e) {
-        this.setState({
-            homepageFormClasses: ['extendedFormShow'],
-            homepageInputClasses: ['homepage', 'homepageLocInput', 'extended'],
-            searchIconClasses: ['searchIcon', 'searchIconExtended'],
-            widthExtended: this.whereToRef.current.offsetWidth + this.searchIconRef.current.offsetWidth,
-        },console.log(this.state.widthExtended));
-    }
+    // handleFormClick(e) {
+    //     this.setState({
+    //         homepageFormClasses: ['extendedFormShow'],
+    //         homepageInputClasses: ['homepage', 'homepageLocInput', 'extended'],
+    //         searchIconClasses: ['searchIcon', 'searchIconExtended'],
+    //         widthExtended: this.whereToRef.current.offsetWidth + this.searchIconRef.current.offsetWidth,
+    //     },console.log(this.state.widthExtended));
+    // }
 
     handleSearchRadius(e) {
         var searchRadiusInput = parseFloat(e.target.value);
@@ -736,6 +735,7 @@ class Userinput extends Component {
                 budgetmin: CONSTANTS.MIN_BUDGET_DEFAULT,
             })
         }
+
 
         //Handle empty search radius input
         if (!this.state.searchRadius || isNaN(this.state.searchRadius) || this.state.searchRadius === undefined
@@ -1600,54 +1600,64 @@ class Userinput extends Component {
                         {/*</div>*/}
                         <Toolbar className="toolbar">
                           <form autoComplete="off" onSubmit={this.handleSubmit}>
+                                    <div className="formCopy">
+                                        <h3>Let us plan<br/> so you don't have to.</h3>
+                                    </div>
                                   <div className="inputsRow">
                                       <div className="inputContainers">
                                           <div>
-                                              <div ref={this.searchIconRef} className={searchIconClasses.join(' ')}>
+                                              <label className="inputLabel" for="location">WHERE</label>
+                                              <div className="homepageIcon">
                                                   <Icon>search</Icon>
                                               </div>
                                               <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                                  <input ref={this.whereToRef} required id="location" className="form-control" type="text" name="location" placeholder="Where To?" onClick={this.handleFormClick} onChange={this.handleChange} autoComplete="address-level2" />
+                                                  <input required id="location" className="fixedTextInput homepageInputs" type="text" name="location" onChange={this.handleChange} autoComplete="address-level2" />
                                               </TooltipMat>
                                           </div>
                                       </div>
-                                      <div className={homepageFormClasses.join(' ')}>
-                                          <div className="inputContainers">
-                                              <h6>{CONSTANTS.HEADER_WHEN_STR}</h6>
-                                              <div className="form-group mb-2 datePickerWrapper">
-                                                  <DatePicker required id="datePicker" className="textInput" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
+                                      <div className="inputContainers">
+                                          <label className="inputLabel" htmlFor="datePicker">WHEN</label>
+                                          <div className="form-group mb-2 datePickerWrapper">
+                                              {/*<div className={searchIconClasses.join(' ')}>*/}
+                                                  {/*<Icon>date_range</Icon>*/}
+                                              {/*</div>*/}
+                                              <DatePicker required id="datePicker"   placeholderText="mm/dd/yyyy" className="textInput fixedTextInput homepageInputs textInputLeft" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
+                                          </div>
+                                      </div>
+                                      <div className="inputContainers">
+                                          {
+                                              // <div className="form-group mb-2">
+                                              // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
+                                              // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                                              // </TooltipMat>
+                                              // </div>
+                                          }
+
+                                          <label className="inputLabel" htmlFor="budgetmax">TRIP BUDGET</label>
+                                          <div className="form-group mb-2">
+                                              <div className="homepageIcon">
+                                                  <Icon>credit_card</Icon>
                                               </div>
-                                          </div>
-                                          <div className="inputContainers">
-                                              <h6>{CONSTANTS.HEADER_RADIUS_STR}</h6>
-                                                  <div className="form-group mb-2">
-                                                      <input /*required*/ className="textInput" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
-                                                  </div>
-                                          </div>
-                                          <div className="inputContainers">
-                                              <h6>{CONSTANTS.HEADER_BUDGET_STR}</h6>
-                                              {
-                                                  // <div className="form-group mb-2">
-                                                  // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
-                                                  // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
-                                                  // </TooltipMat>
-                                                  // </div>
-                                              }
-                                              <div className="form-group mb-2">
-                                                  <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
-                                                    <input /*required*/ className="textInput" min="0" type="number" name="budgetmax" /*value={budgetmax}*/ onChange={this.handleChange} placeholder="$ Max" />
-                                                  </TooltipMat>
-                                              </div>
-                                          </div>
-                                          <div className="search-btn">
-                                              <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
-                                                  <Button variant="contained" color="secondary" type="submit">
-                                                  {CONSTANTS.SEARCH_BUTTON_STR}
-                                                  </Button>
+                                              <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
+                                                  <input /*required*/ className="fixedTextInput homepageInputs" min="0" type="number" name="budgetmax" placeholder="$1000" /*value={budgetmax}*/ onChange={this.handleChange} />
                                               </TooltipMat>
                                           </div>
+                                      </div>
+                                      <div className="inputContainers">
+                                              <label className="inputLabel" htmlFor="searchRadius">{CONSTANTS.HEADER_RADIUS_STR}</label>
+                                              <div className="form-group mb-2">
+                                                  <input /*required*/ className="fixedTextInput homepageInputs" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
+                                              </div>
+                                      </div>
+                                      <div className="search-btn">
+                                          <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
+                                              <Button variant="contained" color="secondary" type="submit">
+                                              {CONSTANTS.SEARCH_BUTTON_STR}
+                                              </Button>
+                                          </TooltipMat>
                                       </div>
                                   </div>
+
 
                           </form>
                         </Toolbar>
