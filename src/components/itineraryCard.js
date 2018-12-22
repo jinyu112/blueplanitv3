@@ -48,6 +48,8 @@ class ItineraryCard extends Component {
         var prevItinItemName = '';
         var timeDifference = 0.0;
         var timeDifferenceStr = '';
+        var startStr = ' starts.'
+        var fromStr = ' from '
 
         var nextValidLocation = -999;
         var nextItinItemName = '';
@@ -74,16 +76,18 @@ class ItineraryCard extends Component {
                     nextItinItemName = resultsArray[nextValidLocation].name.split(/\W+/).slice(0, 4).join(" ");
                     nextItinItemName = nextItinItemName + '...';
                 }
-                timeDifferenceStr = timeDifferenceStr + " until " + nextItinItemName + " starts.";
+                timeDifferenceStr = timeDifferenceStr + " until ";
             }
         }
         else {
             timeDifference = 0.0;
             timeDifferenceStr = '';
+            startStr = '';
         }
 
         if (i === this.props.iFirstValidLocation) {
             distanceFromLastStr = CONSTANTS.DISTANCE_FROM_INPUT_STR;
+            fromStr = '';
         }
         else {
             var lastValidLocation = -999;
@@ -107,7 +111,7 @@ class ItineraryCard extends Component {
 
             // This is here because eventbrite events dont have an accurate location
             if (lastValidLocation !== -999) {
-                distanceFromLastStr = CONSTANTS.DISTANCE_FROM_ITH_LOC_STR + " ";                
+                distanceFromLastStr = CONSTANTS.DISTANCE_FROM_ITH_LOC_STR + " ";                                
             }
         }
 
@@ -116,7 +120,7 @@ class ItineraryCard extends Component {
                 distanceValueStr = distanceValueStr + "s ";
             }
             else {
-                distanceValueStr = distanceValueStr +"s from";
+                distanceValueStr = distanceValueStr +"s";
             }
         }
 
@@ -127,6 +131,7 @@ class ItineraryCard extends Component {
             }
             distanceValueStr = '';
             prevItinItemName = '';
+            fromStr = '';
         }
 
         return (
@@ -219,7 +224,7 @@ class ItineraryCard extends Component {
 
                     </div>
                     <div className="itineraryCardBottomDiv">
-                    <div className="distanceFromLastDiv">{distanceFromLastStr}&nbsp;<b>{distanceValueStr}</b>&nbsp;<a href={url}>{" " + prevItinItemName + " "}</a>&nbsp;</div>
+                    <div className="distanceFromLastDiv">{distanceFromLastStr}&nbsp;<b>{distanceValueStr}</b>&nbsp;{fromStr}&nbsp;<a href={url}>{" " + prevItinItemName + " "}</a>&nbsp;</div>
                     <div className="justify-end">
                         <a href={url} >
                             <img className="origin-logo" alt="" src={origins[origin]} />
@@ -229,7 +234,7 @@ class ItineraryCard extends Component {
                 </div>
                 
             </div>
-            <div className="timeDifferenceDiv">{timeDifferenceStr}</div>
+            <div className="timeDifferenceDiv">{timeDifferenceStr}<b>{nextItinItemName}</b>&nbsp;{startStr}</div>
             </div>
         );
     }

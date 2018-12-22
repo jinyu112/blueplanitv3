@@ -315,6 +315,65 @@ class Userinput extends Component {
             var index = this.state.eliminatedEvents.indexOf(i_checkbox);
             let checked = this.state.checked.slice();
             // from 0 to 6 inclusive
+
+            // add back in a random event/restaurant
+            var itemsToChooseFrom = [];
+            if (i_checkbox % 2 === 0) { // event itinerary slot (i_checkbox = 0,2,4,6)
+                for (var i = 0; i < CONSTANTS.APIKEYS.length; i++) {
+                    if (this.state.filteredApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[i_checkbox]] &&
+                        this.state.filteredApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[i_checkbox]] !== undefined &&
+                        this.state.filteredApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[i_checkbox]] !== null) {
+                        if (this.state.filteredApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[i_checkbox]].length > 0) {
+                            itemsToChooseFrom.push(this.state.filteredApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[i_checkbox]]);
+                        }
+                    }
+                }
+            }
+            else { //restaurant slot
+            // this is bad practice as the values are hardcoded
+                if (i_checkbox === 1) {
+                    itemsToChooseFrom.push(this.state.filteredApiData[CONSTANTS.APIKEYS[4]]); // breakfast
+                }
+                else if (i_checkbox === 3) {
+                    itemsToChooseFrom.push(this.state.filteredApiData[CONSTANTS.APIKEYS[5]]); // lunch
+                }
+                else if (i_checkbox === 5) {
+                    itemsToChooseFrom.push(this.state.filteredApiData[CONSTANTS.APIKEYS[6]]); // dinner
+                }
+            }
+
+            var len = itemsToChooseFrom.length
+            var availableFunds = parseFloat(this.state.budgetmax) - parseFloat(this.state.totalCost);
+            var tempEventCost = parseFloat(availableFunds + 1);
+            if (len > 0) {
+                var irand = 0;
+                var irandInnerArray = 0;
+                var newItineraryObj;
+                var cnt = 0;
+                var maxIter = 10;
+                // finding a random new item to insert into the slot that was previously a "none" item
+                while (tempEventCost > availableFunds && cnt < maxIter) {
+                    irand = misc.randomIntFromInterval(0, len - 1);
+                    irandInnerArray = misc.randomIntFromInterval(0, itemsToChooseFrom[irand].length - 1);                    
+                    newItineraryObj = itemsToChooseFrom[irand][irandInnerArray];
+                    tempEventCost = parseFloat(newItineraryObj.cost);
+                    cnt++;
+                }
+                if (cnt === maxIter) {
+                    if (i_checkbox % 2 === 0) {
+                        newItineraryObj = CONSTANTS.NONE_ITEM_EVENT;                        
+                    }
+                    else {
+                        newItineraryObj = CONSTANTS.NONE_ITEM;
+                    }
+                }
+                newItineraryObj.other = i_checkbox;
+
+                // actually update the states
+                this.handleUpdateItinerary(newItineraryObj);
+            }
+
+
             if (index > -1) {
                 this.state.eliminatedEvents.splice(index, 1);
                 this.state.savedEvents.splice(index, 1);
