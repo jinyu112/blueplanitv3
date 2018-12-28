@@ -65,8 +65,6 @@ class EmailModal extends Component {
        let locate = getLocation();
        locate.then((located) => {
 
-        console.log("email")
-        console.log(located)
            var data = {
                message: this.props.resultsArray,
                email: this.state.email,
