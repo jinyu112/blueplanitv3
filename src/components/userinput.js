@@ -1044,11 +1044,6 @@ class Userinput extends Component {
 
         console.clear();
 
-        console.log(this.state.savedEvents)
-        console.log(this.state.checked)
-        console.log(this.state.eliminated)
-        console.log(this.state.eliminatedEvents)
-
         // Handle empty budget inputs
         if (!this.state.budgetmax || isNaN(this.state.budgetmax) || this.state.budgetmax === undefined) {
             this.setState({
