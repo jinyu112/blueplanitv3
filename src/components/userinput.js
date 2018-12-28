@@ -176,6 +176,8 @@ class Userinput extends Component {
         this.handleClickDescClose = this.handleClickDescClose.bind(this);
         this.handleShowItin = this.handleShowItin.bind(this);
         this.handleShowMap = this.handleShowMap.bind(this);
+        this.handleMoveItinItemUp = this.handleMoveItinItemUp.bind(this);
+        this.handleMoveItinItemDown = this.handleMoveItinItemDown.bind(this);
     }
 
 
@@ -255,6 +257,208 @@ class Userinput extends Component {
             apiCalls: false,
         });
     }
+
+    // This function handles the state updates for when the "move up" button is pressed in an itinerary item
+    handleMoveItinItemUp(e) {
+        var ith_itinItem = parseInt(e.target.value, 10);
+        let resultsArray = this.state.resultsArray.slice();
+        let newSavedEvents = this.state.savedEvents.slice();
+        let newEliminatedEvents = this.state.eliminatedEvents.slice();
+        var indexRemove;        
+
+        if (ith_itinItem > 0 && ith_itinItem !== null && ith_itinItem !== undefined) {
+
+            var validMove = true;
+            // check that the item can be moved up
+            if (resultsArray[ith_itinItem].time.localeCompare(CONSTANTS.FOODTIME_STR) !== 0
+                && resultsArray[ith_itinItem].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) { 
+                if (resultsArray[ith_itinItem - 1].time.localeCompare(CONSTANTS.FOODTIME_STR) !== 0
+                    && resultsArray[ith_itinItem - 1].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+                    validMove = false;
+                }
+            }
+
+            if (validMove) {
+                var tempItinItemObj_Down = resultsArray[ith_itinItem - 1];
+                tempItinItemObj_Down.other = ith_itinItem;
+                this.state.resultsArray[ith_itinItem] = tempItinItemObj_Down;
+                this.state.itinTimes[ith_itinItem] = misc.convertMilTime(tempItinItemObj_Down.time);
+
+                var tempItinItemObj_Up = resultsArray[ith_itinItem];
+                tempItinItemObj_Up.other = ith_itinItem - 1;
+                this.state.resultsArray[ith_itinItem - 1] = tempItinItemObj_Up;
+                this.state.itinTimes[ith_itinItem - 1] = misc.convertMilTime(tempItinItemObj_Up.time);
+
+                // Swap the "checked" state to show a locked or unlocked icon
+                var tempNewState = this.state.checked[ith_itinItem];
+                this.state.checked[ith_itinItem] = this.state.checked[ith_itinItem - 1];
+                this.state.checked[ith_itinItem - 1] = tempNewState;
+
+                // Swap the "eliminated" state to show a canceled or plus icon
+                tempNewState = this.state.eliminated[ith_itinItem];
+                this.state.eliminated[ith_itinItem] = this.state.eliminated[ith_itinItem - 1];
+                this.state.eliminated[ith_itinItem - 1] = tempNewState;
+
+                // Correctly update the savedEvents state (indices of the itinerary that are "locked" 0-6)
+                if (misc.include(this.state.savedEvents, ith_itinItem)) {
+                    newSavedEvents.push(ith_itinItem - 1);
+                    indexRemove = this.state.savedEvents.indexOf(ith_itinItem);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newSavedEvents.splice(indexRemove, 1);
+                    }
+                }
+                if (misc.include(this.state.savedEvents, ith_itinItem - 1)) {
+                    newSavedEvents.push(ith_itinItem);
+                    indexRemove = this.state.savedEvents.indexOf(ith_itinItem - 1);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newSavedEvents.splice(indexRemove, 1);
+                    }
+                }
+
+                // Correctly update the eliminatedEvents state (indices of the itinerary that are "x-ed" 0-6)
+                if (misc.include(this.state.eliminatedEvents, ith_itinItem)) {
+                    newEliminatedEvents.push(ith_itinItem - 1);
+                    indexRemove = this.state.eliminatedEvents.indexOf(ith_itinItem);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newEliminatedEvents.splice(indexRemove, 1);
+                    }
+                }
+                if (misc.include(this.state.eliminatedEvents, ith_itinItem - 1)) {
+                    newEliminatedEvents.push(ith_itinItem);
+                    indexRemove = this.state.eliminatedEvents.indexOf(ith_itinItem - 1);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newEliminatedEvents.splice(indexRemove, 1);
+                    }
+                }
+
+                // Update persistent data in browser for GA
+                var myStorage = window.localStorage;
+                var prevBestItineraryObjs = JSON.stringify({
+                    Event1: this.state.resultsArray[0],
+                    Breakfast: this.state.resultsArray[1],
+                    Event2: this.state.resultsArray[2],
+                    Lunch: this.state.resultsArray[3],
+                    Event3: this.state.resultsArray[4],
+                    Dinner: this.state.resultsArray[5],
+                    Event4: this.state.resultsArray[6],
+                });
+                myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
+
+                // Update states and rerender
+                this.setState({
+                    resultsArray: this.state.resultsArray,
+                    itinTimes: this.state.itinTimes,
+                    eliminated: this.state.eliminated,
+                    checked: this.state.checked,
+                    savedEvents: newSavedEvents,
+                    eliminatedEvents: newEliminatedEvents,
+                });
+            }
+        }
+        
+    }
+
+    // This function handles the state updates for when the "move down" button is pressed in an itinerary item
+    handleMoveItinItemDown(e) {
+        var ith_itinItem = parseInt(e.target.value, 10); // this is the index of the item being moved
+        let resultsArray = this.state.resultsArray.slice();
+        let newSavedEvents = this.state.savedEvents.slice();
+        let newEliminatedEvents = this.state.eliminatedEvents.slice();
+        var indexRemove;
+
+        if (ith_itinItem < resultsArray.length - 1 && ith_itinItem !== null && ith_itinItem !== undefined) {
+
+            var validMove = true;
+            // check that the item can be moved down
+            if (resultsArray[ith_itinItem].time.localeCompare(CONSTANTS.FOODTIME_STR) !== 0
+                && resultsArray[ith_itinItem].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) { 
+                if (resultsArray[ith_itinItem + 1].time.localeCompare(CONSTANTS.FOODTIME_STR) !== 0
+                    && resultsArray[ith_itinItem - 1].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+                    validMove = false;
+                }
+            }
+
+            if (validMove) {
+                // Swap itinerary item objects and times
+                var tempItinItemObj_Down = resultsArray[ith_itinItem];
+                tempItinItemObj_Down.other = ith_itinItem + 1;
+                this.state.resultsArray[ith_itinItem + 1] = tempItinItemObj_Down;
+                this.state.itinTimes[ith_itinItem + 1] = misc.convertMilTime(tempItinItemObj_Down.time);
+
+                var tempItinItemObj_Up = resultsArray[ith_itinItem + 1];
+                tempItinItemObj_Up.other = ith_itinItem;
+                this.state.resultsArray[ith_itinItem] = tempItinItemObj_Up;
+                this.state.itinTimes[ith_itinItem] = misc.convertMilTime(tempItinItemObj_Up.time);
+
+                // Swap the "checked" state to show a locked or unlocked icon
+                var tempNewState = this.state.checked[ith_itinItem];
+                this.state.checked[ith_itinItem] = this.state.checked[ith_itinItem + 1];
+                this.state.checked[ith_itinItem + 1] = tempNewState;
+
+                // Swap the "eliminated" state to show a canceled or plus icon
+                tempNewState = this.state.eliminated[ith_itinItem];
+                this.state.eliminated[ith_itinItem] = this.state.eliminated[ith_itinItem + 1];
+                this.state.eliminated[ith_itinItem + 1] = tempNewState;
+
+                // Correctly update the savedEvents state (indices of the itinerary that are "locked" 0-6)
+                if (misc.include(this.state.savedEvents, ith_itinItem)) {
+                    newSavedEvents.push(ith_itinItem + 1);
+                    indexRemove = this.state.savedEvents.indexOf(ith_itinItem);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newSavedEvents.splice(indexRemove, 1);
+                    }
+                }
+                if (misc.include(this.state.savedEvents, ith_itinItem + 1)) {
+                    newSavedEvents.push(ith_itinItem);
+                    indexRemove = this.state.savedEvents.indexOf(ith_itinItem + 1);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newSavedEvents.splice(indexRemove, 1);
+                    }
+                }
+
+                // Correctly update the eliminatedEvents state (indices of the itinerary that are "x-ed" 0-6)
+                if (misc.include(this.state.eliminatedEvents, ith_itinItem)) {
+                    newEliminatedEvents.push(ith_itinItem + 1);
+                    indexRemove = this.state.eliminatedEvents.indexOf(ith_itinItem);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newEliminatedEvents.splice(indexRemove, 1);
+                    }
+                }
+                if (misc.include(this.state.eliminatedEvents, ith_itinItem + 1)) {
+                    newEliminatedEvents.push(ith_itinItem);
+                    indexRemove = this.state.eliminatedEvents.indexOf(ith_itinItem + 1);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newEliminatedEvents.splice(indexRemove, 1);
+                    }
+                }
+
+                // Update persistent data in browser for GA
+                var myStorage = window.localStorage;
+                var prevBestItineraryObjs = JSON.stringify({
+                    Event1: this.state.resultsArray[0],
+                    Breakfast: this.state.resultsArray[1],
+                    Event2: this.state.resultsArray[2],
+                    Lunch: this.state.resultsArray[3],
+                    Event3: this.state.resultsArray[4],
+                    Dinner: this.state.resultsArray[5],
+                    Event4: this.state.resultsArray[6],
+                });
+                myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
+
+                // Update states and rerender
+                this.setState({
+                    resultsArray: this.state.resultsArray,
+                    itinTimes: this.state.itinTimes,
+                    eliminated: this.state.eliminated,
+                    checked: this.state.checked,
+                    savedEvents: newSavedEvents,
+                    eliminatedEvents: newEliminatedEvents,
+                });
+            }
+        }
+
+    }
+
 
     // This function updates the checked state to toggle checkboxes and update which items are "locked" or choosen
     // by the user
@@ -798,6 +1002,7 @@ class Userinput extends Component {
     }
 
     handleSubmit(e) {
+
         try {
             e.preventDefault();
         }
@@ -806,6 +1011,12 @@ class Userinput extends Component {
         }
 
         console.clear();
+
+        console.log(this.state.eliminated)
+        console.log(this.state.eliminatedEvents)
+
+        console.log(this.state.checked)
+        console.log(this.state.savedEvents)
         // Handle empty budget inputs
         if (!this.state.budgetmax || isNaN(this.state.budgetmax) || this.state.budgetmax === undefined) {
             this.setState({
@@ -1340,7 +1551,13 @@ class Userinput extends Component {
 
 
         // Itinerary header
-        var itinHeadLocationStr = misc.capFirstLetter(this.state.location);
+        var itinHeadStr = CONSTANTS.ITIN_TITLE_TEXT + 
+            misc.capFirstLetter(this.state.location);
+        var dateStrArrayTemp = this.state.startDate.toDate().toDateString().split(" ");
+        if (dateStrArrayTemp.length === 4) {
+        itinHeadStr = itinHeadStr + ", " + dateStrArrayTemp[0] + ". " + dateStrArrayTemp[1] + ". " + 
+                dateStrArrayTemp[2] + ", " + dateStrArrayTemp[3];
+        }
 
         // Itinerary
         var key = 'tbody-' + i;
@@ -1405,6 +1622,8 @@ class Userinput extends Component {
                     handleEliminate={this.handleEliminate}
                     handleClickDescOpen={this.handleClickDescOpen}
                     handleEventCostChange={this.handleEventCostChange}
+                    handleMoveItemUp={this.handleMoveItinItemUp}
+                    handleMoveItemDown={this.handleMoveItinItemDown}
                     distances={distances}
                     resultsArray={this.state.resultsArray}
                     iFirstValidLocation={iFirstValidLocation}
@@ -1776,7 +1995,7 @@ class Userinput extends Component {
                                     <div className={onlyItin.join(' ')}>
                                         {this.state.resultsArray.length === 0 && this.state.loading === false ? '' : 
                                             <div className="itinHeader">
-                                            {itinHeadLocationStr}
+                                            {itinHeadStr}
                                             </div>
                                         }
                                         <div className="itinEvents clearfix">
@@ -2120,8 +2339,6 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
         itineraries[6].Event4.push(CONSTANTS.NONE_ITEM_EVENT);
 
         // Save user added event by overwriting previous assignments
-        console.log("user added events array:")
-        console.log(userAddedEventsObjs_in)
         if (userAddedEventsFlag) {
 
             var doOnce = [true, true, true, true, true, true, true];
@@ -2141,8 +2358,6 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
         }
 
         // Save certain itinerary events/items (from API calls) based on user input by overwriting previous assignments
-        console.log("saved events array:")
-        console.log(savedEvents_in)
         if (savedUserInputs) {
             var itinSlot = 1;
             for (var isaved = 0; isaved < savedEvents_in.length; isaved++) {

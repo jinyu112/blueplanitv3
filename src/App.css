@@ -422,7 +422,7 @@ img{
     text-align: right;
 }
 
-.lock_checkbox, .elim_checkbox {
+.lock_checkbox, .elim_checkbox, .up_button, .down_button {
     display: none;
     cursor: pointer;
 }
@@ -628,7 +628,7 @@ button.close {
     width: 100%; /*70%*/
     max-width: 740px;
     min-width: 620px;
-    font-size: 2.5em;
+    font-size: 2.1em;
     padding-bottom: 1.5rem;
 }
 
@@ -636,9 +636,9 @@ button.close {
     display: grid;
     /* grid-gap: 2em; */
     width: 100%; /*70%*/
-    margin-left: auto;
-    margin-right: 1%;
-    max-width: 740px;
+    margin-left: 1%;
+    margin-right: auto;
+    max-width: 800px;
     min-width: 620px;
     padding-right: 8rem;
     /* dotted line for left side of itinerary */
@@ -668,7 +668,7 @@ button.close {
 .itinRowContent::after { /* circle and number left of the itinerary item */
     width: 23px;
     height: 23px;
-    margin-left: -4.15rem;
+    margin-left: -7.675rem;
     margin-top: 3px;
     background-color: #ffffff;
     position: absolute;
@@ -680,6 +680,11 @@ button.close {
     border: 1px solid #3f51b5;
     border-radius: 12px;
     transition: all .25s linear;
+}
+
+.EditCostHelperText {
+    font-size: .6em;
+    color: #878787;
 }
 
 .itinShortDesc {
@@ -735,7 +740,7 @@ button.close {
     top: -29px;
     z-index: 1;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     grid-gap: 1em;
     margin-right: -10px;
     /* margin: 0 10px; */
@@ -777,8 +782,8 @@ button.close {
     position: relative;
     left: -1em;
     float: left;
-    padding-top: 1em;
-    padding-bottom: 1em;
+    padding-top: 1.5em;
+    padding-bottom: 1.5em;
     font-size: .75em;
     color: #878787;
 }
@@ -792,6 +797,17 @@ button.close {
     font-size: 0px;
     border-left: 4px solid #3f51b5;
     right: 28px;
+}
+
+.itinTimeInfoLeftLine {
+    position: relative;
+    margin: auto;
+    padding-right: 1em;
+    width: 100px;
+    max-width:3.5em;
+    overflow: hidden;
+    justify-content: space-between;
+    color:  #354e72
 }
 
 

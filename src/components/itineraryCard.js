@@ -4,6 +4,8 @@ import Button from '@material-ui/core/Button';
 import TooltipMat from '@material-ui/core/Tooltip';
 import EditCostComponent from './editCostComponent.js';
 import misc from '../miscfuncs/misc.js'
+import Icon from "@material-ui/core/Icon/Icon";
+
 import { isNullOrUndefined } from 'util';
 
 class ItineraryCard extends Component {
@@ -134,12 +136,59 @@ class ItineraryCard extends Component {
             fromStr = '';
         }
 
+        var editCostHelperText = "";
+        if (resultsArray[i].time.localeCompare(CONSTANTS.FOODTIME_STR) === 0) {
+            editCostHelperText = CONSTANTS.ITIN_FOOD_HELPER_TEXT;
+        }
+        else {
+            if (resultsArray[i].origin.localeCompare(CONSTANTS.ORIGINS_NONE) === 0) {
+                editCostHelperText = "";
+            }
+            else {
+                editCostHelperText = CONSTANTS.ITIN_EDIT_COST_HELPER_TEXT ;
+            }
+        }
+        
+        var itineraryLeftLineText = resultsArray[i].time;
+        if (itineraryLeftLineText.localeCompare(CONSTANTS.FOODTIME_STR) === 0) {
+                itineraryLeftLineText = CONSTANTS.FOODTIME_STR;
+        }
+        else {
+            itineraryLeftLineText = misc.convertMilTime(itineraryLeftLineText);
+        }
+
         return (
             <div>
             <div ref={ (divElement) => this.divElement = divElement} className="itinCardContainerDiv">
                 <div className="itineraryLeftLine"></div>                
+                <div className="itinTimeInfoLeftLine">
+                {<span className="boldIt"><b>{itineraryLeftLineText}</b></span>}
+                </div>
                 <div className="showActions" key={key} id={"itinCard" + i}>
                     <div className="actions">
+
+                        <div className="actionButtonDiv">
+                            <Button className="lock-button" >
+                                <label className="takeSpace" htmlFor={"down_button" + id}>
+                                    <TooltipMat placement="top" title={"Move down"}>
+                                        {<Icon>keyboard_arrow_down</Icon>}
+                                    </TooltipMat>
+                                </label>
+                                <input className="down_button" id={"down_button" + id} onClick={this.props.handleMoveItemDown} type="button" value={i} />
+                            </Button>
+                        </div>
+
+                        <div className="actionButtonDiv">
+                            <Button className="lock-button" >
+                                <label className="takeSpace" htmlFor={"up_button" + id}>
+                                    <TooltipMat placement="top" title={"Move up"}>
+                                        {<Icon>keyboard_arrow_up</Icon>}
+                                    </TooltipMat>
+                                </label>
+                                <input className="up_button" id={"up_button" + id} onClick={this.props.handleMoveItemUp} type="button" value={i} />
+                            </Button>
+                        </div>
+
                         <div className="actionButtonDiv">
                             <Button className="lock-button" >
                                 <label className="takeSpace" htmlFor={id}>
@@ -177,7 +226,7 @@ class ItineraryCard extends Component {
                                             <div className="displayInline">
                                                 <i className="fas fa-utensils"></i>
                                             </div>
-                                            : <span className="boldIt"><b>{itinTime}</b></span>
+                                            : ''
                                         }
 
                                         {
@@ -216,6 +265,9 @@ class ItineraryCard extends Component {
                                         i_resultsArray={i}
                                         origin={origin}
                                     />
+                                </div>
+                                <div className="EditCostHelperText">
+                                    {editCostHelperText}
                                 </div>
 
                             </div>

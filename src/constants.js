@@ -167,6 +167,8 @@ module.exports = {
     DISTANCE_FROM_ITH_LOC_STR: "About ",
     DISTANCE_FROM_INPUT_STR: "Approx. distance from input location:  ",
     DISTANCE_UNIT_STR: " mile",
-    NO_LOCATION_DATA: "No accurate location. Please visit site for location."
-
+    NO_LOCATION_DATA: "No accurate location. Please visit site for location.",
+    ITIN_TITLE_TEXT: "Your Itinerary For ",
+    ITIN_FOOD_HELPER_TEXT: "Please edit your budget for this meal.",
+    ITIN_EDIT_COST_HELPER_TEXT: "Default cost. Edit above if applicable.",
 }
