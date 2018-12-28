@@ -222,7 +222,8 @@ class ItineraryCard extends Component {
                                 <input className="elim_checkbox" id={elim_id} checked={elimState} onChange={this.props.handleEliminate} type='checkbox' value={i} /> {/* this.handleEliminate*/}
                             </Button>
                         </div>
-                    </div>                    
+                    </div>
+                    {thumbnailUrl.localeCompare("") === 0 && showImages ? "" : <div className="resultsImgContainer"><a href={thumbnailUrl} target='_blank'><img src={thumbnailUrl}/></a></div>}
 
                     <div className="itinRowContent" data-number={dataNumAttribute}>
 
@@ -257,7 +258,6 @@ class ItineraryCard extends Component {
                                         }
 
                     <div>
-                            {thumbnailUrl.localeCompare("") === 0 && showImages ? "" : <div className="resultsImgContainer"><a href={thumbnailUrl} target='_blank'><img src={thumbnailUrl}/></a></div>}
                         </div>
 
                                         {
