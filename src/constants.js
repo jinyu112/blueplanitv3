@@ -115,7 +115,7 @@ module.exports = {
     EDITCOST_TOOLTIP_STR: "Edit cost.",
     LOCK_TOOLTIP_STR: "Like this event? Lock it to keep it in your itinerary.",
     X_TOOLTIP_STR: "Remove this item slot from your itinerary.",
-    ADD_TOOLTIP_STR:  "Add this item slot back to your itinerary. 'Search Again' to populate event.",
+    ADD_TOOLTIP_STR:  "Add this item slot back to your itinerary. Press the '+' to populate event.",
     EMAIL_TOOLTIP_STR: "Email this itinerary to yourself.",
     SEARCHAGAIN_TOOLTIP_STR: "Auto populate unlocked itinerary slots with new events!",
     ADDTOITIN_TOOLTIP_STR: "Add this event to your itinerary.",
@@ -170,5 +170,5 @@ module.exports = {
     NO_LOCATION_DATA: "No accurate location. Please visit site for location.",
     ITIN_TITLE_TEXT: "Your Itinerary For ",
     ITIN_FOOD_HELPER_TEXT: "Please edit your budget for this meal.",
-    ITIN_EDIT_COST_HELPER_TEXT: "Default cost. Edit above if applicable.",
+    ITIN_EDIT_COST_HELPER_TEXT: "Default cost. Edit above cost if applicable.",
 }

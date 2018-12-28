@@ -112,6 +112,9 @@ module.exports = {
       },
 
       capFirstLetter: function(str_in) {
+          if (!str_in || str_in === undefined || str_in === null) {
+              str_in = "";
+          }
         return str_in = str_in.charAt(0).toUpperCase() + str_in.substr(1);
       },
 

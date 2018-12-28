@@ -14,6 +14,10 @@ class ItineraryCard extends Component {
     }
 
     render() {
+        // turn images on/off
+        var showImages = true;
+
+
         var key=this.props.key;
         var i = this.props.cardIndex;
         var id = this.props.itineraryCardId;
@@ -30,9 +34,11 @@ class ItineraryCard extends Component {
         var itinTime = this.props.itinTime; //this.state.itinTimes[i]
         var num_words_desc = this.props.num_words_desc;
         var description = this.props.description;
+        description = misc.capFirstLetter(description);
         var origin = this.props.origin; // this.state.resultsArray[i].origin
         var isShortDescHTML = this.props.isShortDescHTML;
         var shortenedDesc = this.props.shortenedDesc; 
+        shortenedDesc = misc.capFirstLetter(shortenedDesc);
         var descDialog = this.props.descDialog;
         var cost = this.props.cost; //this.state.resultsArray[i].cost
         var origins = this.props.origins;
@@ -157,6 +163,12 @@ class ItineraryCard extends Component {
             itineraryLeftLineText = misc.convertMilTime(itineraryLeftLineText);
         }
 
+        // thumbnail 
+        var thumbnailUrl = resultsArray[i].thumbnail;
+        if (!thumbnailUrl || thumbnailUrl === undefined || thumbnailUrl === null) {
+            thumbnailUrl = "";
+        }
+        
         return (
             <div>
             <div ref={ (divElement) => this.divElement = divElement} className="itinCardContainerDiv">
@@ -164,7 +176,7 @@ class ItineraryCard extends Component {
                 <div className="itinTimeInfoLeftLine">
                 {<span className="boldIt"><b>{itineraryLeftLineText}</b></span>}
                 </div>
-                <div className="showActions" key={key} id={"itinCard" + i}>
+                <div className="showActions" key={key} id={"itinCard" + i}>                
                     <div className="actions">
 
                         <div className="actionButtonDiv">
@@ -210,10 +222,12 @@ class ItineraryCard extends Component {
                                 <input className="elim_checkbox" id={elim_id} checked={elimState} onChange={this.props.handleEliminate} type='checkbox' value={i} /> {/* this.handleEliminate*/}
                             </Button>
                         </div>
-                    </div>
+                    </div>                    
 
                     <div className="itinRowContent" data-number={dataNumAttribute}>
+
                         <div className="resultsName icon-name itinEventCol3">
+
                             <div>
                                 <span className="align">
                                     {url === "" ? <strong>{truncate_name ? truncate_name : name}</strong> :
@@ -241,6 +255,11 @@ class ItineraryCard extends Component {
 
                                             </div>
                                         }
+
+                    <div>
+                            {thumbnailUrl.localeCompare("") === 0 && showImages ? "" : <div className="resultsImgContainer"><a href={thumbnailUrl} target='_blank'><img src={thumbnailUrl}/></a></div>}
+                        </div>
+
                                         {
                                             num_words_desc > 10 ?
                                                 <div>
@@ -254,9 +273,13 @@ class ItineraryCard extends Component {
                                 </div>
                             </div>
 
+
+
                         </div>
+
                         <div className="itinEventCol4 edit-cost text-warning">
                             <div className="costPanel">
+
                                 <div className="edit-cost-cont">
                                     <EditCostComponent
                                         name={name}

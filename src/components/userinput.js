@@ -373,7 +373,7 @@ class Userinput extends Component {
             if (resultsArray[ith_itinItem].time.localeCompare(CONSTANTS.FOODTIME_STR) !== 0
                 && resultsArray[ith_itinItem].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) { 
                 if (resultsArray[ith_itinItem + 1].time.localeCompare(CONSTANTS.FOODTIME_STR) !== 0
-                    && resultsArray[ith_itinItem - 1].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+                    && resultsArray[ith_itinItem + 1].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
                     validMove = false;
                 }
             }
@@ -469,22 +469,39 @@ class Userinput extends Component {
 
         // If the checkbox is checked, add the checkbox index to the states
         let checked = this.state.checked.slice();
+        let newEliminatedEvents = this.state.eliminatedEvents.slice();
         if (e.target.checked) {
             if (!misc.include(this.state.savedEvents, i_checkbox)) { // if i_checkbox is not already in the savedEvents array
                 this.state.savedEvents.push(i_checkbox);
             }
             checked[i_checkbox] = 1;
-            this.setState({ checked: checked });
         }
         // If the checkbox is NOT checked, find and remove the checkbox index from the states
         else {
             var index = this.state.savedEvents.indexOf(i_checkbox);
+
             if (index > -1) {
                 this.state.savedEvents.splice(index, 1);
                 checked[i_checkbox] = 0;
-                this.setState({ checked: checked });
+            }
+
+            // Handle the case in which the itinerary item is "none" but it is unlocked/not saved. 
+            // Re-searching/pressing plan button should randoming populate in this scenario
+            if (this.state.checked[i_checkbox]) {
+                this.state.eliminated[i_checkbox] = 0;
+                index = this.state.eliminatedEvents.indexOf(i_checkbox);
+                if (index > -1) {
+                    newEliminatedEvents.splice(index, 1);
+                }
             }
         }
+
+        // Update states
+        this.setState( {
+            checked: checked,
+            eliminated: this.state.eliminated,
+            eliminatedEvents: newEliminatedEvents,
+        })
     }
 
     // This function updates the eliminated state to toggle checkboxes and update which items are "nulled"
@@ -511,12 +528,16 @@ class Userinput extends Component {
             tempNoneObj.other = i_checkbox;
             tempNoneObj.cost = 0.0;
 
+            // update states
             this.handleUpdateItinerary(tempNoneObj);
             this.setState({ eliminated: eliminated });
+
         }
         // If the checkbox is unchecked, find and remove the checkbox index from the states
         else {
             var index = this.state.eliminatedEvents.indexOf(i_checkbox);
+            var savedIndex;
+            var newSavedEvents = this.state.savedEvents.slice();
             let checked = this.state.checked.slice();
             // from 0 to 6 inclusive
 
@@ -573,10 +594,21 @@ class Userinput extends Component {
                 }
                 newItineraryObj.other = i_checkbox;
 
-                // actually update the states
-                this.handleUpdateItinerary(newItineraryObj);
-            }
+                // Remove savedEvents and reset checked[i_checkbox] state since when adding back a 
+                // random item, since it clears the lock 
+                this.state.checked[i_checkbox] = 0;
+                savedIndex = this.state.savedEvents.indexOf(i_checkbox);
+                if (savedIndex > -1) {
+                    newSavedEvents.splice(savedIndex, 1);
+                }
 
+                // actually update the states                
+                this.handleUpdateItinerary(newItineraryObj);
+                this.setState({ //this overwrites some states being set in handleUpdateItinerary. Not ideal. I know
+                    checked: this.state.checked,
+                    savedEvents: newSavedEvents,
+                })
+            }
 
             if (index > -1) {
                 this.state.eliminatedEvents.splice(index, 1);
@@ -1012,11 +1044,11 @@ class Userinput extends Component {
 
         console.clear();
 
+        console.log(this.state.savedEvents)
+        console.log(this.state.checked)
         console.log(this.state.eliminated)
         console.log(this.state.eliminatedEvents)
 
-        console.log(this.state.checked)
-        console.log(this.state.savedEvents)
         // Handle empty budget inputs
         if (!this.state.budgetmax || isNaN(this.state.budgetmax) || this.state.budgetmax === undefined) {
             this.setState({
