@@ -287,6 +287,7 @@ class ItineraryCard extends Component {
                                         handleCostChange={this.props.handleEventCostChange} //this.handleEventCostChange
                                         i_resultsArray={i}
                                         origin={origin}
+                                        i_originalItinPos={resultsArray[i].original_itin_pos}
                                     />
                                 </div>
                                 <div className="EditCostHelperText">

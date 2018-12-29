@@ -10,13 +10,14 @@ export class EditCostComponent extends Component {
     }
 
     handleBlur(event) {
-        var edittedEventCost = misc.round2NearestHundredth(parseFloat(this.refs.edittedEventCost.value.replace('$ ','')));
+        var edittedEventCost = misc.round2NearestHundredth(parseFloat(this.refs.edittedEventCost.value.replace('$','')));
         var edittedEventName = this.props.name;
         var i_resultsArray = this.props.i_resultsArray; // index of the event in the itinerary results (0-6, ie the itinerary slot)
         var edittedEventOrigin = this.props.origin;
+        var i_originalItinPos = this.props.i_originalItinPos;
 
         if (edittedEventCost !== this.props.cost) {
-            this.props.handleCostChange(edittedEventCost,edittedEventName,i_resultsArray,edittedEventOrigin)
+            this.props.handleCostChange(edittedEventCost,edittedEventName,i_resultsArray,edittedEventOrigin,i_originalItinPos)
         }
     }
 

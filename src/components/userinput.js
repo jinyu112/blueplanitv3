@@ -260,7 +260,7 @@ class Userinput extends Component {
 
     // This function handles the state updates for when the "move up" button is pressed in an itinerary item
     handleMoveItinItemUp(e) {
-        var ith_itinItem = parseInt(e.target.value, 10);
+        var ith_itinItem = parseInt(e.target.value, 10); //position of the item being moved in the itinerary (0-6)
         let resultsArray = this.state.resultsArray.slice();
         let newSavedEvents = this.state.savedEvents.slice();
         let newEliminatedEvents = this.state.eliminatedEvents.slice();
@@ -866,10 +866,14 @@ class Userinput extends Component {
         })
     }
 
-    handleEventCostChange(edittedEventCost, edittedEventName, i_resultsArray, edittedEventOrigin) {
+    handleEventCostChange(edittedEventCost, edittedEventName, i_resultsArray, edittedEventOrigin, i_originalItinPos) {
         var indexDBcompat = window.indexedDB;
         var myStorage = window.localStorage;
         var bestItineraryObjsParsed;
+
+        console.clear();
+        console.log("Handling event cost change")
+        console.log(edittedEventCost)
 
         // edittedEventCost is a float
         if (edittedEventCost !== null &&
@@ -878,6 +882,9 @@ class Userinput extends Component {
             indexDBcompat && myStorage) {
 
             i_resultsArray = parseInt(i_resultsArray, 10);
+            i_originalItinPos = parseInt(i_originalItinPos, 10); // this is the itinerary slot the object originally is from 
+                                                                 // (i.e. for a breakfast item, i_originalItinPos will always equal 1
+                                                                 // similarly, for an event 1 item, i_originalItinPos will always equal 0)
             let checked = this.state.checked.slice();
 
             // Update the cost of the userAddedEvent in the states if user changes the cost in the itinerary
@@ -891,7 +898,7 @@ class Userinput extends Component {
                     this.state.resultsArray[i_resultsArray].cost = edittedEventCost;
 
                     // save the change in the user-saved objects persistent data
-                    bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
+                    bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects")); // this object array is used to overwrite new itinerary items during GA with the saved/locked ones in the same slot from the previous itinerary
                     bestItineraryObjsParsed[CONSTANTS.EVENTKEYS[i_resultsArray]].cost = edittedEventCost;
                     myStorage.setItem("prevBestItinerarySavedObjects", JSON.stringify(bestItineraryObjsParsed));
 
@@ -923,7 +930,7 @@ class Userinput extends Component {
                 }
 
                 // save the change in the user-saved objects persistent data
-                bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
+                bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects")); // this object array is used to overwrite new itinerary items during GA with the saved/locked ones in the same slot from the previous itinerary
                 bestItineraryObjsParsed[CONSTANTS.EVENTKEYS[i_resultsArray]].cost = edittedEventCost;
                 myStorage.setItem("prevBestItinerarySavedObjects", JSON.stringify(bestItineraryObjsParsed));
             }
@@ -969,24 +976,32 @@ class Userinput extends Component {
                         apiKey = CONSTANTS.APIKEYS[3];
                     }
                     else if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_YELP) === 0) {
-                        if (i_resultsArray === 1) {
+                        if (i_originalItinPos === 1) {
                             apiKey = CONSTANTS.APIKEYS[4];
                         }
-                        else if (i_resultsArray === 3) {
+                        else if (i_originalItinPos === 3) {
                             apiKey = CONSTANTS.APIKEYS[5];
                         }
-                        else if (i_resultsArray === 5) {
+                        else if (i_originalItinPos === 5) {
                             apiKey = CONSTANTS.APIKEYS[6];
                         }
                     }
+
+                    console.log("All api data in handleEventCostChange")
+                    console.log(apiData_in)
+                    console.log(apiKey)
 
                     if (apiKey.localeCompare('none') !== 0) {
                         if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_YELP) === 0) {
                             arr = apiData_in[apiKey];
                         }
                         else {
-                            arr = apiData_in[apiKey][CONSTANTS.EVENTKEYS[i_resultsArray]];
+                            arr = apiData_in[apiKey][CONSTANTS.EVENTKEYS[i_originalItinPos]];
                         }
+
+                        console.log("bestItineraryObjsParsed in handleEventCostChange")
+                        console.log(bestItineraryObjsParsed)
+                        console.log(arr)
 
                         // Find the index within the proper array of event objects that has an event name that matches with
                         // edittedEventName
@@ -997,7 +1012,7 @@ class Userinput extends Component {
                                 apiData_in[apiKey][elementPos].cost = edittedEventCost;
                             }
                             else {
-                                apiData_in[apiKey][CONSTANTS.EVENTKEYS[i_resultsArray]][elementPos].cost = edittedEventCost;
+                                apiData_in[apiKey][CONSTANTS.EVENTKEYS[i_originalItinPos]][elementPos].cost = edittedEventCost;
                             }
                         }
                     }
@@ -1276,9 +1291,9 @@ class Userinput extends Component {
                                                     this.handleData(optimItinerary.bestLocations, optimItinerary.bestUrls, mapCenter);
 
                                                     var messageStrObj = {
-                                                        textArray: ["The max event cost is "
+                                                        textArray: [CONSTANTS.MAX_EVENT_COST_NOTE
                                                             , "$" + optimItinerary.maxCost.toString(),
-                                                            ". Increase your budget to include more events!"],
+                                                            CONSTANTS.MAX_EVENT_COST_NOTE_END],
                                                         boldIndex: 1
                                                     };
 
@@ -1378,7 +1393,7 @@ class Userinput extends Component {
                                                         var dataForGA = processAPIDataForGA(this.state.filteredApiData,
                                                             this.state.eventFilterFlags,
                                                             savedEvents,
-                                                            bestItineraryObjsParsed,
+                                                            bestItineraryObjsParsed, // previously generated itinerary
                                                             this.state.userAddedEvents);
 
                                                     }
@@ -1387,7 +1402,7 @@ class Userinput extends Component {
                                                         var dataForGA = processAPIDataForGA(val,
                                                             this.state.eventFilterFlags,
                                                             savedEvents,
-                                                            bestItineraryObjsParsed,
+                                                            bestItineraryObjsParsed, // previously generated itinerary
                                                             this.state.userAddedEvents);
                                                     }
 
@@ -1453,9 +1468,9 @@ class Userinput extends Component {
 
                                                         this.handleData(optimItinerary.bestLocations, optimItinerary.bestUrls, mapCenter);
                                                         var messageStrObj = {
-                                                            textArray: ["The max event cost is "
+                                                            textArray: [CONSTANTS.MAX_EVENT_COST_NOTE
                                                                 , "$" + optimItinerary.maxCost.toString(),
-                                                                ". Increase your budget to include more events!"],
+                                                                CONSTANTS.MAX_EVENT_COST_NOTE_END],
                                                             boldIndex: 1
                                                         };
 

@@ -170,5 +170,7 @@ module.exports = {
     NO_LOCATION_DATA: "No accurate location. Please visit site for location.",
     ITIN_TITLE_TEXT: "Your Itinerary For ",
     ITIN_FOOD_HELPER_TEXT: "Please edit your budget for this meal.",
-    ITIN_EDIT_COST_HELPER_TEXT: "Default cost. Edit above cost if applicable.",
+    ITIN_EDIT_COST_HELPER_TEXT: "Event may cost more. Feel free to edit the above cost.",
+    MAX_EVENT_COST_NOTE: "The max single event cost is ",
+    MAX_EVENT_COST_NOTE_END: ". Increase your budget to include more events in your search!",
 }
