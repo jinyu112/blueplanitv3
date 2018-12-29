@@ -1587,6 +1587,12 @@ class Userinput extends Component {
 
     return (
       <div className="Userinput">
+          {this.state.loading === true ?
+              <div className="loader">
+                  <Loader type="spinningBubbles" color="#fff" height="150px" width="150px"></Loader>
+                  <h5>Planning your trip...</h5>
+              </div> : false
+          }
           <div className={banner.join(' ')}>
               {
                   this.state.resultsArray.length === 0 ?
@@ -1624,7 +1630,7 @@ class Userinput extends Component {
                                               <DatePicker required id="datePicker"   placeholderText="mm/dd/yyyy" className="textInput fixedTextInput homepageInputs textInputLeft" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
                                           </div>
                                       </div>
-                                      <div className="inputContainers">
+                                      <div className="inputContainers misc-params">
                                           {
                                               // <div className="form-group mb-2">
                                               // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
@@ -1633,8 +1639,9 @@ class Userinput extends Component {
                                               // </div>
                                           }
 
-                                          <label className="inputLabel" htmlFor="budgetmax">TRIP BUDGET</label>
+
                                           <div className="form-group mb-2">
+                                              <label className="inputLabel" htmlFor="budgetmax">TRIP BUDGET</label>
                                               <div className="homepageIcon">
                                                   <Icon>credit_card</Icon>
                                               </div>
@@ -1642,12 +1649,13 @@ class Userinput extends Component {
                                                   <input /*required*/ className="fixedTextInput homepageInputs" min="0" type="number" name="budgetmax" placeholder="$1000" /*value={budgetmax}*/ onChange={this.handleChange} />
                                               </TooltipMat>
                                           </div>
-                                      </div>
-                                      <div className="inputContainers">
+                                          <div className="form-group mb-2">
                                               <label className="inputLabel" htmlFor="searchRadius">{CONSTANTS.HEADER_RADIUS_STR}</label>
-                                              <div className="form-group mb-2">
-                                                  <input /*required*/ className="fixedTextInput homepageInputs" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
+                                              <div className="homepageIcon">
+                                                  <Icon>360</Icon>
                                               </div>
+                                              <input /*required*/ className="fixedTextInput homepageInputs" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
+                                          </div>
                                       </div>
                                       <div className="search-btn">
                                           <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
@@ -1686,9 +1694,7 @@ class Userinput extends Component {
                           </div> : ''
                       }
                   </div>
-
               }
-
           </div>
           {this.state.resultsArray.length > 0 ?
               <div className="content-parent-div clearfix">
@@ -1769,15 +1775,9 @@ class Userinput extends Component {
                       {/* ITINERARY CONTENT */}
                       <main className={itinContent.join(' ')}>
                           <div>
-                              {this.state.resultsArray.length === 0 && this.state.loading === false ?
-                                  <div className="greeting"><h4>Get Started Planning Your Trip / Day Above!</h4><img
-                                      alt="globe" src={globe}></img></div> : ' '}
                               {this.state.loading === true ?
-                                  <div className="loader"><Loader type="spinningBubbles" color="#6c757d"></Loader>
-                                      <h5>Searching...</h5></div> :
-
+                                  ' ':
                                   <div>
-
                                       <div className={onlyItin.join(' ')} ref={(itineraryDiv) => {
                                           this.itineraryDiv = itineraryDiv
                                       }}>

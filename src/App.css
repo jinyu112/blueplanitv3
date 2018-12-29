@@ -64,9 +64,9 @@
     border: 1px solid #EBEBEB;
     border-bottom-right-radius: 4px;
     border-top-right-radius: 4px;
-    font-size: 16px;
+    font-size: 14px;
     padding: 0.8em;
-    width: 75%;
+    width: calc(100% - 48px);
     display: table-cell;
     vertical-align: middle;
     border-left: none;
@@ -108,6 +108,7 @@
     border-right: none;
     background-color: white;
     color:black;
+    width: 48px;
 }
 
 
@@ -160,6 +161,9 @@
     text-align: center;
 }
 
+.textInputLeft {
+    border: 1px solid #EBEBEB;
+}
 form {
     background-color: white;
     color: #656565;
@@ -324,18 +328,22 @@ tbody:hover {
     width: 100%;
     top: 0;
     left: 0;
-    height: 45vh;
-    background-color: rgba(255,255,255, 0.55);
+    height: 100vh;
+    background-color: rgba(0,102,210, 1);
     z-index: 200;
+    text-align: center;
 }
 
 .loader div:first-child {
     position: absolute;
-    top: calc(47% - 50px);
-    left: calc(51% - 50px);
+    top: calc(25% - 50px);
+    left: calc(50% - 85px);
 }
+
 .loader h5 {
+    color: white;
     margin-top: 50px;
+    font-weight: 700;
 }
 
 #nav-tab {
@@ -937,8 +945,14 @@ header::before {
     color: white;
     text-transform: uppercase;
     font-family: "Open Sans";
-
 }
+
+.misc-params {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
