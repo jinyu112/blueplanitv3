@@ -223,7 +223,7 @@ class ItineraryCard extends Component {
                             </Button>
                         </div>
                     </div>
-                    {thumbnailUrl.localeCompare("") === 0 && showImages ? "" : <div className="resultsImgContainer"><a href={thumbnailUrl} target='_blank'><img src={thumbnailUrl}/></a></div>}
+                    {thumbnailUrl.localeCompare("") === 0 && showImages ? "" : <div className="resultsImgContainer"><a href={url} target='_blank'><img src={thumbnailUrl}/></a></div>}
 
                     <div className="itinRowContent" data-number={dataNumAttribute}>
 
