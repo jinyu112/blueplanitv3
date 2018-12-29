@@ -7,6 +7,15 @@ export class EditCostComponent extends Component {
     constructor(props) {
         super(props);
         this.handleBlur = this.handleBlur.bind(this);
+        this.handleKeyUp = this.handleKeyUp.bind(this);
+    }
+
+    handleKeyUp(event) {
+        if (event.keyCode) {
+            if (event.keyCode === 13) { // the "enter" button
+                this.handleBlur(event);
+            }
+        }
     }
 
     handleBlur(event) {
@@ -31,7 +40,7 @@ export class EditCostComponent extends Component {
         if (eventOrigin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) { //if not a "none item" itinerary slot, show the price
             // editCostComponentArray.push(<span key={this.props.name + "editCostSpan"}>$</span>);
             editCostComponentArray.push(<input type="text" className="text-succes form-control editCostStyle" min="0"
-                defaultValue={'$ ' + cost} onBlur={this.handleBlur}
+                defaultValue={'$ ' + cost} onBlur={this.handleBlur} onKeyUp={this.handleKeyUp}
                 ref="edittedEventCost"
                 key={this.props.name + "editCostInput"}/>);
         }
