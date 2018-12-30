@@ -9,13 +9,10 @@ import GoogleApiWrapper from './googlemaps.js';
 import Loader from './reactloading.js';
 import DeleteUserEvent from './deleteUserEvent.js';
 import ItineraryCard from './itineraryCard.js';
-import MoreInfoView from './moreInfoView.js';
-import EditCostComponent from './editCostComponent.js';
 import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
 import MoreOptions from './moreOptions';
 import Message from './message.js';
-import ApproxCostToolTip from './approxCostToolTip.js';
 import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -25,11 +22,8 @@ import EmailModal from './emailModal.js';
 import Footer from './footer.js';
 import TooltipMat from '@material-ui/core/Tooltip';
 import AppBar from '@material-ui/core/AppBar';
-import AppBarCollapsed from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import DistanceFilter from './distanceFilter.js';
 import ApiFilter from './apiFilter.js';
 import TimeFilter from './timeFilter.js';
@@ -40,10 +34,7 @@ import google_logo from '../images/google_places.png';
 import meetup_logo from '../images/meetup_logo.png';
 import eventbrite_logo from '../images/eventbrite_logo.png';
 import seatgeek_logo from '../images/seatgeek_logo.png';
-import globe from '../images/globe.png';
 
-import { withStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
 
 import CONSTANTS from '../constants.js';
 import DescDialog from './descDialog.js'
@@ -1033,9 +1024,10 @@ class Userinput extends Component {
         catch (err) {
             //do nothing
         }
-        //revisit
-        this.setState( { resultsArray: [] } );
+
         console.clear();
+        console.log(this.state.loading);
+
         // Handle empty budget inputs
         if (!this.state.budgetmax || isNaN(this.state.budgetmax) || this.state.budgetmax === undefined) {
             this.setState({
@@ -1070,13 +1062,16 @@ class Userinput extends Component {
 
         var insideBudget = true;
         if (this.state.resultsArray.length > 1) {
-            var arrayOfCosts = [this.state.resultsArray[0].cost,
-            this.state.resultsArray[1].cost,
-            this.state.resultsArray[2].cost,
-            this.state.resultsArray[3].cost,
-            this.state.resultsArray[4].cost,
-            this.state.resultsArray[5].cost,
-            this.state.resultsArray[6].cost]
+            var arrayOfCosts = [
+                this.state.resultsArray[0].cost,
+                this.state.resultsArray[1].cost,
+                this.state.resultsArray[2].cost,
+                this.state.resultsArray[3].cost,
+                this.state.resultsArray[4].cost,
+                this.state.resultsArray[5].cost,
+                this.state.resultsArray[6].cost,
+            ];
+
             var maxCostIndex = misc.findMaxValueInArray(arrayOfCosts);
 
             if (this.state.checked[maxCostIndex] === 1) {
@@ -1095,9 +1090,6 @@ class Userinput extends Component {
             }
         }
 
-        this.setState({
-            loading: true
-        });
         var myStorage = window.localStorage;
         var doAPICallsFlag = true;
         var indexDBcompat = window.indexedDB;
@@ -1162,7 +1154,9 @@ class Userinput extends Component {
                                         var doAPICallsObj = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, this.state.searchRadius, this.state.eventType);
 
                                         if (doAPICallsObj.doApiCallsFlag || clearApiData || !indexDBcompat) {
-
+                                            this.setState({
+                                                loading: true
+                                            });
                                             // Reset filters
                                             this.state.filterRadius = this.state.searchRadiusForFilterCompare;
                                             this.setState({
@@ -1889,7 +1883,7 @@ class Userinput extends Component {
 
     return (
       <div className="Userinput">
-          {this.state.loading === true ?
+          {this.state.loading === true && this.state.resultsArray.length == 0 ?
               <div className="loader">
                   <Loader type="spinningBubbles" color="#fff" height="150px" width="150px"></Loader>
                   <h5>Planning your trip...</h5>
@@ -1900,17 +1894,18 @@ class Userinput extends Component {
                   this.state.resultsArray.length === 0 ?
                   <AppBar position="static">
                         <div className="topNavBar">
-                            <span className="nav-bar-logo">Blue</span> Planit
+                            <span className="nav-bar-logo">Blue</span>
+                            <span className="nav-bar-logo2">Planit</span>
                         </div>
                         {/*<div className="headerText">*/}
                             {/*<h1>{CONSTANTS.BANNER_TEXT.FIRST}</h1>*/}
                             {/*<h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>*/}
                         {/*</div>*/}
                         <Toolbar className="toolbar">
-                          <form className="homepageForm" autoComplete="off" onSubmit={this.handleSubmit}>
-                                    <div className="formCopy">
-                                        <h3>Let us plan<br/> so you don't have to.</h3>
-                                    </div>
+                              <form className="homepageForm" autoComplete="off" onSubmit={this.handleSubmit}>
+                                  <div className="formCopy">
+                                      <h3>Let us plan<br/> so you don't have to.</h3>
+                                  </div>
                                   <div className="inputsRow">
                                       <div className="inputContainers">
                                           <div>
@@ -1967,13 +1962,14 @@ class Userinput extends Component {
                                           </TooltipMat>
                                       </div>
                                   </div>
-                          </form>
+                              </form>
                         </Toolbar>
                   </AppBar>
                       :
                   <div className="row topNavBar fixedNav">
                       <div className="col-md-2">
-                          <span className="nav-bar-logo">Blue</span> Planit
+                          <span className="nav-bar-logo">Blue </span>
+                          <span className="nav-bar-logo2">Planit</span>
                       </div>
                       <div className="col-md-6">
                           <div>
@@ -1984,6 +1980,63 @@ class Userinput extends Component {
                                   <input required id="location" onClick={this.handleSearchInputClick} className="fixedTextInput search-input" type="text" name="location" value={this.state.cityName} onChange={this.handleChange} autoComplete="address-level2" />
                               </TooltipMat>
                           </div>
+                          <form className="homepageForm extended-search-input" autoComplete="off" onSubmit={this.handleSubmit}>
+                              <div className="inputs-cont">
+                                  <div className="inputContainers">
+                                      <label className="inputLabel" htmlFor="datePicker">WHEN</label>
+                                      <div className="form-group mb-2 datePickerWrapper">
+                                          {/*<div className={searchIconClasses.join(' ')}>*/}
+                                          {/*<Icon>date_range</Icon>*/}
+                                          {/*</div>*/}
+                                          <DatePicker required id="datePicker" placeholderText="mm/dd/yyyy"
+                                                      className="textInput fixedTextInput homepageInputs textInputLeft"
+                                                      selected={this.state.startDate} onChange={this.handleDateChange}
+                                                      minDate={CONSTANTS.TODAYDATE}/>
+                                      </div>
+                                  </div>
+                                  <div className="inputContainers misc-params">
+                                      {
+                                          // <div className="form-group mb-2">
+                                          // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
+                                          // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                                          // </TooltipMat>
+                                          // </div>
+                                      }
+
+
+                                      <div className="form-group mb-2">
+                                          <label className="inputLabel" htmlFor="budgetmax">TRIP BUDGET</label>
+                                          <div className="homepageIcon">
+                                              <Icon>credit_card</Icon>
+                                          </div>
+                                          <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
+                                              <input /*required*/ className="fixedTextInput homepageInputs" min="0"
+                                                                  type="number" name="budgetmax"
+                                                                  placeholder="$1000" /*value={budgetmax}*/
+                                                                  onChange={this.handleChange}/>
+                                          </TooltipMat>
+                                      </div>
+                                      <div className="form-group mb-2">
+                                          <label className="inputLabel"
+                                                 htmlFor="searchRadius">{CONSTANTS.HEADER_RADIUS_STR}</label>
+                                          <div className="homepageIcon">
+                                              <Icon>360</Icon>
+                                          </div>
+                                          <input /*required*/ className="fixedTextInput homepageInputs" type="number"
+                                                              min="0" name="searchRadius" /*value={50}*/
+                                                              onChange={this.handleSearchRadius}
+                                                              placeholder="Search Radius (mi)"/>
+                                      </div>
+                                  </div>
+                                  <div className="search-btn">
+                                      <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
+                                          <Button variant="contained" color="secondary" type="submit">
+                                              {CONSTANTS.SEARCH_BUTTON_STR}
+                                          </Button>
+                                      </TooltipMat>
+                                  </div>
+                              </div>
+                          </form>
 
                       </div>
                       {this.state.resultsArray.length > 0 ?
@@ -1998,6 +2051,13 @@ class Userinput extends Component {
           {this.state.resultsArray.length > 0 ?
               <div className="content-parent-div clearfix">
                   <div className="wrapper eventsCont apidata">
+                      {
+                          this.state.loading === true ?
+                          <div className="loader results-loader">
+                              <Loader type="spinningBubbles" color="#000" height="75px" width="75px"></Loader>
+                              <h5>Planning your trip...</h5>
+                          </div> : false
+                      }
                       <div className={mapAndResultsDiv.join(' ')}>
                           <div className={mapAndResultsContent.join(' ')}>
                               <div className="filters-div">
