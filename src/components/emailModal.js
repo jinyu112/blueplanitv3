@@ -58,12 +58,13 @@ class EmailModal extends Component {
                 } else {
                   resolve(lat_lon);
                 }
-            });
+            },{ key: process.env.REACT_APP_GOOGLE_API_KEY });
           });
           }
 
        let locate = getLocation();
        locate.then((located) => {
+
            var data = {
                message: this.props.resultsArray,
                email: this.state.email,

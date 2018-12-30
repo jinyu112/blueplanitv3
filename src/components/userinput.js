@@ -8,7 +8,7 @@ import idb_keyval from 'idb-keyval'
 import GoogleApiWrapper from './googlemaps.js';
 import Loader from './reactloading.js';
 import DeleteUserEvent from './deleteUserEvent.js';
-import AddUserEvent from './addUserEvent.js';
+import ItineraryCard from './itineraryCard.js';
 import MoreInfoView from './moreInfoView.js';
 import EditCostComponent from './editCostComponent.js';
 import PaginationLink from './paginationLink.js'
@@ -28,6 +28,8 @@ import AppBar from '@material-ui/core/AppBar';
 import AppBarCollapsed from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
 import DistanceFilter from './distanceFilter.js';
 import ApiFilter from './apiFilter.js';
 import TimeFilter from './timeFilter.js';
@@ -97,13 +99,11 @@ class Userinput extends Component {
             apiCalls: true,
 
             mapOrResultsState: 'maps',
-            //Height of Itinerary Div
-            itinHeight: 0,
 
             //Event description
             descDialogOpen: [false, false, false, false, false, false, false],
 
-            //Homepage Form
+            //Homepage Form -- revisit
             homepageFormClasses: ['extendedForm'],
             homepageInputClasses: ['homepage', 'homepageLocInput'],
             searchIconClasses: ['searchIcon'],
@@ -141,6 +141,8 @@ class Userinput extends Component {
         this.handleClickDescClose = this.handleClickDescClose.bind(this);
         this.handleShowItin = this.handleShowItin.bind(this);
         this.handleShowMap = this.handleShowMap.bind(this);
+        this.handleMoveItinItemUp = this.handleMoveItinItemUp.bind(this);
+        this.handleMoveItinItemDown = this.handleMoveItinItemDown.bind(this);
         this.handleSearchInputClick = this.handleSearchInputClick(this);
     }
 
@@ -152,7 +154,6 @@ class Userinput extends Component {
     }
 
     handleChange(e) {
-
         const state = this.state;
         state[e.target.name] = e.target.value;
         this.setState(state);
@@ -232,6 +233,208 @@ class Userinput extends Component {
         });
     }
 
+    // This function handles the state updates for when the "move up" button is pressed in an itinerary item
+    handleMoveItinItemUp(e) {
+        var ith_itinItem = parseInt(e.target.value, 10); //position of the item being moved in the itinerary (0-6)
+        let resultsArray = this.state.resultsArray.slice();
+        let newSavedEvents = this.state.savedEvents.slice();
+        let newEliminatedEvents = this.state.eliminatedEvents.slice();
+        var indexRemove;
+
+        if (ith_itinItem > 0 && ith_itinItem !== null && ith_itinItem !== undefined) {
+
+            var validMove = true;
+            // check that the item can be moved up
+            if (resultsArray[ith_itinItem].time.localeCompare(CONSTANTS.FOODTIME_STR) !== 0
+                && resultsArray[ith_itinItem].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+                if (resultsArray[ith_itinItem - 1].time.localeCompare(CONSTANTS.FOODTIME_STR) !== 0
+                    && resultsArray[ith_itinItem - 1].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+                    validMove = false;
+                }
+            }
+
+            if (validMove) {
+                var tempItinItemObj_Down = resultsArray[ith_itinItem - 1];
+                tempItinItemObj_Down.other = ith_itinItem;
+                this.state.resultsArray[ith_itinItem] = tempItinItemObj_Down;
+                this.state.itinTimes[ith_itinItem] = misc.convertMilTime(tempItinItemObj_Down.time);
+
+                var tempItinItemObj_Up = resultsArray[ith_itinItem];
+                tempItinItemObj_Up.other = ith_itinItem - 1;
+                this.state.resultsArray[ith_itinItem - 1] = tempItinItemObj_Up;
+                this.state.itinTimes[ith_itinItem - 1] = misc.convertMilTime(tempItinItemObj_Up.time);
+
+                // Swap the "checked" state to show a locked or unlocked icon
+                var tempNewState = this.state.checked[ith_itinItem];
+                this.state.checked[ith_itinItem] = this.state.checked[ith_itinItem - 1];
+                this.state.checked[ith_itinItem - 1] = tempNewState;
+
+                // Swap the "eliminated" state to show a canceled or plus icon
+                tempNewState = this.state.eliminated[ith_itinItem];
+                this.state.eliminated[ith_itinItem] = this.state.eliminated[ith_itinItem - 1];
+                this.state.eliminated[ith_itinItem - 1] = tempNewState;
+
+                // Correctly update the savedEvents state (indices of the itinerary that are "locked" 0-6)
+                if (misc.include(this.state.savedEvents, ith_itinItem)) {
+                    newSavedEvents.push(ith_itinItem - 1);
+                    indexRemove = this.state.savedEvents.indexOf(ith_itinItem);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newSavedEvents.splice(indexRemove, 1);
+                    }
+                }
+                if (misc.include(this.state.savedEvents, ith_itinItem - 1)) {
+                    newSavedEvents.push(ith_itinItem);
+                    indexRemove = this.state.savedEvents.indexOf(ith_itinItem - 1);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newSavedEvents.splice(indexRemove, 1);
+                    }
+                }
+
+                // Correctly update the eliminatedEvents state (indices of the itinerary that are "x-ed" 0-6)
+                if (misc.include(this.state.eliminatedEvents, ith_itinItem)) {
+                    newEliminatedEvents.push(ith_itinItem - 1);
+                    indexRemove = this.state.eliminatedEvents.indexOf(ith_itinItem);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newEliminatedEvents.splice(indexRemove, 1);
+                    }
+                }
+                if (misc.include(this.state.eliminatedEvents, ith_itinItem - 1)) {
+                    newEliminatedEvents.push(ith_itinItem);
+                    indexRemove = this.state.eliminatedEvents.indexOf(ith_itinItem - 1);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newEliminatedEvents.splice(indexRemove, 1);
+                    }
+                }
+
+                // Update persistent data in browser for GA
+                var myStorage = window.localStorage;
+                var prevBestItineraryObjs = JSON.stringify({
+                    Event1: this.state.resultsArray[0],
+                    Breakfast: this.state.resultsArray[1],
+                    Event2: this.state.resultsArray[2],
+                    Lunch: this.state.resultsArray[3],
+                    Event3: this.state.resultsArray[4],
+                    Dinner: this.state.resultsArray[5],
+                    Event4: this.state.resultsArray[6],
+                });
+                myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
+
+                // Update states and rerender
+                this.setState({
+                    resultsArray: this.state.resultsArray,
+                    itinTimes: this.state.itinTimes,
+                    eliminated: this.state.eliminated,
+                    checked: this.state.checked,
+                    savedEvents: newSavedEvents,
+                    eliminatedEvents: newEliminatedEvents,
+                });
+            }
+        }
+
+    }
+
+    // This function handles the state updates for when the "move down" button is pressed in an itinerary item
+    handleMoveItinItemDown(e) {
+        var ith_itinItem = parseInt(e.target.value, 10); // this is the index of the item being moved
+        let resultsArray = this.state.resultsArray.slice();
+        let newSavedEvents = this.state.savedEvents.slice();
+        let newEliminatedEvents = this.state.eliminatedEvents.slice();
+        var indexRemove;
+
+        if (ith_itinItem < resultsArray.length - 1 && ith_itinItem !== null && ith_itinItem !== undefined) {
+
+            var validMove = true;
+            // check that the item can be moved down
+            if (resultsArray[ith_itinItem].time.localeCompare(CONSTANTS.FOODTIME_STR) !== 0
+                && resultsArray[ith_itinItem].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+                if (resultsArray[ith_itinItem + 1].time.localeCompare(CONSTANTS.FOODTIME_STR) !== 0
+                    && resultsArray[ith_itinItem + 1].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+                    validMove = false;
+                }
+            }
+
+            if (validMove) {
+                // Swap itinerary item objects and times
+                var tempItinItemObj_Down = resultsArray[ith_itinItem];
+                tempItinItemObj_Down.other = ith_itinItem + 1;
+                this.state.resultsArray[ith_itinItem + 1] = tempItinItemObj_Down;
+                this.state.itinTimes[ith_itinItem + 1] = misc.convertMilTime(tempItinItemObj_Down.time);
+
+                var tempItinItemObj_Up = resultsArray[ith_itinItem + 1];
+                tempItinItemObj_Up.other = ith_itinItem;
+                this.state.resultsArray[ith_itinItem] = tempItinItemObj_Up;
+                this.state.itinTimes[ith_itinItem] = misc.convertMilTime(tempItinItemObj_Up.time);
+
+                // Swap the "checked" state to show a locked or unlocked icon
+                var tempNewState = this.state.checked[ith_itinItem];
+                this.state.checked[ith_itinItem] = this.state.checked[ith_itinItem + 1];
+                this.state.checked[ith_itinItem + 1] = tempNewState;
+
+                // Swap the "eliminated" state to show a canceled or plus icon
+                tempNewState = this.state.eliminated[ith_itinItem];
+                this.state.eliminated[ith_itinItem] = this.state.eliminated[ith_itinItem + 1];
+                this.state.eliminated[ith_itinItem + 1] = tempNewState;
+
+                // Correctly update the savedEvents state (indices of the itinerary that are "locked" 0-6)
+                if (misc.include(this.state.savedEvents, ith_itinItem)) {
+                    newSavedEvents.push(ith_itinItem + 1);
+                    indexRemove = this.state.savedEvents.indexOf(ith_itinItem);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newSavedEvents.splice(indexRemove, 1);
+                    }
+                }
+                if (misc.include(this.state.savedEvents, ith_itinItem + 1)) {
+                    newSavedEvents.push(ith_itinItem);
+                    indexRemove = this.state.savedEvents.indexOf(ith_itinItem + 1);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newSavedEvents.splice(indexRemove, 1);
+                    }
+                }
+
+                // Correctly update the eliminatedEvents state (indices of the itinerary that are "x-ed" 0-6)
+                if (misc.include(this.state.eliminatedEvents, ith_itinItem)) {
+                    newEliminatedEvents.push(ith_itinItem + 1);
+                    indexRemove = this.state.eliminatedEvents.indexOf(ith_itinItem);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newEliminatedEvents.splice(indexRemove, 1);
+                    }
+                }
+                if (misc.include(this.state.eliminatedEvents, ith_itinItem + 1)) {
+                    newEliminatedEvents.push(ith_itinItem);
+                    indexRemove = this.state.eliminatedEvents.indexOf(ith_itinItem + 1);
+                    if (indexRemove > -1) { // remove old index that was locked (if any)
+                        newEliminatedEvents.splice(indexRemove, 1);
+                    }
+                }
+
+                // Update persistent data in browser for GA
+                var myStorage = window.localStorage;
+                var prevBestItineraryObjs = JSON.stringify({
+                    Event1: this.state.resultsArray[0],
+                    Breakfast: this.state.resultsArray[1],
+                    Event2: this.state.resultsArray[2],
+                    Lunch: this.state.resultsArray[3],
+                    Event3: this.state.resultsArray[4],
+                    Dinner: this.state.resultsArray[5],
+                    Event4: this.state.resultsArray[6],
+                });
+                myStorage.setItem("prevBestItinerarySavedObjects", prevBestItineraryObjs);
+
+                // Update states and rerender
+                this.setState({
+                    resultsArray: this.state.resultsArray,
+                    itinTimes: this.state.itinTimes,
+                    eliminated: this.state.eliminated,
+                    checked: this.state.checked,
+                    savedEvents: newSavedEvents,
+                    eliminatedEvents: newEliminatedEvents,
+                });
+            }
+        }
+
+    }
+
+
     // This function updates the checked state to toggle checkboxes and update which items are "locked" or choosen
     // by the user
     handleCheckbox(e) {
@@ -241,22 +444,39 @@ class Userinput extends Component {
 
         // If the checkbox is checked, add the checkbox index to the states
         let checked = this.state.checked.slice();
+        let newEliminatedEvents = this.state.eliminatedEvents.slice();
         if (e.target.checked) {
             if (!misc.include(this.state.savedEvents, i_checkbox)) { // if i_checkbox is not already in the savedEvents array
                 this.state.savedEvents.push(i_checkbox);
             }
             checked[i_checkbox] = 1;
-            this.setState({ checked: checked });
         }
         // If the checkbox is NOT checked, find and remove the checkbox index from the states
         else {
             var index = this.state.savedEvents.indexOf(i_checkbox);
+
             if (index > -1) {
                 this.state.savedEvents.splice(index, 1);
                 checked[i_checkbox] = 0;
-                this.setState({ checked: checked });
+            }
+
+            // Handle the case in which the itinerary item is "none" but it is unlocked/not saved.
+            // Re-searching/pressing plan button should randoming populate in this scenario
+            if (this.state.checked[i_checkbox]) {
+                this.state.eliminated[i_checkbox] = 0;
+                index = this.state.eliminatedEvents.indexOf(i_checkbox);
+                if (index > -1) {
+                    newEliminatedEvents.splice(index, 1);
+                }
             }
         }
+
+        // Update states
+        this.setState( {
+            checked: checked,
+            eliminated: this.state.eliminated,
+            eliminatedEvents: newEliminatedEvents,
+        })
     }
 
     // This function updates the eliminated state to toggle checkboxes and update which items are "nulled"
@@ -283,14 +503,88 @@ class Userinput extends Component {
             tempNoneObj.other = i_checkbox;
             tempNoneObj.cost = 0.0;
 
+            // update states
             this.handleUpdateItinerary(tempNoneObj);
             this.setState({ eliminated: eliminated });
+
         }
         // If the checkbox is unchecked, find and remove the checkbox index from the states
         else {
             var index = this.state.eliminatedEvents.indexOf(i_checkbox);
+            var savedIndex;
+            var newSavedEvents = this.state.savedEvents.slice();
             let checked = this.state.checked.slice();
             // from 0 to 6 inclusive
+
+            // add back in a random event/restaurant
+            var itemsToChooseFrom = [];
+            if (i_checkbox % 2 === 0) { // event itinerary slot (i_checkbox = 0,2,4,6)
+                for (var i = 0; i < CONSTANTS.APIKEYS.length; i++) {
+                    if (this.state.filteredApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[i_checkbox]] &&
+                        this.state.filteredApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[i_checkbox]] !== undefined &&
+                        this.state.filteredApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[i_checkbox]] !== null) {
+                        if (this.state.filteredApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[i_checkbox]].length > 0) {
+                            itemsToChooseFrom.push(this.state.filteredApiData[CONSTANTS.APIKEYS[i]][CONSTANTS.EVENTKEYS[i_checkbox]]);
+                        }
+                    }
+                }
+            }
+            else { //restaurant slot
+            // this is bad practice as the values are hardcoded
+                if (i_checkbox === 1) {
+                    itemsToChooseFrom.push(this.state.filteredApiData[CONSTANTS.APIKEYS[4]]); // breakfast
+                }
+                else if (i_checkbox === 3) {
+                    itemsToChooseFrom.push(this.state.filteredApiData[CONSTANTS.APIKEYS[5]]); // lunch
+                }
+                else if (i_checkbox === 5) {
+                    itemsToChooseFrom.push(this.state.filteredApiData[CONSTANTS.APIKEYS[6]]); // dinner
+                }
+            }
+
+            var len = itemsToChooseFrom.length
+            var availableFunds = parseFloat(this.state.budgetmax) - parseFloat(this.state.totalCost);
+            var tempEventCost = parseFloat(availableFunds + 1);
+            if (len > 0) {
+                var irand = 0;
+                var irandInnerArray = 0;
+                var newItineraryObj;
+                var cnt = 0;
+                var maxIter = 10;
+                // finding a random new item to insert into the slot that was previously a "none" item
+                while (tempEventCost > availableFunds && cnt < maxIter) {
+                    irand = misc.randomIntFromInterval(0, len - 1);
+                    irandInnerArray = misc.randomIntFromInterval(0, itemsToChooseFrom[irand].length - 1);
+                    newItineraryObj = itemsToChooseFrom[irand][irandInnerArray];
+                    tempEventCost = parseFloat(newItineraryObj.cost);
+                    cnt++;
+                }
+                if (cnt === maxIter) {
+                    if (i_checkbox % 2 === 0) {
+                        newItineraryObj = CONSTANTS.NONE_ITEM_EVENT;
+                    }
+                    else {
+                        newItineraryObj = CONSTANTS.NONE_ITEM;
+                    }
+                }
+                newItineraryObj.other = i_checkbox;
+
+                // Remove savedEvents and reset checked[i_checkbox] state since when adding back a
+                // random item, since it clears the lock
+                this.state.checked[i_checkbox] = 0;
+                savedIndex = this.state.savedEvents.indexOf(i_checkbox);
+                if (savedIndex > -1) {
+                    newSavedEvents.splice(savedIndex, 1);
+                }
+
+                // actually update the states
+                this.handleUpdateItinerary(newItineraryObj);
+                this.setState({ //this overwrites some states being set in handleUpdateItinerary. Not ideal. I know
+                    checked: this.state.checked,
+                    savedEvents: newSavedEvents,
+                })
+            }
+
             if (index > -1) {
                 this.state.eliminatedEvents.splice(index, 1);
                 this.state.savedEvents.splice(index, 1);
@@ -547,10 +841,14 @@ class Userinput extends Component {
         })
     }
 
-    handleEventCostChange(edittedEventCost, edittedEventName, i_resultsArray, edittedEventOrigin) {
+    handleEventCostChange(edittedEventCost, edittedEventName, i_resultsArray, edittedEventOrigin, i_originalItinPos) {
         var indexDBcompat = window.indexedDB;
         var myStorage = window.localStorage;
         var bestItineraryObjsParsed;
+
+        console.clear();
+        console.log("Handling event cost change")
+        console.log(edittedEventCost)
 
         // edittedEventCost is a float
         if (edittedEventCost !== null &&
@@ -559,6 +857,9 @@ class Userinput extends Component {
             indexDBcompat && myStorage) {
 
             i_resultsArray = parseInt(i_resultsArray, 10);
+            i_originalItinPos = parseInt(i_originalItinPos, 10); // this is the itinerary slot the object originally is from
+                                                                 // (i.e. for a breakfast item, i_originalItinPos will always equal 1
+                                                                 // similarly, for an event 1 item, i_originalItinPos will always equal 0)
             let checked = this.state.checked.slice();
 
             // Update the cost of the userAddedEvent in the states if user changes the cost in the itinerary
@@ -572,7 +873,7 @@ class Userinput extends Component {
                     this.state.resultsArray[i_resultsArray].cost = edittedEventCost;
 
                     // save the change in the user-saved objects persistent data
-                    bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
+                    bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects")); // this object array is used to overwrite new itinerary items during GA with the saved/locked ones in the same slot from the previous itinerary
                     bestItineraryObjsParsed[CONSTANTS.EVENTKEYS[i_resultsArray]].cost = edittedEventCost;
                     myStorage.setItem("prevBestItinerarySavedObjects", JSON.stringify(bestItineraryObjsParsed));
 
@@ -604,7 +905,7 @@ class Userinput extends Component {
                 }
 
                 // save the change in the user-saved objects persistent data
-                bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects"));
+                bestItineraryObjsParsed = JSON.parse(myStorage.getItem("prevBestItinerarySavedObjects")); // this object array is used to overwrite new itinerary items during GA with the saved/locked ones in the same slot from the previous itinerary
                 bestItineraryObjsParsed[CONSTANTS.EVENTKEYS[i_resultsArray]].cost = edittedEventCost;
                 myStorage.setItem("prevBestItinerarySavedObjects", JSON.stringify(bestItineraryObjsParsed));
             }
@@ -650,24 +951,32 @@ class Userinput extends Component {
                         apiKey = CONSTANTS.APIKEYS[3];
                     }
                     else if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_YELP) === 0) {
-                        if (i_resultsArray === 1) {
+                        if (i_originalItinPos === 1) {
                             apiKey = CONSTANTS.APIKEYS[4];
                         }
-                        else if (i_resultsArray === 3) {
+                        else if (i_originalItinPos === 3) {
                             apiKey = CONSTANTS.APIKEYS[5];
                         }
-                        else if (i_resultsArray === 5) {
+                        else if (i_originalItinPos === 5) {
                             apiKey = CONSTANTS.APIKEYS[6];
                         }
                     }
+
+                    console.log("All api data in handleEventCostChange")
+                    console.log(apiData_in)
+                    console.log(apiKey)
 
                     if (apiKey.localeCompare('none') !== 0) {
                         if (edittedEventOrigin.localeCompare(CONSTANTS.ORIGINS_YELP) === 0) {
                             arr = apiData_in[apiKey];
                         }
                         else {
-                            arr = apiData_in[apiKey][CONSTANTS.EVENTKEYS[i_resultsArray]];
+                            arr = apiData_in[apiKey][CONSTANTS.EVENTKEYS[i_originalItinPos]];
                         }
+
+                        console.log("bestItineraryObjsParsed in handleEventCostChange")
+                        console.log(bestItineraryObjsParsed)
+                        console.log(arr)
 
                         // Find the index within the proper array of event objects that has an event name that matches with
                         // edittedEventName
@@ -678,7 +987,7 @@ class Userinput extends Component {
                                 apiData_in[apiKey][elementPos].cost = edittedEventCost;
                             }
                             else {
-                                apiData_in[apiKey][CONSTANTS.EVENTKEYS[i_resultsArray]][elementPos].cost = edittedEventCost;
+                                apiData_in[apiKey][CONSTANTS.EVENTKEYS[i_originalItinPos]][elementPos].cost = edittedEventCost;
                             }
                         }
                     }
@@ -721,6 +1030,7 @@ class Userinput extends Component {
         catch (err) {
             //do nothing
         }
+        //revisit
         this.setState( { resultsArray: [] } );
         console.clear();
         // Handle empty budget inputs
@@ -734,7 +1044,6 @@ class Userinput extends Component {
                 budgetmin: CONSTANTS.MIN_BUDGET_DEFAULT,
             })
         }
-
 
         //Handle empty search radius input
         if (!this.state.searchRadius || isNaN(this.state.searchRadius) || this.state.searchRadius === undefined
@@ -957,9 +1266,9 @@ class Userinput extends Component {
                                                     this.handleData(optimItinerary.bestLocations, optimItinerary.bestUrls, mapCenter);
 
                                                     var messageStrObj = {
-                                                        textArray: ["The max event cost is "
+                                                        textArray: [CONSTANTS.MAX_EVENT_COST_NOTE
                                                             , "$" + optimItinerary.maxCost.toString(),
-                                                            ". Increase your budget to include more events!"],
+                                                            CONSTANTS.MAX_EVENT_COST_NOTE_END],
                                                         boldIndex: 1
                                                     };
 
@@ -1060,7 +1369,7 @@ class Userinput extends Component {
                                                         var dataForGA = processAPIDataForGA(this.state.filteredApiData,
                                                             this.state.eventFilterFlags,
                                                             savedEvents,
-                                                            bestItineraryObjsParsed,
+                                                            bestItineraryObjsParsed, // previously generated itinerary
                                                             this.state.userAddedEvents);
 
                                                     }
@@ -1069,7 +1378,7 @@ class Userinput extends Component {
                                                         var dataForGA = processAPIDataForGA(val,
                                                             this.state.eventFilterFlags,
                                                             savedEvents,
-                                                            bestItineraryObjsParsed,
+                                                            bestItineraryObjsParsed, // previously generated itinerary
                                                             this.state.userAddedEvents);
                                                     }
 
@@ -1136,9 +1445,9 @@ class Userinput extends Component {
 
                                                         this.handleData(optimItinerary.bestLocations, optimItinerary.bestUrls, mapCenter);
                                                         var messageStrObj = {
-                                                            textArray: ["The max event cost is "
+                                                            textArray: [CONSTANTS.MAX_EVENT_COST_NOTE
                                                                 , "$" + optimItinerary.maxCost.toString(),
-                                                                ". Increase your budget to include more events!"],
+                                                                CONSTANTS.MAX_EVENT_COST_NOTE_END],
                                                             boldIndex: 1
                                                         };
 
@@ -1203,7 +1512,9 @@ class Userinput extends Component {
     }
 
     handleClickDescClose(e) {
+
         const dialogStates = [false, false, false, false, false, false, false];
+
         this.setState({ descDialogOpen: dialogStates })
     }
 
@@ -1230,9 +1541,18 @@ class Userinput extends Component {
         var ITINERARY_LENGTH = this.state.resultsArray.length;
         const { term, budgetmax, budgetmin, location } = this.state;
         var indents = [];
-        var itinSideInfo = [];
 
         if (this.state.resultsArray.length > 0) {
+            // Calculate distances between locations in itinerary
+            var distances = calcItineraryDistancesFromLocation2Location(this.state.resultsArray);
+            var iFirstValidLocation = 0; // index of first itinerary item that has a valid lat long location
+            for (var i = 0; i < distances.length; i++) {
+                if (distances[i] !== -1.0) {
+                    iFirstValidLocation = i;
+                    break;
+                }
+            }
+
             // Form the itinerary results display
             for (var i = 0; i < ITINERARY_LENGTH; i++) {
                 var origin = this.state.resultsArray[i].origin;
@@ -1254,6 +1574,17 @@ class Userinput extends Component {
                     elimToolTipStr = CONSTANTS.X_TOOLTIP_STR;
                 }
 
+
+        // Itinerary header
+        var itinHeadStr = CONSTANTS.ITIN_TITLE_TEXT +
+            misc.capFirstLetter(this.state.location);
+        var dateStrArrayTemp = this.state.startDate.toDate().toDateString().split(" ");
+        if (dateStrArrayTemp.length === 4) {
+        itinHeadStr = itinHeadStr + ", " + dateStrArrayTemp[0] + ". " + dateStrArrayTemp[1] + ". " +
+                dateStrArrayTemp[2] + ", " + dateStrArrayTemp[3];
+        }
+
+        // Itinerary
         var key = 'tbody-' + i;
         let id = 'checkbox-' + i;
         let elim_id = 'elim-' + i;
@@ -1261,7 +1592,14 @@ class Userinput extends Component {
         let num_words_desc = 0;
         let num_words_name = 0;
         let descDialog = null;
+        var shortenedDesc = description;
+        var isShortDescHTML = false;
+
         if(description) {
+            shortenedDesc = shortenedDesc.substring(0,CONSTANTS.ITIN_CARD_DESC_STR_LENGTH) + '...';
+            if (shortenedDesc.substring(0,1).localeCompare('<') === 0) {
+                isShortDescHTML = true;
+            }
             num_words_desc = description.split(/\W+/).length;
             if(num_words_desc > 10) {
                 descDialog = <DescDialog eventname={this.state.resultsArray[i].name} open={this.state.descDialogOpen[i]} eventDesc={description} handleClose={this.handleClickDescClose}></DescDialog>;
@@ -1273,7 +1611,7 @@ class Userinput extends Component {
             num_words_name = name.split(/\W+/).length;
             if(num_words_name > 9) {
                 let result = this.state.resultsArray[i].name.split(/\W+/).slice(0,10).join(" ");
-                truncate_name = result + ' ...';
+                truncate_name = result + '...';
                 truncate_name = <TooltipMat placement="top" title={name}><span>{truncate_name}</span></TooltipMat>
             }
         }
@@ -1281,82 +1619,40 @@ class Userinput extends Component {
         var dataNumAttribute = i + 1;
 
                 indents.push(
-                    <div>
-                        <Card className="showActions" key={key}>
-                            <div className="itinRowContent" data-number={dataNumAttribute}>
-                                <div className="resultsName icon-name itinEventCol3">
-                                    <div className="justify-end"><a href={this.state.resultsArray[i].url} ><img className="origin-logo" alt="" src={origins[origin]} /></a></div>
-
-                                    <div>
-                                        <span className="align">
-                                            {this.state.resultsArray[i].url === "" ? <strong>{truncate_name ? truncate_name : name}</strong> :
-                                                <strong><a href={this.state.resultsArray[i].url} target='_blank'>{truncate_name ? truncate_name : name}</a></strong>}
-                                            {/* {this.state.resultsArray[i].origin === 'noneitem' || this.state.resultsArray[i].origin === CONSTANTS.ORIGINS_USER ? '' : <MoreInfoButton value={i} onButtonClick={this.handleMoreInfo} />} */}
-
-                                        </span>
-                                        <div>
-                                            <span>
-                                                {this.state.itinTimes[i] == 'Food' ? <div className="displayInline"><i className="fas fa-utensils"></i></div> : <span className="boldIt">{this.state.itinTimes[i]}</span>} {num_words_desc > 10 ? <div><Button id={'open-' + i} className="descBtn" variant="contained" color="primary" onClick={this.handleClickDescOpen}><span id={'open-span-' + i}>Read More</span></Button></div> : description === 0 || !description ? '' : '- ' + description}
-                                            </span>
-                                            {descDialog}
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div className="itinEventCol4 edit-cost text-warning">
-                                    <div className="costPanel">
-                                        <div className="edit-cost-cont">
-                                            <EditCostComponent
-                                                name={this.state.resultsArray[i].name}
-                                                cost={this.state.resultsArray[i].cost}
-                                                handleCostChange={this.handleEventCostChange}
-                                                i_resultsArray={i}
-                                                origin={this.state.resultsArray[i].origin}
-                                            />
-                                            <ApproxCostToolTip
-                                                approxCostFlag={this.state.resultsArray[i].approximateFee}
-                                                origin={this.state.resultsArray[i].origin}
-                                            />
-                                        </div>
-
-                                        <div className="actions">
-                                            <Button className="lock-button" variant="contained" color="primary">
-                                                <label className="takeSpace" htmlFor={id}>
-                                                    <TooltipMat placement="top" title={CONSTANTS.LOCK_TOOLTIP_STR}>
-                                                        {lock_icon}
-                                                    </TooltipMat>
-                                                </label>
-                                                <input className="lock_checkbox" id={id} checked={this.state.checked[i]} onChange={this.handleCheckbox} type="checkbox" value={i} />
-                                            </Button>
-
-                                            <Button className="elim-button" variant="contained" color="secondary">
-                                                <label className="takeSpace" htmlFor={elim_id}>
-                                                    <TooltipMat placement="top" title={elimToolTipStr}>
-                                                        {elim_icon}
-                                                    </TooltipMat>
-                                                </label>
-                                                <input className="elim_checkbox" id={elim_id} checked={this.state.eliminated[i]} onChange={this.handleEliminate} type='checkbox' value={i} />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div className={moreInfoStyles.join(' ')}>
-                                <MoreInfoView desc={this.state.resultsArray[i].description}
-                                    phone={this.state.resultsArray[i].phone}
-                                    address={this.state.resultsArray[i].address}
-                                    duration={this.state.resultsArray[i].duration}
-                                    otherInfo={this.state.resultsArray[i].other}
-                                    origin={this.state.resultsArray[i].origin}
-                                    thumbnail={this.state.resultsArray[i].thumbnail}
-                                    url={this.state.resultsArray[i].url}
-                                    approxFeeFlag={this.state.resultsArray[i].approximateFee}
-                                    defaultDurationFlag={this.state.resultsArray[i].defaultDuration}
-                                />
-                            </div>
-                        </Card>
-                    </div>
+                    <ItineraryCard
+                    key={key}
+                    cardIndex={i}
+                    itineraryCardId={id}
+                    lockIcon={lock_icon}
+                    elimIcon={elim_icon}
+                    itinCardCheckedState={this.state.checked[i]}
+                    itinCardElimState={this.state.eliminated[i]}
+                    elimId={elim_id}
+                    elimToolTipStr={elimToolTipStr}
+                    dataNumAttribute={dataNumAttribute}
+                    truncate_name={truncate_name}
+                    url={this.state.resultsArray[i].url}
+                    name={this.state.resultsArray[i].name}
+                    itinTime={this.state.itinTimes[i]}
+                    num_words_desc={num_words_desc}
+                    description={description}
+                    origin={this.state.resultsArray[i].origin}
+                    distance_from_input_location={this.state.resultsArray[i].distance_from_input_location}
+                    isShortDescHTML={isShortDescHTML}
+                    shortenedDesc={shortenedDesc}
+                    descDialog={descDialog}
+                    cost={this.state.resultsArray[i].cost}
+                    origins={origins}
+                    handleCheckbox={this.handleCheckbox}
+                    handleEliminate={this.handleEliminate}
+                    handleClickDescOpen={this.handleClickDescOpen}
+                    handleEventCostChange={this.handleEventCostChange}
+                    handleMoveItemUp={this.handleMoveItinItemUp}
+                    handleMoveItemDown={this.handleMoveItinItemDown}
+                    distances={distances}
+                    resultsArray={this.state.resultsArray}
+                    iFirstValidLocation={iFirstValidLocation}
+                    />
                 );
             }
 
@@ -1524,6 +1820,8 @@ class Userinput extends Component {
             }
         }
 
+    const { classes, theme } = this.props;
+
         // Handling itinerary div width when results presented
         var itinContent = ['main','mapsfix', 'itinerary'];
         // if (this.state.resultsArray.length > 0) { //if there are itinerary results set the div width to 8 columns
@@ -1581,7 +1879,7 @@ class Userinput extends Component {
             moreOptionsLinkClass.push('active');
         }
 
-        //Home Page Form
+        //Home Page Form -- revisit
         var homepageFormClasses = this.state.homepageFormClasses;
         var homepageInputClasses = this.state.homepageInputClasses;
         var searchIconClasses = this.state.searchIconClasses;
@@ -1776,10 +2074,13 @@ class Userinput extends Component {
                               {this.state.loading === true ?
                                   ' ':
                                   <div>
-                                      <div className={onlyItin.join(' ')} ref={(itineraryDiv) => {
-                                          this.itineraryDiv = itineraryDiv
-                                      }}>
+                                      <div className={onlyItin.join(' ')}>
                                           <div className="ItinEvents clearfix">
+                                              {this.state.resultsArray.length === 0 && this.state.loading === false ? '' :
+                                                  <div className="itinHeader">
+                                                      {itinHeadStr}
+                                                  </div>
+                                              }
                                               {indents}
                                           </div>
                                           <div className="itinFooter">
@@ -1805,7 +2106,6 @@ class Userinput extends Component {
           </div>
 
         </div>
-
 
         )
     }
@@ -2124,8 +2424,6 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
         itineraries[6].Event4.push(CONSTANTS.NONE_ITEM_EVENT);
 
         // Save user added event by overwriting previous assignments
-        console.log("user added events array:")
-        console.log(userAddedEventsObjs_in)
         if (userAddedEventsFlag) {
 
             var doOnce = [true, true, true, true, true, true, true];
@@ -2145,8 +2443,6 @@ function processAPIDataForGA(events_in, eventFilterFlags_in, savedEvents_in,
         }
 
         // Save certain itinerary events/items (from API calls) based on user input by overwriting previous assignments
-        console.log("saved events array:")
-        console.log(savedEvents_in)
         if (savedUserInputs) {
             var itinSlot = 1;
             for (var isaved = 0; isaved < savedEvents_in.length; isaved++) {
@@ -2403,6 +2699,57 @@ function updateAllEventCosts(userEventCost, allApiData) {
         }
     }
     return allApiData;
+}
+
+function calcItineraryDistancesFromLocation2Location(resultsArray_in) {
+    var len = resultsArray_in.length;
+    var distances = [];
+    var firstLocationFlag = true;
+    var negative1 = -1.0;
+
+    if (len > 0) {
+        var latlongprev = {
+            lat: 0.0,
+            lng: 0.0,
+        };
+        var latlongcurr = {
+            lat: 0.0,
+            lng: 0.0,
+        };
+        for (var i = 0; i <len; i++) {
+
+            if (firstLocationFlag) {
+                if (resultsArray_in[i].origin.localeCompare(CONSTANTS.ORIGINS_EB) !== 0 &&
+                    resultsArray_in[i].origin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) {
+                    firstLocationFlag = false;
+                    distances.push(resultsArray_in[i].distance_from_input_location);
+                    latlongprev = resultsArray_in[i].location;
+                }
+                else {
+                    distances.push(negative1)
+                }
+            }
+            else if (!firstLocationFlag) {
+                if (resultsArray_in[i].origin.localeCompare(CONSTANTS.ORIGINS_EB) === 0 ||
+                    resultsArray_in[i].origin.localeCompare(CONSTANTS.ORIGINS_NONE) === 0) {
+                    distances.push(negative1);
+                }
+                else {
+                    latlongcurr = resultsArray_in[i].location;
+                    distances.push(misc.getDistanceFromLatLonInKm(latlongprev.lat, latlongprev.lng,
+                        latlongcurr.lat, latlongcurr.lng));
+                    latlongprev = resultsArray_in[i].location;
+                }
+            }
+            else {
+                distances.push(negative1);
+            }
+        }
+        return distances;
+    }
+    else {
+        return -1;
+    }
 }
 
 Userinput.propTypes = {

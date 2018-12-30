@@ -386,8 +386,8 @@ tbody:hover {
 
 .origin-logo {
     width: 100%;
-
-    min-width: 50px;
+    max-width: 30px;
+    /* min-width: 50px; */
 }
 
 .optionInputs {
@@ -457,18 +457,37 @@ tbody:hover {
 
 .resultsName {
     max-width: 450px;
-    font-size: 1.1em;
     text-align: left;
     display: grid;
-    grid-template-columns: 1fr 4fr;
+    /* grid-template-columns: 1fr 4fr; */
+    grid-template-columns: 1fr;
     grid-gap: 10px;
     align-items: center;
 }
 
 .resultsName a {
-    font-size: 1.3em;
+    font-size: 14px;
     font-family: 'Open Sans';
-    font-weight: 500;
+    font-weight: 700;
+}
+
+.resultsImgContainer {
+    width: 100%;
+    height: 125px;
+    overflow: hidden;
+    /* margin: 10px; */
+    /*margin-top: 10px;*/
+    position: relative;
+}
+.resultsImgContainer img {
+    position: absolute;
+    margin: auto; 
+    min-height: 100%;
+    min-width: 100%;
+    left: -100%;
+    right: -100%;
+    top: -150%;
+    bottom: -100%;
 }
 
 .greeting {
@@ -516,7 +535,7 @@ img{
     text-align: right;
 }
 
-.lock_checkbox, .elim_checkbox {
+.lock_checkbox, .elim_checkbox, .up_button, .down_button {
     display: none;
     cursor: pointer;
 }
@@ -562,9 +581,9 @@ img{
 .edit-cost-cont {
     display: grid;
     align-items: center;
-    grid-gap: 5px;
-    margin: 0 10px;
-    grid-template-columns: 10fr 1fr;
+    /* grid-gap: 5px;
+    margin: 0 10px; */
+    /* grid-template-columns: 10fr 1fr; */
 }
 
 .edit-cost-cont span {
@@ -723,14 +742,25 @@ button.close {
     margin: 0!important;
 }
 
-.ItinEvents {
-    display: grid;
-    grid-gap: 2em;
+.itinHeader {
     width: 100%; /*70%*/
-    margin-left: auto;
-    margin-right: 1%;
     max-width: 740px;
     min-width: 620px;
+    font-size: 2.1em;
+    padding-bottom: 1.5rem;
+    /* padding-left: 100px; */
+    text-align: left;
+}
+
+.itinEvents {
+    display: grid;
+    /* grid-gap: 2em; */
+    width: 100%; /*70%*/
+    margin-left: 1%;
+    margin-right: auto;
+    max-width: 800px;
+    min-width: 620px;
+    padding-right: 8rem;
     /* dotted line for left side of itinerary */
     padding-left: 1.5rem;
     border-left: 4px dotted #3f51b5;
@@ -747,17 +777,18 @@ button.close {
   width: 100%;
   justify-content: space-between;
   align-items: center;
-  padding: 3em 1.5em;
+  padding: 1.5em 1.5em;
+  padding-bottom: .1em;
   display: inline-flex;
   /* max-height: 220px;*/
-  height: 10.25em; /* consistent with showActions before height*/
+  /*height: 10.25em;*/ /* consistent with showActions before height*/
   overflow-y: hidden;
 }
 
 .itinRowContent::after { /* circle and number left of the itinerary item */
     width: 23px;
     height: 23px;
-    margin-left: -3.865rem;
+    margin-left: -7.675rem;
     margin-top: 3px;
     background-color: #ffffff;
     position: absolute;
@@ -769,6 +800,16 @@ button.close {
     border: 1px solid #3f51b5;
     border-radius: 12px;
     transition: all .25s linear;
+}
+
+.EditCostHelperText {
+    font-size: .6em;
+    color: #878787;
+    text-align: left;
+}
+
+.itinShortDesc {
+    font-size: .6em;
 }
 
 .itinEventCol1 img {
@@ -799,7 +840,7 @@ button.close {
     -ms-flex: 1;
     flex: 1;
     margin: -1em 0;
-    border-left: 1px solid #ececec!important;
+    /* border-left: 1px solid #ececec!important; */
     margin-left: 1em;
 }
 
@@ -814,46 +855,95 @@ button.close {
  /*}*/
 
 .actions {
-    position: relative;
+    /* position: relative; */
+    position: absolute; 
+    right: -11px;
+    top: -29px;
     z-index: 1;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     grid-gap: 1em;
-    margin: 0 10px;
+    margin-right: -10px;
+    /* margin: 0 10px; */
 }
+
 
 .actions button {
     margin: 10px 0;
-
 }
 
 .lock-button {
-    background-color: #007bff!important;
+    background-color: #fff!important;
+    border-radius: 50%!important;
+    border: 1px solid #354e72!important;
+    min-width: 0px!important;
+    padding-right: 6px!important;
+    padding-left: 6px!important;
+    padding-top: 3px!important;
+    padding-bottom: 3px!important;
+    box-shadow: none!important;
+    color: #354e72!important;
 }
 
 .elim-button {
-    background-color: #fc2a24!important;
+    background-color: #fff!important;
+    border-radius: 50%!important;
+    border: 1px solid #354e72!important;
+    min-width: 0px!important;
+    padding-right: 6px!important;
+    padding-left: 6px!important;
+    padding-top: 3px!important;
+    padding-bottom: 3px!important;
+    box-shadow: none!important;
+    color: #354e72!important;
 }
+
+
+.timeDifferenceDiv {
+    position: relative;
+    left: -1em;
+    float: left;
+    padding-top: 1.5em;
+    padding-bottom: 1.5em;
+    font-size: .75em;
+    color: #878787;
+}
+
+.itinCardContainerDiv { /* itineraryCard encapsulating div class*/
+    display:flex;
+}
+
+.itineraryLeftLine {
+    position: relative;
+    font-size: 0px;
+    border-left: 4px solid #3f51b5;
+    right: 28px;
+}
+
+.itinTimeInfoLeftLine {
+    position: relative;
+    margin: auto;
+    padding-right: 1em;
+    width: 100px;
+    max-width:3.5em;
+    overflow: hidden;
+    justify-content: space-between;
+    color:  #354e72
+}
+
 
 .showActions { /* itinerary card class*/
     overflow: visible!important;
     color: #666!important;
     transition: all .25s linear;
-    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.3);
+    /*box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.3);*/
+    /*border-radius: 3px!important;*/
+    position: relative; /* added for the actions class so that the buttons can use position: absolute and be placed "outside" of the showActions div*/
+    border: 1px solid #354e72 !important;
+    width:100%;
 }
 
-.showActions::before { /*solid line left of the itinerary */
-    width: 4px;
-    height: 10.25em; /* consistent with itinRowContent height*/
-    /* max-height: calc(220px + 3em); */
-    background-color:  #3f51b5;
-    display: block;
-    content: '';
-    position: absolute;
-    z-index: 1;
-    overflow-y: hidden;
-    margin-left: -1.75em; /* eye-ed when designing, not best practice?? */
-}
+
 .costPanel label {
     margin-bottom: 0px!important;
 }
@@ -862,12 +952,8 @@ button.close {
     box-shadow: -3px 6px 17px 0px rgba(0,0,0,0.4);
 }
 
-/*.ItinEvents .showActions:last-child::before {*/
-    /*max-height: 220px;*/
-/*}*/
-
 .actionsBtn {
-    background-color: white!important;
+    background-color: #fff!important;
 }
 .actonsBtn label {
     margin: 0;
@@ -877,8 +963,20 @@ button.close {
     align-self: center;
 }
 
+.itineraryCardBottomDiv {
+    padding-top:.75em
+}
+
+.distanceFromLastDiv {
+        display: inline-flex;
+        float: left;
+        font-size: .6em;
+        padding-left: 2.5em; /*this number is equal to 1.5em (the itinRowContent padding) divided by this class's font size */
+}
 .justify-end {
-    justify-self: end;
+    float: right;
+    padding-right: .5em;
+    padding-bottom: .5em;
 }
 
 .costPanel {
@@ -887,7 +985,10 @@ button.close {
 
 .descBtn {
     margin-top: 1em!important;
-    margin-left: -5px!important;
+    /* margin-left: -5px!important; */
+    font-size: .7em!important;
+    padding: 4px 8px!important;
+    min-height: 0px!important;
 }
 
 .boldIt {
@@ -903,6 +1004,7 @@ button.close {
     width: 100%;
     height: 100%;
     cursor: pointer;
+    margin-bottom:-.25rem;
 }
 
 .banner {
@@ -927,7 +1029,7 @@ header {
 }
 
 header::before {
-    background-image: url('./images/banner.jpg');
+    /* background-image: url('./images/banner.jpg'); */
     background-size: cover;
     background-position: 0px -100px;
     content: "";

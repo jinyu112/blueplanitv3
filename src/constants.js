@@ -7,6 +7,7 @@ module.exports = {
     ORIGINS_SG: 'seatgeek',
     ORIGINS_NONE: 'noneitem',
     ORIGINS_USER: 'useradded',
+    FOODTIME_STR: 'Food',
     // keys/fields in the itinerary object
     EVENTKEYS: [
         'Event1',
@@ -104,7 +105,7 @@ module.exports = {
     TODAYDATE: new Date(Date.now()),
     MAX_BUDGET_DEFAULT: 9999.0,
     MIN_BUDGET_DEFAULT: 0.0,
-    DEFAULT_SEARCH_RADIUS_MI: 10, //miles
+    DEFAULT_SEARCH_RADIUS_MI: 5, //miles
     APPROX_EVENT_COST_STR: "Default cost. Check event link for actual cost.",
     APPROX_YELPRESTAURANT_COST_STR: "Default meal cost. Enter desired price.",
     LOCATION_TOOLTIP_STR: "Enter an city, address, or zip code that you want to explore!",
@@ -114,7 +115,7 @@ module.exports = {
     EDITCOST_TOOLTIP_STR: "Edit cost.",
     LOCK_TOOLTIP_STR: "Like this event? Lock it to keep it in your itinerary.",
     X_TOOLTIP_STR: "Remove this item slot from your itinerary.",
-    ADD_TOOLTIP_STR:  "Add this item slot back to your itinerary. 'Search Again' to populate event.",
+    ADD_TOOLTIP_STR:  "Add this item slot back to your itinerary. Press the '+' to populate event.",
     EMAIL_TOOLTIP_STR: "Email this itinerary to yourself.",
     SEARCHAGAIN_TOOLTIP_STR: "Auto populate unlocked itinerary slots with new events!",
     ADDTOITIN_TOOLTIP_STR: "Add this event to your itinerary.",
@@ -161,4 +162,15 @@ module.exports = {
         FIRST: 'Let Us Plan So ',
         LAST: ' You Can Explore'
     },
+    ITIN_CARD_DESC_STR_LENGTH: 120,
+    DISTANCE_FROM_PREV_LOC_STR: "Approx. distance from previous location:  ",
+    DISTANCE_FROM_ITH_LOC_STR: "About ",
+    DISTANCE_FROM_INPUT_STR: "Approx. distance from input location:  ",
+    DISTANCE_UNIT_STR: " mile",
+    NO_LOCATION_DATA: "No accurate location. Please visit site for location.",
+    ITIN_TITLE_TEXT: "Your Itinerary For ",
+    ITIN_FOOD_HELPER_TEXT: "Please edit your budget for this meal.",
+    ITIN_EDIT_COST_HELPER_TEXT: "Event may cost more. Feel free to edit the above cost.",
+    MAX_EVENT_COST_NOTE: "The max single event cost is ",
+    MAX_EVENT_COST_NOTE_END: ". Increase your budget to include more events in your search!",
 }

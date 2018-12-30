@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/optimizer-v2.iml" filepath="$PROJECT_DIR$/.idea/optimizer-v2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../optimizer-v2back/.idea/optimizer-v2back.iml" filepath="$PROJECT_DIR$/../optimizer-v2back/.idea/optimizer-v2back.iml" />
     </modules>
   </component>
 </project>
