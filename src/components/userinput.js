@@ -2035,12 +2035,12 @@ class Userinput extends Component {
                                 <div>
 
                                     <div className={onlyItin.join(' ')}>
+                                        <div className="itinEvents clearfix">
                                         {this.state.resultsArray.length === 0 && this.state.loading === false ? '' : 
                                             <div className="itinHeader">
                                             {itinHeadStr}
                                             </div>
                                         }
-                                        <div className="itinEvents clearfix">
                                             {indents}
                                         </div>
                                         <div className="itinFooter">
