@@ -83,7 +83,6 @@ export class MapContainer extends Component {
                    </InfoWindow>
                 )
             }
-
         }
 
         const mapClasses  = ['maps', 'hidden'];

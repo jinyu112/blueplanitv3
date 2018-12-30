@@ -141,8 +141,7 @@ class Userinput extends Component {
         this.handleClickDescClose = this.handleClickDescClose.bind(this);
         this.handleShowItin = this.handleShowItin.bind(this);
         this.handleShowMap = this.handleShowMap.bind(this);
-        this.whereToRef = React.createRef();
-        this.searchIconRef = React.createRef();
+        this.handleSearchInputClick = this.handleSearchInputClick(this);
     }
 
 
@@ -1204,10 +1203,12 @@ class Userinput extends Component {
     }
 
     handleClickDescClose(e) {
-
         const dialogStates = [false, false, false, false, false, false, false];
-
         this.setState({ descDialogOpen: dialogStates })
+    }
+
+    handleSearchInputClick() {
+
     }
 
     render() {
@@ -1665,8 +1666,6 @@ class Userinput extends Component {
                                           </TooltipMat>
                                       </div>
                                   </div>
-
-
                           </form>
                         </Toolbar>
                   </AppBar>
@@ -1676,16 +1675,15 @@ class Userinput extends Component {
                           <span className="nav-bar-logo">Blue</span> Planit
                       </div>
                       <div className="col-md-6">
-                          <div className="">
-                              <div className="">
-                                  <div className="searchIcon">
-                                      <Icon>search</Icon>
-                                  </div>
-                                  <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                      <input required id="location" className="fixedTextInput search" type="text" name="location" value={this.state.cityName} onChange={this.handleChange} autoComplete="address-level2" />
-                                  </TooltipMat>
+                          <div>
+                              <div className="searchIcon">
+                                  <Icon>search</Icon>
                               </div>
+                              <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
+                                  <input required id="location" onClick={this.handleSearchInputClick} className="fixedTextInput search-input" type="text" name="location" value={this.state.cityName} onChange={this.handleChange} autoComplete="address-level2" />
+                              </TooltipMat>
                           </div>
+
                       </div>
                       {this.state.resultsArray.length > 0 ?
                           <div className="col-md-4 mapAndResultsActions" key="toggleItin">
