@@ -542,7 +542,7 @@ class Userinput extends Component {
                 }
             }
 
-            var len = itemsToChooseFrom.length
+            var len = itemsToChooseFrom.length;
             var availableFunds = parseFloat(this.state.budgetmax) - parseFloat(this.state.totalCost);
             var tempEventCost = parseFloat(availableFunds + 1);
             if (len > 0) {
@@ -1904,7 +1904,7 @@ class Userinput extends Component {
                             {/*<h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>*/}
                         {/*</div>*/}
                         <Toolbar className="toolbar">
-                          <form autoComplete="off" onSubmit={this.handleSubmit}>
+                          <form className="homepageForm" autoComplete="off" onSubmit={this.handleSubmit}>
                                     <div className="formCopy">
                                         <h3>Let us plan<br/> so you don't have to.</h3>
                                     </div>
@@ -2075,7 +2075,7 @@ class Userinput extends Component {
                                   ' ':
                                   <div>
                                       <div className={onlyItin.join(' ')}>
-                                          <div className="ItinEvents clearfix">
+                                          <div className="itinEvents clearfix">
                                               {this.state.resultsArray.length === 0 && this.state.loading === false ? '' :
                                                   <div className="itinHeader">
                                                       {itinHeadStr}

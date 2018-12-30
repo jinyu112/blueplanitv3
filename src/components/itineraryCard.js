@@ -279,7 +279,6 @@ class ItineraryCard extends Component {
 
                         <div className="itinEventCol4 edit-cost text-warning">
                             <div className="costPanel">
-
                                 <div className="edit-cost-cont">
                                     <EditCostComponent
                                         name={name}

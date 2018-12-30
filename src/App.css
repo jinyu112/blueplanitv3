@@ -171,7 +171,7 @@
 .textInputLeft {
     border: 1px solid #EBEBEB;
 }
-form {
+.homepageForm {
     background-color: white;
     color: #656565;
     border-radius: 4px;
@@ -183,7 +183,7 @@ form {
     width: 438px;
 }
 
-form h3 {
+.homepageForm h3 {
     font-weight: 700!important;
     padding-bottom: 1em;
     color: #18292e;
@@ -1162,4 +1162,6 @@ input:-webkit-autofill:active {
 .mapAndResults {
     height: 100vh;
     overflow-y: auto;
+    position: absolute;
+    top: 100px;
 }
