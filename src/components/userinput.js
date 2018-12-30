@@ -567,7 +567,14 @@ class Userinput extends Component {
                 }
             }
 
+            console.log("handleEliminate:  ->")
+            console.log(itemsToChooseFrom)
+
             var len = itemsToChooseFrom.length
+            if (len > 0) {
+                len = itemsToChooseFrom[0].length;
+            }
+            
             var availableFunds = parseFloat(this.state.budgetmax) - parseFloat(this.state.totalCost);
             var tempEventCost = parseFloat(availableFunds + 1);
             if (len > 0) {
