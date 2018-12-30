@@ -93,11 +93,11 @@ export class MapContainer extends Component {
             mapClasses.pop();
             }
         };
-
         return (
+
           <Map google={this.props.google}
                zoom={CONSTANTS.GMAPS_DEFAULT_ZOOM}
-               center={this.props.center}
+               initialCenter={this.props.center}
                className={mapClasses.join(' ')}
                style={maps}
             >

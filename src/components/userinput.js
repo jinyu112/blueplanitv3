@@ -1682,7 +1682,7 @@ class Userinput extends Component {
                                       <Icon>search</Icon>
                                   </div>
                                   <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                      <input required id="location" className="fixedTextInput" type="text" name="location" value={this.state.cityName} onChange={this.handleChange} autoComplete="address-level2" />
+                                      <input required id="location" className="fixedTextInput search" type="text" name="location" value={this.state.cityName} onChange={this.handleChange} autoComplete="address-level2" />
                                   </TooltipMat>
                               </div>
                           </div>
