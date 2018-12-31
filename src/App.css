@@ -315,6 +315,11 @@ tbody:hover {
 }
 .totalCost {
     font-size: 1.4rem;
+    width: 100%;
+    max-width: 800px;
+    display: inline-flex;
+    padding-bottom: 10px;
+    padding-top: 10px;
 }
 
 .plane-icon {
@@ -529,10 +534,13 @@ img{
 
 .costStr {
     text-align: left;
+    margin-left: 2.7em;
+    width: 50%;
 }
 
 .cost  {
     text-align: right;
+    width:50%
 }
 
 .lock_checkbox, .elim_checkbox, .up_button, .down_button {
@@ -555,10 +563,7 @@ img{
     font-size: .75rem;
 }
 
-.itinGoBtn {
-    float: right;
-    /* width: 100%; */
-}
+
 .timeInput {
     background-color: white;
     border: none;
@@ -574,8 +579,11 @@ img{
 }
 
 .message {
-    font-size: .5em;
-    text-align: right;
+    font-size: .6em;
+    text-align: left;
+    padding-bottom:20px;
+    margin-left: 3.75rem;
+    padding-bottom: 30px;
 }
 
 .edit-cost-cont {
@@ -649,14 +657,7 @@ button.close {
     opacity: .2;
 }
 
-.sendEmail {
-    float: left;
-}
 
-.sendEmail input {
-    background-color: #551A8B!important;
-    border: none;
-}
 
 
 .footer {
@@ -745,17 +746,42 @@ button.close {
 /* itinDiv is temporary*/
 .itinDiv {
     position:relative;
-    top:100px;
+    top:110px;
+}
+
+.itinHeaderContainer{
+    display:inline-flex;
+    width: 100%;
+    padding-bottom: 20px;
 }
 
 .itinHeader {
-    width: 100%; /*70%*/
+    width: 75%; /*70%*/
     max-width: 740px;
-    min-width: 620px;
-    font-size: 2.1em;
-    padding-bottom: 1.5rem;
+    /* min-width: 620px; */
+    font-size: 1.1em;
+    /* padding-bottom: 1.5rem; */
     /* padding-left: 100px; */
     text-align: left;
+    font-weight: bold;
+    color: #878787;
+}
+
+.itinGeneralActionsContainer{
+    padding-left: 20px;
+}
+
+.itinGoBtn {
+    float: right;
+}
+
+.sendEmail {
+    float: left;
+}
+
+.sendEmail input {
+    background-color: #551A8B!important;
+    border: none;
 }
 
 .itinEvents {
@@ -858,11 +884,9 @@ button.close {
     justify-self: start;
 }
 
-/*.mapAndResultsActions {*/
-     /*display: flex;*/
-     /*justify-content: center;*/
-     /*padding: .5em;*/
- /*}*/
+.mapAndResultsActions {
+    display: -webkit-inline-box;
+ }
 
 .actions {
     /* position: relative; */

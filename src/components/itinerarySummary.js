@@ -20,63 +20,42 @@ class ItinerarySummary extends Component {
 
     openModal() {
         this.emailModal.openModal();
-    }    
+    }
 
 
     render() {
         var totalCostDisplayed = this.props.totalCostDisplayed;
         var message = this.props.message;
         var messageObject = this.props.messageObject;
-        var location = this.props. location;
+        var location = this.props.location;
         var totalCost = this.props.totalCost;
         var resultsArray = this.props.resultsArray;
-        var emailModal = this.props.emailModal;
+        var itinHeadStr = this.props.itinHeadStr;
 
         return (
             <div>
-                <div className="totalCost">
-                    <div key="totalCostDiv">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td className="costStr">
-                                        <strong>Approx. Total Cost:</strong>
-                                    </td>
-                                    <td className="cost">
-                                        {totalCostDisplayed}
-                                    </td>
-                                </tr>
+                {/* Action buttons for search again */}
+                <div className="itinHeaderContainer">
 
-
-                                {message === -1 ? '' :
-                                    <tr><td colSpan="2">
-                                        <Message key={"messageComponent"} messageObj={messageObject} />
-                                    </td></tr>
-                                }
-                            </tbody>
-                        </table>
+                    <div className="itinHeader">
+                        {itinHeadStr}
                     </div>
+                    <div className="sendEmail">
+                            <EmailModal location={location} totalCost={totalCost} resultsArray={resultsArray} onRef={ref => (this.emailModal = ref)} />
+                            <TooltipMat placement="bottom" title={CONSTANTS.EMAIL_TOOLTIP_STR}>
+                                <input className="btn btn-sm go-btn" type="button" value="Send Me the Itinerary" onClick={this.openModal} />
+                            </TooltipMat>
+                        </div>
+
                 </div>
 
-                <div>
-                    <table key={"go-button-table"}>
-                        <tbody>
-                            <tr>
-                                <td className="sendEmail">
-                                    <EmailModal location={location} totalCost={totalCost} resultsArray={resultsArray} onRef={ref => (this.emailModal = ref)} />
-                                    <TooltipMat placement="top" title={CONSTANTS.EMAIL_TOOLTIP_STR}>
-                                        <input className="block btn btn-sm btn-primary go-btn" type="button" value="Send Me the Itinerary" onClick={this.openModal} />
-                                    </TooltipMat>
-                                </td>
-                                <td className="itinGoBtn">
-                                    <TooltipMat placement="top" title={CONSTANTS.SEARCHAGAIN_TOOLTIP_STR}>
-                                        <input className="btn btn-sm go-btn" type="submit" onClick={this.handleSubmit} value="Search Again!" />
-                                    </TooltipMat>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                {/* Total Cost and other pertinent info */}
+                <div className="totalCost" key="totalCostDiv">
+                    <div className="costStr"><strong>Approx. Total Cost:</strong></div>
+                    <div className="cost">{totalCostDisplayed}</div>
                 </div>
+                <div><Message key={"messageComponent"} messageObj={messageObject} /></div>
+
             </div>
         );
     }

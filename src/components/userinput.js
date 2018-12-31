@@ -1683,6 +1683,7 @@ class Userinput extends Component {
                     totalCost={this.state.totalCost}
                     resultsArray={this.state.resultsArray}
                     handleSubmit={this.handleSubmit}
+                    itinHeadStr={itinHeadStr}
                 />);        
             }
         }
@@ -1944,15 +1945,23 @@ class Userinput extends Component {
                               </TooltipMat>
                           </div>
 
-                      </div>
-                      {this.state.resultsArray.length > 0 ?
-                          <div className="col-md-4 mapAndResultsActions" key="toggleItin">
-                              <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
-                              <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
-                          </div> : ''
-                      }
-                  </div>
-              }
+                            </div>
+                            {this.state.resultsArray.length > 0 ?
+                                <div className="col-md-4 mapAndResultsActions" key="toggleItin">
+                                    <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
+                                    <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
+                                    <div className="itinGeneralActionsContainer">
+
+                                        <div className="itinGoBtn">
+                                            <TooltipMat placement="bottom" title={CONSTANTS.SEARCHAGAIN_TOOLTIP_STR}>
+                                                <input className="btn btn-sm go-btn" type="submit" onClick={this.handleSubmit} value="Search Again!" />
+                                            </TooltipMat>
+                                        </div>
+                                    </div>
+                                </div> : ''
+                            }
+                        </div>
+                }
           </div>
           {this.state.resultsArray.length > 0 ?
               <div className="content-parent-div clearfix">
@@ -2038,17 +2047,13 @@ class Userinput extends Component {
                                   <div>
                                       <div className={onlyItin.join(' ')}>
                                           <div className="itinEvents clearfix">
-                                              {this.state.resultsArray.length === 0 && this.state.loading === false ? '' :
-                                                  <div className="itinHeader">
-                                                      {itinHeadStr}
-                                                  </div>
-                                              }
+                                                <div className="itinSummary">
+                                                    {this.state.loading === false ?
+                                                        itinerarySummaryComponent : ''}
+                                                </div>
                                               {indents}
                                           </div>
-                                          <div className="itinSummary">
-                                              {this.state.loading === false ?
-                                                  itinerarySummaryComponent : ''}
-                                          </div>
+
                                       </div>
 
                                   </div>}
