@@ -40,22 +40,23 @@ class ItinerarySummary extends Component {
                     <div className="itinHeader">
                         {itinHeadStr}
                     </div>
-                    <div className="sendEmail">
-                            <EmailModal location={location} totalCost={totalCost} resultsArray={resultsArray} onRef={ref => (this.emailModal = ref)} />
-                            <TooltipMat placement="bottom" title={CONSTANTS.EMAIL_TOOLTIP_STR}>
-                                <input className="btn btn-sm go-btn" type="button" value="Send Me the Itinerary" onClick={this.openModal} />
-                            </TooltipMat>
-                        </div>
 
                 </div>
 
                 {/* Total Cost and other pertinent info */}
-                <div className="totalCost" key="totalCostDiv">
-                    <div className="costStr"><strong>Approx. Total Cost:</strong></div>
-                    <div className="cost">{totalCostDisplayed}</div>
+                <div className="itinerarySumInfoContainer">
+                    <div className="totalCost" key="totalCostDiv">
+                        <div className="costStr"><strong>{CONSTANTS.APPROX_COST_STR}</strong></div>
+                        <div className="cost">{totalCostDisplayed}</div>
+                    </div>
+                    <div><Message key={"messageComponent"} messageObj={messageObject} /></div>
+                    <div className="sendEmail">
+                        <EmailModal location={location} totalCost={totalCost} resultsArray={resultsArray} onRef={ref => (this.emailModal = ref)} />
+                        <TooltipMat placement="bottom" title={CONSTANTS.EMAIL_TOOLTIP_STR}>
+                            <input className="btn btn-sm go-btn" type="button" value={CONSTANTS.EMAIL_ITINERARY_STR} onClick={this.openModal} />
+                        </TooltipMat>
+                    </div>
                 </div>
-                <div><Message key={"messageComponent"} messageObj={messageObject} /></div>
-
             </div>
         );
     }

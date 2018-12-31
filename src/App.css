@@ -190,17 +190,15 @@
 }
 
 
-
-
 .events-half {
     margin: 10px;
 }
 
 .go-btn {
-    background-color: #2CC185!important;
+    background-color: #0066d2!important;
     color: white;
     font-weight: bold!important;
-    border-radius: 0px!important;
+    border-radius: 3px!important;
     padding: 10px!important;
 }
 
@@ -534,13 +532,13 @@ img{
 
 .costStr {
     text-align: left;
-    margin-left: 2.7em;
-    width: 50%;
+    /* margin-left: 2.7em; */
+    width: 75%;
 }
 
 .cost  {
     text-align: right;
-    width:50%
+    width:25%
 }
 
 .lock_checkbox, .elim_checkbox, .up_button, .down_button {
@@ -581,9 +579,7 @@ img{
 .message {
     font-size: .6em;
     text-align: left;
-    padding-bottom:20px;
-    margin-left: 3.75rem;
-    padding-bottom: 30px;
+    color:#666;
 }
 
 .edit-cost-cont {
@@ -776,11 +772,12 @@ button.close {
 }
 
 .sendEmail {
-    float: left;
+    float: right;
+    padding-top: 10px;
+    padding-bottom: 20px;
 }
 
 .sendEmail input {
-    background-color: #551A8B!important;
     border: none;
 }
 
@@ -795,7 +792,7 @@ button.close {
     padding-right: 8rem;
     /* dotted line for left side of itinerary */
     padding-left: 1.5rem;
-    border-left: 4px dotted #3f51b5;
+    border-left: 4px dotted #0066d2;
 }
 
 .itinSummary {
@@ -803,6 +800,18 @@ button.close {
     margin: auto;
     max-width: 800px;
     min-width: 620px;
+}
+
+.itinerarySumInfoContainer {
+    display: inline-block;
+    width: 90.5%;
+    max-width: 800px;
+    margin-left: 3.75em;
+    border: 1px solid #354e72 !important;
+    border-radius: 3px!important;
+    margin-bottom: 3em;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .itinRowContent {
@@ -817,6 +826,10 @@ button.close {
   overflow-y: hidden;
 }
 
+.itinEvenShorterDescript {
+    font-size: .75em;
+}
+
 .itinRowContent::after { /* circle and number left of the itinerary item */
     width: 23px;
     height: 23px;
@@ -827,9 +840,9 @@ button.close {
     z-index: 3;
     content: attr(data-number);
     display: block;
-    color: #3f51b5;
+    color: #0066d2;
     text-align: center;
-    border: 1px solid #3f51b5;
+    border: 1px solid #0066d2;
     border-radius: 12px;
     transition: all .25s linear;
 }
@@ -844,9 +857,9 @@ button.close {
     text-align: right!important;
 }
 
-.itinShortDesc {
+/* .itinShortDesc {
     font-size: .6em;
-}
+} */
 
 .itinEventCol1 img {
     object-fit: cover;
@@ -950,7 +963,7 @@ button.close {
 .itineraryLeftLine {
     position: relative;
     font-size: 0px;
-    border-left: 4px solid #3f51b5;
+    border-left: 4px solid #0066d2;
     right: 28px;
 }
 
@@ -971,7 +984,7 @@ button.close {
     color: #666!important;
     transition: all .25s linear;
     /*box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.3);*/
-    /*border-radius: 3px!important;*/
+    border-radius: 3px!important;
     position: relative; /* added for the actions class so that the buttons can use position: absolute and be placed "outside" of the showActions div*/
     border: 1px solid #354e72 !important;
     width:100%;
@@ -1020,9 +1033,12 @@ button.close {
 .descBtn {
     margin-top: 1em!important;
     /* margin-left: -5px!important; */
-    font-size: .7em!important;
+    font-size: .8em!important;
     padding: 4px 8px!important;
     min-height: 0px!important;
+    box-shadow: none!important;
+    background-color: #0066d2!important;
+    border-radius: 3px!important;
 }
 
 .boldIt {

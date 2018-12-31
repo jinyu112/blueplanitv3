@@ -173,4 +173,7 @@ module.exports = {
     ITIN_EDIT_COST_HELPER_TEXT: "Event may cost more. Feel free to edit the above cost.",
     MAX_EVENT_COST_NOTE: "The max single event cost is ",
     MAX_EVENT_COST_NOTE_END: ". Increase your budget to include more events in your search!",
+    APPROX_COST_STR: "Approx. Total Trip Cost: ",
+    EMAIL_ITINERARY_STR: "Send Me This Itinerary",
+    READ_MORE_BUTTON: "Read More",
 }

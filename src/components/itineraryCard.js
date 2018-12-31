@@ -235,7 +235,7 @@ class ItineraryCard extends Component {
                                         <strong><a href={url} target='_blank'>{truncate_name ? truncate_name : name}</a></strong>}
                                 </span>
                                 <div>
-                                    <span>
+                                    <span className="itinEvenShorterDescript">
 
                                         {itinTime == 'Food' ?
                                             <div className="displayInline">
@@ -264,7 +264,7 @@ class ItineraryCard extends Component {
                                             num_words_desc > 10 ?
                                                 <div>
                                                     <Button id={'open-' + i} className="descBtn" variant="contained" color="primary" onClick={this.props.handleClickDescOpen}> {/*this.handleClickDescOpen */}
-                                                        <span id={'open-span-' + i}>Read More</span>
+                                                        <span id={'open-span-' + i}>{CONSTANTS.READ_MORE_BUTTON}</span>
                                                     </Button>
                                                 </div> : ''
                                         }
