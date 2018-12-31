@@ -9,19 +9,16 @@ import GoogleApiWrapper from './googlemaps.js';
 import Loader from './reactloading.js';
 import DeleteUserEvent from './deleteUserEvent.js';
 import ItineraryCard from './itineraryCard.js';
-import MoreInfoView from './moreInfoView.js';
-import EditCostComponent from './editCostComponent.js';
+import ItinerarySummary from './itinerarySummary.js';
 import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
 import MoreOptions from './moreOptions';
-import Message from './message.js';
 import ApproxCostToolTip from './approxCostToolTip.js';
 import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import '../maps.css';
-import EmailModal from './emailModal.js';
 import Footer from './footer.js';
 import TooltipMat from '@material-ui/core/Tooltip';
 import AppBar from '@material-ui/core/AppBar';
@@ -41,9 +38,6 @@ import meetup_logo from '../images/meetup_logo.png';
 import eventbrite_logo from '../images/eventbrite_logo.png';
 import seatgeek_logo from '../images/seatgeek_logo.png';
 import globe from '../images/globe.png';
-
-import { withStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
 
 import CONSTANTS from '../constants.js';
 import DescDialog from './descDialog.js'
@@ -110,7 +104,6 @@ class Userinput extends Component {
         };
         this.apiService = new ApiService();
         this.handleChange = this.handleChange.bind(this);
-        this.openModal = this.openModal.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleCheckbox = this.handleCheckbox.bind(this);
@@ -544,8 +537,9 @@ class Userinput extends Component {
 
             var len = itemsToChooseFrom.length;
             if (len > 0) {
-                len = itemsToChooseFrom[0].length;
+                if (itemsToChooseFrom[0].length === 0) len = 0; // check for a populated object, but an array of zero length
             }
+
             var availableFunds = parseFloat(this.state.budgetmax) - parseFloat(this.state.totalCost);
             var tempEventCost = parseFloat(availableFunds + 1);
             if (len > 0) {
@@ -1020,10 +1014,6 @@ class Userinput extends Component {
                     return err;
                 }).catch(err => console.log('Error setting the new api data with updated cost in handleEventCostChange!', err));
         }
-    }
-
-    openModal() {
-        this.emailModal.openModal();
     }
 
     handleSubmit(e) {
@@ -1680,51 +1670,20 @@ class Userinput extends Component {
                 messageObject = this.state.message;
                 totalCostDisplayed = <b>${this.state.totalCost}</b>;
             }
-            if (this.state.resultsArray.length > 0) {
-                var total = [];
-                total.push(<div key="totalCostDiv">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td className="costStr">
-                                    <strong>Approx. Total Cost:</strong>
-                                </td>
-                                <td className="cost">
-                                    {totalCostDisplayed}
-                                </td>
-                            </tr>
 
-
-                            {this.state.message === -1 ? '' :
-                                <tr><td colSpan="2">
-                                    <Message key={"messageComponent"} messageObj={messageObject} />
-                                </td></tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>);
-
-                var goAgainButton = [];
-
-                goAgainButton.push(
-                    <table key={"go-button-table"}>
-                        <tbody>
-                            <tr>
-                                <td className="sendEmail">
-                                    <EmailModal location={this.state.location} totalCost={this.state.totalCost} resultsArray={this.state.resultsArray} onRef={ref => (this.emailModal = ref)} />
-                                    <TooltipMat placement="top" title={CONSTANTS.EMAIL_TOOLTIP_STR}>
-                                        <input className="block btn btn-sm btn-primary go-btn" type="button" value="Send Me the Itinerary" onClick={this.openModal} />
-                                    </TooltipMat>
-                                </td>
-                                <td className="itinGoBtn">
-                                    <TooltipMat placement="top" title={CONSTANTS.SEARCHAGAIN_TOOLTIP_STR}>
-                                        <input className="btn btn-sm go-btn" type="submit" onClick={this.handleSubmit} value="Search Again!" />
-                                    </TooltipMat>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                );
+            // Itinerary summary info like total cost and buttons
+            var itinerarySummaryComponent = [];
+            if (this.state.resultsArray.length > 0) {                
+                itinerarySummaryComponent.push(
+                <ItinerarySummary
+                    totalCostDisplayed={totalCostDisplayed}
+                    message={this.state.message}
+                    messageObject={messageObject}
+                    location={this.state.location}
+                    totalCost={this.state.totalCost}
+                    resultsArray={this.state.resultsArray}
+                    handleSubmit={this.handleSubmit}
+                />);        
             }
         }
 
@@ -2086,14 +2045,9 @@ class Userinput extends Component {
                                               }
                                               {indents}
                                           </div>
-                                          <div className="itinFooter">
-                                              {this.state.loading === false ? <div className="totalCost">
-                                                  {total}
-                                              </div> : ''}
-
-                                              {this.state.loading === false ? <div>
-                                                      {goAgainButton}</div>
-                                                  : ''}
+                                          <div className="itinSummary">
+                                              {this.state.loading === false ?
+                                                  itinerarySummaryComponent : ''}
                                           </div>
                                       </div>
 
