@@ -203,7 +203,7 @@
 }
 
 .search-btn {
-    margin-top: 1em;
+    /* margin-top: 1em; */
     text-align: right;
 }
 
@@ -752,7 +752,7 @@ button.close {
 }
 
 .itinHeader {
-    width: 75%; /*70%*/
+    width: 100%; /*70%*/
     max-width: 740px;
     /* min-width: 620px; */
     font-size: 1.1em;

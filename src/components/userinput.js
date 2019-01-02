@@ -65,8 +65,7 @@ class Userinput extends Component {
             eliminated: [0, 0, 0, 0, 0, 0, 0], // for displaying checked or unchecked in eliminating itinerary slots
             totalCost: 0,
             itinTimes: [], // time string in AM/PM format for display
-            userAddedEvents: [],
-            center: {},
+            userAddedEvents: [],            
             loading: false,
             showMoreInfo: [false, false, false, false, false, false, false],
             message: {},
@@ -77,6 +76,13 @@ class Userinput extends Component {
             showModal: false,
             tabState: CONSTANTS.NAV_EVENT_TAB_ID,
             cityName: '',
+
+            //Map states
+            center: {},
+            mapItinCardHoverStates: {
+                showMarker: false,
+                iHover: 0, //ith itinerary item to show marker info when the card is hovered over
+            },            
 
             //Settings
             userFoodCost: 0, // a blanket cost set to food defined by the user in the settings/more options function
@@ -137,8 +143,31 @@ class Userinput extends Component {
         this.handleMoveItinItemUp = this.handleMoveItinItemUp.bind(this);
         this.handleMoveItinItemDown = this.handleMoveItinItemDown.bind(this);
         this.handleSearchInputClick = this.handleSearchInputClick(this);
+        this.handleItinCardMouseEnter = this.handleItinCardMouseEnter.bind(this);
+        this.handleItinCardMouseLeave = this.handleItinCardMouseLeave.bind(this);
     }
 
+    handleItinCardMouseEnter(e) {
+        e = parseInt(e, 10)
+        var tempObj = {
+            showMarker: true,
+            iHover: e,
+        }
+        this.setState({
+            mapItinCardHoverStates: tempObj,
+        });
+    }
+
+    handleItinCardMouseLeave(e) {
+        e = parseInt(e, 10)
+        var tempObj = {
+            showMarker: false,
+            iHover: e,
+        }
+        this.setState({
+            mapItinCardHoverStates: tempObj,
+        });
+    }
 
     handleTabState(e) {
         this.setState({
@@ -607,8 +636,6 @@ class Userinput extends Component {
 
     handleData(locations, urls, center) {
         this.setState({
-            itinLocations: locations,
-            itinUrls: urls,
             center: center
         })
     }
@@ -1642,6 +1669,8 @@ class Userinput extends Component {
                     handleEventCostChange={this.handleEventCostChange}
                     handleMoveItemUp={this.handleMoveItinItemUp}
                     handleMoveItemDown={this.handleMoveItinItemDown}
+                    handleItinCardMouseEnter={this.handleItinCardMouseEnter}
+                    handleItinCardMouseLeave={this.handleItinCardMouseLeave}
                     distances={distances}
                     resultsArray={this.state.resultsArray}
                     iFirstValidLocation={iFirstValidLocation}
@@ -1950,14 +1979,6 @@ class Userinput extends Component {
                                 <div className="col-md-4 mapAndResultsActions" key="toggleItin">
                                     <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
                                     <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
-                                    <div className="itinGeneralActionsContainer">
-
-                                        <div className="itinGoBtn">
-                                            <TooltipMat placement="bottom" title={CONSTANTS.SEARCHAGAIN_TOOLTIP_STR}>
-                                                <input className="btn btn-sm go-btn" type="submit" onClick={this.handleSubmit} value="Search Again!" />
-                                            </TooltipMat>
-                                        </div>
-                                    </div>
                                 </div> : ''
                             }
                         </div>
@@ -2036,7 +2057,7 @@ class Userinput extends Component {
                               </div>
                           </div>
                           <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray}
-                                            center={this.state.center}/>
+                                            center={this.state.center} showMarkerOnHoverObj={this.state.mapItinCardHoverStates}/>
                       </div>
 
                       {/* ITINERARY CONTENT */}

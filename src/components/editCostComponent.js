@@ -14,6 +14,7 @@ export class EditCostComponent extends Component {
         if (event.keyCode) {
             if (event.keyCode === 13) { // the "enter" button
                 this.handleBlur(event);
+                return;
             }
         }
     }

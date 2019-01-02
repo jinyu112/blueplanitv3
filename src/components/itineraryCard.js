@@ -6,17 +6,23 @@ import EditCostComponent from './editCostComponent.js';
 import misc from '../miscfuncs/misc.js'
 import Icon from "@material-ui/core/Icon/Icon";
 
-import { isNullOrUndefined } from 'util';
-
 class ItineraryCard extends Component {
     constructor(props) {
         super(props);
+        this.handleHover=this.handleHover.bind(this);
+        this.handleLeave=this.handleLeave.bind(this);
+    }
+
+    handleHover(e) {
+        this.props.handleItinCardMouseEnter(this.props.cardIndex);
+    }
+    handleLeave(e) {
+        this.props.handleItinCardMouseLeave(this.props.cardIndex);
     }
 
     render() {
         // turn images on/off
         var showImages = true;
-
 
         var key=this.props.key;
         var i = this.props.cardIndex;
@@ -171,12 +177,12 @@ class ItineraryCard extends Component {
         
         return (
             <div>
-            <div ref={ (divElement) => this.divElement = divElement} className="itinCardContainerDiv">
+            <div ref={ (divElement) => this.divElement = divElement} className="itinCardContainerDiv" >
                 <div className="itineraryLeftLine"></div>                
                 <div className="itinTimeInfoLeftLine">
                 {<span className="boldIt"><b>{itineraryLeftLineText}</b></span>}
                 </div>
-                <div className="showActions" key={key} id={"itinCard" + i}>                
+                <div className="showActions" key={key} id={"itinCard" + i} onMouseEnter={this.handleHover} onMouseLeave={this.handleLeave}>                
                     <div className="actions">
 
                         <div className="actionButtonDiv">

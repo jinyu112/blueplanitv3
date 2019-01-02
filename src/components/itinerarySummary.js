@@ -40,7 +40,11 @@ class ItinerarySummary extends Component {
                     <div className="itinHeader">
                         {itinHeadStr}
                     </div>
-
+                    <div className="itinGoBtn">
+                        <TooltipMat placement="bottom" title={CONSTANTS.SEARCHAGAIN_TOOLTIP_STR}>
+                            <input className="btn btn-sm go-btn" type="submit" onClick={this.handleSubmit} value="Search Again!" />
+                        </TooltipMat>
+                    </div>
                 </div>
 
                 {/* Total Cost and other pertinent info */}
