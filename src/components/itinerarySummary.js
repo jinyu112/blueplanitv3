@@ -33,27 +33,27 @@ class ItinerarySummary extends Component {
         var itinHeadStr = this.props.itinHeadStr;
 
         return (
-            <div>
+            <div className="itinerarySumInfoContainer" >
+                <div className="itinHeader">
+                    {itinHeadStr}
+                </div>
+
+                <div className="totalCost" key="totalCostDiv">
+                    <div className="costStr"><strong>{CONSTANTS.APPROX_COST_STR}</strong></div>
+                    <div className="cost">{totalCostDisplayed}</div>
+                </div>
+                <div>
+
+                    <Message key={"messageComponent"} messageObj={messageObject} />
+                </div>
+
                 {/* Action buttons for search again */}
                 <div className="itinHeaderContainer">
-
-                    <div className="itinHeader">
-                        {itinHeadStr}
-                    </div>
                     <div className="itinGoBtn">
                         <TooltipMat placement="bottom" title={CONSTANTS.SEARCHAGAIN_TOOLTIP_STR}>
                             <input className="btn btn-sm go-btn" type="submit" onClick={this.handleSubmit} value="Search Again!" />
                         </TooltipMat>
                     </div>
-                </div>
-
-                {/* Total Cost and other pertinent info */}
-                <div className="itinerarySumInfoContainer">
-                    <div className="totalCost" key="totalCostDiv">
-                        <div className="costStr"><strong>{CONSTANTS.APPROX_COST_STR}</strong></div>
-                        <div className="cost">{totalCostDisplayed}</div>
-                    </div>
-                    <div><Message key={"messageComponent"} messageObj={messageObject} /></div>
                     <div className="sendEmail">
                         <EmailModal location={location} totalCost={totalCost} resultsArray={resultsArray} onRef={ref => (this.emailModal = ref)} />
                         <TooltipMat placement="bottom" title={CONSTANTS.EMAIL_TOOLTIP_STR}>
@@ -61,7 +61,7 @@ class ItinerarySummary extends Component {
                         </TooltipMat>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 }
