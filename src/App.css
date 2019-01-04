@@ -291,6 +291,13 @@ td {
     padding: 0px!important;
 }
 
+.maps {
+    top: 90px;
+    width: 100%!important;
+    height: 100%;
+    display: inline-flex;
+}
+
 .marginRowFix {
     margin: 0px!important;;
 }
@@ -742,7 +749,7 @@ button.close {
 /* itinDiv is temporary*/
 .itinDiv {
     position:relative;
-    top:110px;
+    top:90px;
 }
 
 .itinHeaderContainer{
@@ -1203,7 +1210,7 @@ input:-webkit-autofill:active {
 
 .sidebar {
     width: calc(100%/ (5/12));
-    height: 50vh;
+    /* height: 50vh; */
     position: -webkit-sticky;
     position: sticky;
     top: 0;
@@ -1214,4 +1221,11 @@ input:-webkit-autofill:active {
     overflow-y: auto;
     position: absolute;
     top: 100px;
+}
+
+.mapboxgl-marker {
+    cursor: pointer!important;
+}
+.mapboxgl-popup {
+    max-width: 200px;
 }

@@ -13,7 +13,7 @@ import ItinerarySummary from './itinerarySummary.js';
 import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
 import MoreOptions from './moreOptions';
-import ApproxCostToolTip from './approxCostToolTip.js';
+import MapBoxComponent from './mapBoxComponent';
 import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -37,7 +37,6 @@ import google_logo from '../images/google_places.png';
 import meetup_logo from '../images/meetup_logo.png';
 import eventbrite_logo from '../images/eventbrite_logo.png';
 import seatgeek_logo from '../images/seatgeek_logo.png';
-import globe from '../images/globe.png';
 
 import CONSTANTS from '../constants.js';
 import DescDialog from './descDialog.js'
@@ -46,6 +45,7 @@ import Icon from "@material-ui/core/Icon/Icon";
 //https://developers.google.com/maps/documentation/geocoding/usage-and-billing
 //0-100k queries = $5 per 1k queries
 var geocoder = require('geocoder');
+
 
 class Userinput extends Component {
     constructor(props) {
@@ -65,7 +65,7 @@ class Userinput extends Component {
             eliminated: [0, 0, 0, 0, 0, 0, 0], // for displaying checked or unchecked in eliminating itinerary slots
             totalCost: 0,
             itinTimes: [], // time string in AM/PM format for display
-            userAddedEvents: [],            
+            userAddedEvents: [],
             loading: false,
             showMoreInfo: [false, false, false, false, false, false, false],
             message: {},
@@ -82,7 +82,7 @@ class Userinput extends Component {
             mapItinCardHoverStates: {
                 showMarker: false,
                 iHover: 0, //ith itinerary item to show marker info when the card is hovered over
-            },            
+            },
 
             //Settings
             userFoodCost: 0, // a blanket cost set to food defined by the user in the settings/more options function
@@ -494,7 +494,7 @@ class Userinput extends Component {
         }
 
         // Update states
-        this.setState( {
+        this.setState({
             checked: checked,
             eliminated: this.state.eliminated,
             eliminatedEvents: newEliminatedEvents,
@@ -552,7 +552,7 @@ class Userinput extends Component {
                 }
             }
             else { //restaurant slot
-            // this is bad practice as the values are hardcoded
+                // this is bad practice as the values are hardcoded
                 if (i_checkbox === 1) {
                     itemsToChooseFrom.push(this.state.filteredApiData[CONSTANTS.APIKEYS[4]]); // breakfast
                 }
@@ -882,8 +882,8 @@ class Userinput extends Component {
 
             i_resultsArray = parseInt(i_resultsArray, 10);
             i_originalItinPos = parseInt(i_originalItinPos, 10); // this is the itinerary slot the object originally is from
-                                                                 // (i.e. for a breakfast item, i_originalItinPos will always equal 1
-                                                                 // similarly, for an event 1 item, i_originalItinPos will always equal 0)
+            // (i.e. for a breakfast item, i_originalItinPos will always equal 1
+            // similarly, for an event 1 item, i_originalItinPos will always equal 0)
             let checked = this.state.checked.slice();
 
             // Update the cost of the userAddedEvent in the states if user changes the cost in the itinerary
@@ -1051,7 +1051,7 @@ class Userinput extends Component {
             //do nothing
         }
         //revisit
-        this.setState( { resultsArray: [] } );
+        this.setState({ resultsArray: [] });
         console.clear();
         // Handle empty budget inputs
         if (!this.state.budgetmax || isNaN(this.state.budgetmax) || this.state.budgetmax === undefined) {
@@ -1141,7 +1141,7 @@ class Userinput extends Component {
 
                 // Geocoding to convert user location input into lat/lon
                 geocoder.geocode(this.state.location, function (err, data_latlon) {
-                var cityName = '';
+                    var cityName = '';
                     if (data_latlon) {
                         if (data_latlon.results && data_latlon.results.length > 0 && insideBudget) {
 
@@ -1288,7 +1288,7 @@ class Userinput extends Component {
                                                     var messageStrObj = {
                                                         textArray: [CONSTANTS.MAX_EVENT_COST_NOTE
                                                             , "$" + optimItinerary.maxCost.toString(),
-                                                            CONSTANTS.MAX_EVENT_COST_NOTE_END],
+                                                        CONSTANTS.MAX_EVENT_COST_NOTE_END],
                                                         boldIndex: 1
                                                     };
 
@@ -1299,8 +1299,8 @@ class Userinput extends Component {
                                                     // a change in search radius or a change in event type
                                                     if (doAPICallsObj.eventTypeSearchTermIsDifferent ||
                                                         doAPICallsObj.radiusIsDifferent) {
-                                                            tempCheckedState = this.state.checked;
-                                                            tempEliminatedState = this.state.eliminated;
+                                                        tempCheckedState = this.state.checked;
+                                                        tempEliminatedState = this.state.eliminated;
                                                     }
                                                     this.setState({
                                                         resultsArray: resultsArrayOutput,
@@ -1467,7 +1467,7 @@ class Userinput extends Component {
                                                         var messageStrObj = {
                                                             textArray: [CONSTANTS.MAX_EVENT_COST_NOTE
                                                                 , "$" + optimItinerary.maxCost.toString(),
-                                                                CONSTANTS.MAX_EVENT_COST_NOTE_END],
+                                                            CONSTANTS.MAX_EVENT_COST_NOTE_END],
                                                             boldIndex: 1
                                                         };
 
@@ -1595,85 +1595,85 @@ class Userinput extends Component {
                 }
 
 
-        // Itinerary header
-        var itinHeadStr = CONSTANTS.ITIN_TITLE_TEXT +
-            misc.capFirstLetter(this.state.location);
-        var dateStrArrayTemp = this.state.startDate.toDate().toDateString().split(" ");
-        if (dateStrArrayTemp.length === 4) {
-        itinHeadStr = itinHeadStr + ", " + dateStrArrayTemp[0] + ". " + dateStrArrayTemp[1] + ". " +
-                dateStrArrayTemp[2] + ", " + dateStrArrayTemp[3];
-        }
+                // Itinerary header
+                var itinHeadStr = CONSTANTS.ITIN_TITLE_TEXT +
+                    misc.capFirstLetter(this.state.location);
+                var dateStrArrayTemp = this.state.startDate.toDate().toDateString().split(" ");
+                if (dateStrArrayTemp.length === 4) {
+                    itinHeadStr = itinHeadStr + ", " + dateStrArrayTemp[0] + ". " + dateStrArrayTemp[1] + ". " +
+                        dateStrArrayTemp[2] + ", " + dateStrArrayTemp[3];
+                }
 
-        // Itinerary
-        var key = 'tbody-' + i;
-        let id = 'checkbox-' + i;
-        let elim_id = 'elim-' + i;
-        let description = this.state.resultsArray[i].description;
-        let num_words_desc = 0;
-        let num_words_name = 0;
-        let descDialog = null;
-        var shortenedDesc = description;
-        var isShortDescHTML = false;
+                // Itinerary
+                var key = 'tbody-' + i;
+                let id = 'checkbox-' + i;
+                let elim_id = 'elim-' + i;
+                let description = this.state.resultsArray[i].description;
+                let num_words_desc = 0;
+                let num_words_name = 0;
+                let descDialog = null;
+                var shortenedDesc = description;
+                var isShortDescHTML = false;
 
-        if(description) {
-            shortenedDesc = shortenedDesc.substring(0,CONSTANTS.ITIN_CARD_DESC_STR_LENGTH) + '...';
-            if (shortenedDesc.substring(0,1).localeCompare('<') === 0) {
-                isShortDescHTML = true;
-            }
-            num_words_desc = description.split(/\W+/).length;
-            if(num_words_desc > 10) {
-                descDialog = <DescDialog eventname={this.state.resultsArray[i].name} open={this.state.descDialogOpen[i]} eventDesc={description} handleClose={this.handleClickDescClose}></DescDialog>;
-            }
-        }
-        let name = this.state.resultsArray[i].name;
-        let truncate_name = 0;
-        if(name) {
-            num_words_name = name.split(/\W+/).length;
-            if(num_words_name > 9) {
-                let result = this.state.resultsArray[i].name.split(/\W+/).slice(0,10).join(" ");
-                truncate_name = result + '...';
-                truncate_name = <TooltipMat placement="top" title={name}><span>{truncate_name}</span></TooltipMat>
-            }
-        }
+                if (description) {
+                    shortenedDesc = shortenedDesc.substring(0, CONSTANTS.ITIN_CARD_DESC_STR_LENGTH) + '...';
+                    if (shortenedDesc.substring(0, 1).localeCompare('<') === 0) {
+                        isShortDescHTML = true;
+                    }
+                    num_words_desc = description.split(/\W+/).length;
+                    if (num_words_desc > 10) {
+                        descDialog = <DescDialog eventname={this.state.resultsArray[i].name} open={this.state.descDialogOpen[i]} eventDesc={description} handleClose={this.handleClickDescClose}></DescDialog>;
+                    }
+                }
+                let name = this.state.resultsArray[i].name;
+                let truncate_name = 0;
+                if (name) {
+                    num_words_name = name.split(/\W+/).length;
+                    if (num_words_name > 9) {
+                        let result = this.state.resultsArray[i].name.split(/\W+/).slice(0, 10).join(" ");
+                        truncate_name = result + '...';
+                        truncate_name = <TooltipMat placement="top" title={name}><span>{truncate_name}</span></TooltipMat>
+                    }
+                }
 
-        var dataNumAttribute = i + 1;
+                var dataNumAttribute = i + 1;
 
                 indents.push(
                     <ItineraryCard
-                    key={key}
-                    cardIndex={i}
-                    itineraryCardId={id}
-                    lockIcon={lock_icon}
-                    elimIcon={elim_icon}
-                    itinCardCheckedState={this.state.checked[i]}
-                    itinCardElimState={this.state.eliminated[i]}
-                    elimId={elim_id}
-                    elimToolTipStr={elimToolTipStr}
-                    dataNumAttribute={dataNumAttribute}
-                    truncate_name={truncate_name}
-                    url={this.state.resultsArray[i].url}
-                    name={this.state.resultsArray[i].name}
-                    itinTime={this.state.itinTimes[i]}
-                    num_words_desc={num_words_desc}
-                    description={description}
-                    origin={this.state.resultsArray[i].origin}
-                    distance_from_input_location={this.state.resultsArray[i].distance_from_input_location}
-                    isShortDescHTML={isShortDescHTML}
-                    shortenedDesc={shortenedDesc}
-                    descDialog={descDialog}
-                    cost={this.state.resultsArray[i].cost}
-                    origins={origins}
-                    handleCheckbox={this.handleCheckbox}
-                    handleEliminate={this.handleEliminate}
-                    handleClickDescOpen={this.handleClickDescOpen}
-                    handleEventCostChange={this.handleEventCostChange}
-                    handleMoveItemUp={this.handleMoveItinItemUp}
-                    handleMoveItemDown={this.handleMoveItinItemDown}
-                    handleItinCardMouseEnter={this.handleItinCardMouseEnter}
-                    handleItinCardMouseLeave={this.handleItinCardMouseLeave}
-                    distances={distances}
-                    resultsArray={this.state.resultsArray}
-                    iFirstValidLocation={iFirstValidLocation}
+                        key={key}
+                        cardIndex={i}
+                        itineraryCardId={id}
+                        lockIcon={lock_icon}
+                        elimIcon={elim_icon}
+                        itinCardCheckedState={this.state.checked[i]}
+                        itinCardElimState={this.state.eliminated[i]}
+                        elimId={elim_id}
+                        elimToolTipStr={elimToolTipStr}
+                        dataNumAttribute={dataNumAttribute}
+                        truncate_name={truncate_name}
+                        url={this.state.resultsArray[i].url}
+                        name={this.state.resultsArray[i].name}
+                        itinTime={this.state.itinTimes[i]}
+                        num_words_desc={num_words_desc}
+                        description={description}
+                        origin={this.state.resultsArray[i].origin}
+                        distance_from_input_location={this.state.resultsArray[i].distance_from_input_location}
+                        isShortDescHTML={isShortDescHTML}
+                        shortenedDesc={shortenedDesc}
+                        descDialog={descDialog}
+                        cost={this.state.resultsArray[i].cost}
+                        origins={origins}
+                        handleCheckbox={this.handleCheckbox}
+                        handleEliminate={this.handleEliminate}
+                        handleClickDescOpen={this.handleClickDescOpen}
+                        handleEventCostChange={this.handleEventCostChange}
+                        handleMoveItemUp={this.handleMoveItinItemUp}
+                        handleMoveItemDown={this.handleMoveItinItemDown}
+                        handleItinCardMouseEnter={this.handleItinCardMouseEnter}
+                        handleItinCardMouseLeave={this.handleItinCardMouseLeave}
+                        distances={distances}
+                        resultsArray={this.state.resultsArray}
+                        iFirstValidLocation={iFirstValidLocation}
                     />
                 );
             }
@@ -1702,18 +1702,18 @@ class Userinput extends Component {
 
             // Itinerary summary info like total cost and buttons
             var itinerarySummaryComponent = [];
-            if (this.state.resultsArray.length > 0) {                
+            if (this.state.resultsArray.length > 0) {
                 itinerarySummaryComponent.push(
-                <ItinerarySummary
-                    totalCostDisplayed={totalCostDisplayed}
-                    message={this.state.message}
-                    messageObject={messageObject}
-                    location={this.state.location}
-                    totalCost={this.state.totalCost}
-                    resultsArray={this.state.resultsArray}
-                    handleSubmit={this.handleSubmit}
-                    itinHeadStr={itinHeadStr}
-                />);        
+                    <ItinerarySummary
+                        totalCostDisplayed={totalCostDisplayed}
+                        message={this.state.message}
+                        messageObject={messageObject}
+                        location={this.state.location}
+                        totalCost={this.state.totalCost}
+                        resultsArray={this.state.resultsArray}
+                        handleSubmit={this.handleSubmit}
+                        itinHeadStr={itinHeadStr}
+                    />);
             }
         }
 
@@ -1812,10 +1812,10 @@ class Userinput extends Component {
             }
         }
 
-    const { classes, theme } = this.props;
+        const { classes, theme } = this.props;
 
         // Handling itinerary div width when results presented
-        var itinContent = ['main','mapsfix', 'itinerary'];
+        var itinContent = ['main', 'mapsfix', 'itinerary'];
         // if (this.state.resultsArray.length > 0) { //if there are itinerary results set the div width to 8 columns
         //     itinContent.push('col-md-7');
         // }
@@ -1825,7 +1825,7 @@ class Userinput extends Component {
 
         //Banner versus fixed banner
         var banner = ['banner'];
-        if(this.state.resultsArray.length > 0) {
+        if (this.state.resultsArray.length > 0) {
             banner.push('fixedBanner');
         }
 
@@ -1837,8 +1837,8 @@ class Userinput extends Component {
 
         // Itinerary div css classes
         var onlyItin = ['itinDiv', 'clearfix'];
-        var mapAndResultsDiv = ['clearfix', 'mapAndResultsDiv','sidebar', 'hidden'];
-        if(this.state.resultsArray.length > 0) {
+        var mapAndResultsDiv = ['clearfix', 'mapAndResultsDiv', 'sidebar', 'hidden'];
+        if (this.state.resultsArray.length > 0) {
             mapAndResultsDiv.pop();
         } else {
 
@@ -1876,219 +1876,221 @@ class Userinput extends Component {
         var homepageInputClasses = this.state.homepageInputClasses;
         var searchIconClasses = this.state.searchIconClasses;
 
-    return (
-      <div className="Userinput">
-          {this.state.loading === true ?
-              <div className="loader">
-                  <Loader type="spinningBubbles" color="#fff" height="150px" width="150px"></Loader>
-                  <h5>Planning your trip...</h5>
-              </div> : false
-          }
-          <div className={banner.join(' ')}>
-              {
-                  this.state.resultsArray.length === 0 ?
-                  <AppBar position="static">
-                        <div className="topNavBar">
-                            <span className="nav-bar-logo">Blue</span> Planit
-                        </div>
-                        {/*<div className="headerText">*/}
-                            {/*<h1>{CONSTANTS.BANNER_TEXT.FIRST}</h1>*/}
-                            {/*<h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>*/}
-                        {/*</div>*/}
-                        <Toolbar className="toolbar">
-                          <form className="homepageForm" autoComplete="off" onSubmit={this.handleSubmit}>
-                                    <div className="formCopy">
-                                        <h3>Let us plan<br/> so you don't have to.</h3>
-                                    </div>
-                                  <div className="inputsRow">
-                                      <div className="inputContainers">
-                                          <div>
-                                              <label className="inputLabel" for="location">WHERE</label>
-                                              <div className="homepageIcon">
-                                                  <Icon>search</Icon>
-                                              </div>
-                                              <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                                  <input required id="location" className="fixedTextInput homepageInputs" type="text" name="location" onChange={this.handleChange} autoComplete="address-level2" />
-                                              </TooltipMat>
-                                          </div>
-                                      </div>
-                                      <div className="inputContainers">
-                                          <label className="inputLabel" htmlFor="datePicker">WHEN</label>
-                                          <div className="form-group mb-2 datePickerWrapper">
-                                              {/*<div className={searchIconClasses.join(' ')}>*/}
-                                                  {/*<Icon>date_range</Icon>*/}
-                                              {/*</div>*/}
-                                              <DatePicker required id="datePicker"   placeholderText="mm/dd/yyyy" className="textInput fixedTextInput homepageInputs textInputLeft" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
-                                          </div>
-                                      </div>
-                                      <div className="inputContainers misc-params">
-                                          {
-                                              // <div className="form-group mb-2">
-                                              // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
-                                              // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
-                                              // </TooltipMat>
-                                              // </div>
-                                          }
-
-
-                                          <div className="form-group mb-2">
-                                              <label className="inputLabel" htmlFor="budgetmax">TRIP BUDGET</label>
-                                              <div className="homepageIcon">
-                                                  <Icon>credit_card</Icon>
-                                              </div>
-                                              <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
-                                                  <input /*required*/ className="fixedTextInput homepageInputs" min="0" type="number" name="budgetmax" placeholder="$1000" /*value={budgetmax}*/ onChange={this.handleChange} />
-                                              </TooltipMat>
-                                          </div>
-                                          <div className="form-group mb-2">
-                                              <label className="inputLabel" htmlFor="searchRadius">{CONSTANTS.HEADER_RADIUS_STR}</label>
-                                              <div className="homepageIcon">
-                                                  <Icon>360</Icon>
-                                              </div>
-                                              <input /*required*/ className="fixedTextInput homepageInputs" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
-                                          </div>
-                                      </div>
-                                      <div className="search-btn">
-                                          <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
-                                              <Button variant="contained" color="secondary" type="submit">
-                                              {CONSTANTS.SEARCH_BUTTON_STR}
-                                              </Button>
-                                          </TooltipMat>
-                                      </div>
-                                  </div>
-                          </form>
-                        </Toolbar>
-                  </AppBar>
-                      :
-                  <div className="row topNavBar fixedNav">
-                      <div className="col-md-2">
-                          <span className="nav-bar-logo">Blue</span> Planit
-                      </div>
-                      <div className="col-md-6">
-                          <div>
-                              <div className="searchIcon">
-                                  <Icon>search</Icon>
-                              </div>
-                              <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                  <input required id="location" onClick={this.handleSearchInputClick} className="fixedTextInput search-input" type="text" name="location" value={this.state.cityName} onChange={this.handleChange} autoComplete="address-level2" />
-                              </TooltipMat>
-                          </div>
-
-                            </div>
-                            {this.state.resultsArray.length > 0 ?
-                                <div className="col-md-4 mapAndResultsActions" key="toggleItin">
-                                    <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
-                                    <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
-                                </div> : ''
-                            }
-                        </div>
+        return (
+            <div className="Userinput">
+                {this.state.loading === true ?
+                    <div className="loader">
+                        <Loader type="spinningBubbles" color="#fff" height="150px" width="150px"></Loader>
+                        <h5>Planning your trip...</h5>
+                    </div> : false
                 }
-          </div>
-          {this.state.resultsArray.length > 0 ?
-              <div className="content-parent-div clearfix">
-                  <div className="wrapper eventsCont apidata">
-                      <div className={mapAndResultsDiv.join(' ')}>
-                          <div className={mapAndResultsContent.join(' ')}>
-                              <div className="filters-div">
-                                  <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
-                                                  setDistance={this.handleFilterRadius}></DistanceFilter>
-                                  <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
-                                  {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
-                                      <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
-                                      <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
-                                  <PriceFilter setPriceRange={this.handlePriceFilter}></PriceFilter>
-                              </div>
-
-
-                              {/* All data gets shown here (api data, and user added data) */}
-                              <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                                  <a onClick={this.handleTabState} className={eventsLinkClass.join(' ')}
-                                     id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab"
-                                     aria-controls="nav-events" aria-selected="true">Events and Places</a>
-                                  <a onClick={this.handleTabState} className={restaurantsLinkClass.join(' ')}
-                                     id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab"
-                                     aria-controls="nav-food" aria-selected="false"> Restaurants</a>
-                                  <a onClick={this.handleTabState} className={moreOptionsLinkClass.join(' ')}
-                                     id={CONSTANTS.NAV_MOREOPTIONS_TAB_ID} data-toggle="tab" href="#nav-moreoptions"
-                                     role="tab" aria-controls="nav-moreoptions" aria-selected="false"> More Options</a>
-                              </div>
-                              <div className={eventsTabsClass.join(' ')} id="nav-events" role="tabpanel"
-                                   aria-labelledby="nav-options-tab">
-
-                                  {<MultiResultDisplay apiData={eventsMultiResults}
-                                                       displayCategory={1} //events
-                                                       pageNumber={this.state.pageNumber}
-                                                       AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
-                                                       priceFilterRange={this.state.priceFilterRange}
-                                                       maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
-                                                       minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
-                                                       eventFilterFlags={this.state.eventFilterFlags}
-                                                       filterRadius={this.state.filterRadius}
-                                                       maxRadius={this.state.searchRadiusForFilterCompare}
-                                                       tabState={this.state.tabState}/>}
-                                  {pages}
-
-                              </div>
-
-                              <div className={restaurantsTabsClass.join(' ')} id="nav-food" role="tabpanel"
-                                   aria-labelledby="nav-options-tab">
-                                  {<MultiResultDisplay apiData={foodMultiResults}
-                                                       displayCategory={0} //restaurants
-                                                       pageNumber={this.state.foodPageNumber}
-                                                       AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
-                                                       priceFilterRange={this.state.priceFilterRange}
-                                                       maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
-                                                       minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
-                                                       eventFilterFlags={this.state.eventFilterFlags}
-                                                       filterRadius={this.state.filterRadius}
-                                                       maxRadius={this.state.searchRadiusForFilterCompare}
-                                                       tabState={this.state.tabState}/>}
-                                  {foodPages}
-                              </div>
-
-
-                              <div className={moreOptionsTabsClass.join(' ')} id="nav-moreoptions" role="tabpanel"
-                                   aria-labelledby="nav-moreoptions-tab">
-                                  {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost}
-                                                updateUserEventCost={this.handleUpdateUserEventCost}
-                                                updateEventTypeSearch={this.handleUpdateEventTypeSearch}
-                                                currentFoodCost={this.state.userFoodCost}
-                                                currentEventCost={this.state.userEventCost}/>}
-                              </div>
-                          </div>
-                          <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray}
-                                            center={this.state.center} showMarkerOnHoverObj={this.state.mapItinCardHoverStates}/>
-                      </div>
-
-                      {/* ITINERARY CONTENT */}
-                      <main className={itinContent.join(' ')}>
-                          <div>
-                              {this.state.loading === true ?
-                                  ' ':
-                                  <div>
-                                      <div className={onlyItin.join(' ')}>
-                                          <div className="itinEvents clearfix">
-                                                <div className="itinSummary">
-                                                    {this.state.loading === false ?
-                                                        itinerarySummaryComponent : ''}
+                <div className={banner.join(' ')}>
+                    {
+                        this.state.resultsArray.length === 0 ?
+                            <AppBar position="static">
+                                <div className="topNavBar">
+                                    <span className="nav-bar-logo">Blue</span> Planit
+                        </div>
+                                {/*<div className="headerText">*/}
+                                {/*<h1>{CONSTANTS.BANNER_TEXT.FIRST}</h1>*/}
+                                {/*<h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>*/}
+                                {/*</div>*/}
+                                <Toolbar className="toolbar">
+                                    <form className="homepageForm" autoComplete="off" onSubmit={this.handleSubmit}>
+                                        <div className="formCopy">
+                                            <h3>Let us plan<br /> so you don't have to.</h3>
+                                        </div>
+                                        <div className="inputsRow">
+                                            <div className="inputContainers">
+                                                <div>
+                                                    <label className="inputLabel" for="location">WHERE</label>
+                                                    <div className="homepageIcon">
+                                                        <Icon>search</Icon>
+                                                    </div>
+                                                    <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
+                                                        <input required id="location" className="fixedTextInput homepageInputs" type="text" name="location" onChange={this.handleChange} autoComplete="address-level2" />
+                                                    </TooltipMat>
                                                 </div>
-                                              {indents}
-                                          </div>
+                                            </div>
+                                            <div className="inputContainers">
+                                                <label className="inputLabel" htmlFor="datePicker">WHEN</label>
+                                                <div className="form-group mb-2 datePickerWrapper">
+                                                    {/*<div className={searchIconClasses.join(' ')}>*/}
+                                                    {/*<Icon>date_range</Icon>*/}
+                                                    {/*</div>*/}
+                                                    <DatePicker required id="datePicker" placeholderText="mm/dd/yyyy" className="textInput fixedTextInput homepageInputs textInputLeft" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE} />
+                                                </div>
+                                            </div>
+                                            <div className="inputContainers misc-params">
+                                                {
+                                                    // <div className="form-group mb-2">
+                                                    // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
+                                                    // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                                                    // </TooltipMat>
+                                                    // </div>
+                                                }
 
-                                      </div>
 
-                                  </div>}
-                          </div>
+                                                <div className="form-group mb-2">
+                                                    <label className="inputLabel" htmlFor="budgetmax">TRIP BUDGET</label>
+                                                    <div className="homepageIcon">
+                                                        <Icon>credit_card</Icon>
+                                                    </div>
+                                                    <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
+                                                        <input /*required*/ className="fixedTextInput homepageInputs" min="0" type="number" name="budgetmax" placeholder="$1000" /*value={budgetmax}*/ onChange={this.handleChange} />
+                                                    </TooltipMat>
+                                                </div>
+                                                <div className="form-group mb-2">
+                                                    <label className="inputLabel" htmlFor="searchRadius">{CONSTANTS.HEADER_RADIUS_STR}</label>
+                                                    <div className="homepageIcon">
+                                                        <Icon>360</Icon>
+                                                    </div>
+                                                    <input /*required*/ className="fixedTextInput homepageInputs" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
+                                                </div>
+                                            </div>
+                                            <div className="search-btn">
+                                                <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
+                                                    <Button variant="contained" color="secondary" type="submit">
+                                                        {CONSTANTS.SEARCH_BUTTON_STR}
+                                                    </Button>
+                                                </TooltipMat>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </Toolbar>
+                            </AppBar>
+                            :
+                            <div className="row topNavBar fixedNav">
+                                <div className="col-md-2">
+                                    <span className="nav-bar-logo">Blue</span> Planit
+                      </div>
+                                <div className="col-md-6">
+                                    <div>
+                                        <div className="searchIcon">
+                                            <Icon>search</Icon>
+                                        </div>
+                                        <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
+                                            <input required id="location" onClick={this.handleSearchInputClick} className="fixedTextInput search-input" type="text" name="location" value={this.state.cityName} onChange={this.handleChange} autoComplete="address-level2" />
+                                        </TooltipMat>
+                                    </div>
 
-                      </main>
-                  </div>
-              </div>
-            : false}
-          <div>
-              {/*{<Footer />}*/}
-          </div>
+                                </div>
+                                {this.state.resultsArray.length > 0 ?
+                                    <div className="col-md-4 mapAndResultsActions" key="toggleItin">
+                                        <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
+                                        <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
+                                    </div> : ''
+                                }
+                            </div>
+                    }
+                </div>
+                {this.state.resultsArray.length > 0 ?
+                    <div className="content-parent-div clearfix">
+                        <div className="wrapper eventsCont apidata">
+                            <div className={mapAndResultsDiv.join(' ')}>
+                                <div className={mapAndResultsContent.join(' ')}>
+                                    <div className="filters-div">
+                                        <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
+                                            setDistance={this.handleFilterRadius}></DistanceFilter>
+                                        <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
+                                        {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
+                                            <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
+                                            <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
+                                        <PriceFilter setPriceRange={this.handlePriceFilter}></PriceFilter>
+                                    </div>
 
-        </div>
+
+                                    {/* All data gets shown here (api data, and user added data) */}
+                                    <div className="nav nav-tabs" id="nav-tab" role="tablist">
+                                        <a onClick={this.handleTabState} className={eventsLinkClass.join(' ')}
+                                            id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab"
+                                            aria-controls="nav-events" aria-selected="true">Events and Places</a>
+                                        <a onClick={this.handleTabState} className={restaurantsLinkClass.join(' ')}
+                                            id={CONSTANTS.NAV_FOOD_TAB_ID} data-toggle="tab" href="#nav-food" role="tab"
+                                            aria-controls="nav-food" aria-selected="false"> Restaurants</a>
+                                        <a onClick={this.handleTabState} className={moreOptionsLinkClass.join(' ')}
+                                            id={CONSTANTS.NAV_MOREOPTIONS_TAB_ID} data-toggle="tab" href="#nav-moreoptions"
+                                            role="tab" aria-controls="nav-moreoptions" aria-selected="false"> More Options</a>
+                                    </div>
+                                    <div className={eventsTabsClass.join(' ')} id="nav-events" role="tabpanel"
+                                        aria-labelledby="nav-options-tab">
+
+                                        {<MultiResultDisplay apiData={eventsMultiResults}
+                                            displayCategory={1} //events
+                                            pageNumber={this.state.pageNumber}
+                                            AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
+                                            priceFilterRange={this.state.priceFilterRange}
+                                            maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
+                                            minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
+                                            eventFilterFlags={this.state.eventFilterFlags}
+                                            filterRadius={this.state.filterRadius}
+                                            maxRadius={this.state.searchRadiusForFilterCompare}
+                                            tabState={this.state.tabState} />}
+                                        {pages}
+
+                                    </div>
+
+                                    <div className={restaurantsTabsClass.join(' ')} id="nav-food" role="tabpanel"
+                                        aria-labelledby="nav-options-tab">
+                                        {<MultiResultDisplay apiData={foodMultiResults}
+                                            displayCategory={0} //restaurants
+                                            pageNumber={this.state.foodPageNumber}
+                                            AddUserSelectedEventFromDisplayedResults={this.handleUpdateItinerary}
+                                            priceFilterRange={this.state.priceFilterRange}
+                                            maxTime={CONSTANTS.DEFAULT_MAX_TIME_4_DISPLAY}
+                                            minTime={CONSTANTS.DEFAULT_MIN_TIME_4_DISPLAY}
+                                            eventFilterFlags={this.state.eventFilterFlags}
+                                            filterRadius={this.state.filterRadius}
+                                            maxRadius={this.state.searchRadiusForFilterCompare}
+                                            tabState={this.state.tabState} />}
+                                        {foodPages}
+                                    </div>
+
+
+                                    <div className={moreOptionsTabsClass.join(' ')} id="nav-moreoptions" role="tabpanel"
+                                        aria-labelledby="nav-moreoptions-tab">
+                                        {<MoreOptions updateUserFoodCost={this.handleUpdateUserFoodCost}
+                                            updateUserEventCost={this.handleUpdateUserEventCost}
+                                            updateEventTypeSearch={this.handleUpdateEventTypeSearch}
+                                            currentFoodCost={this.state.userFoodCost}
+                                            currentEventCost={this.state.userEventCost} />}
+                                    </div>
+                                </div>
+                                <MapBoxComponent show={this.state.mapOrResultsState} results={this.state.resultsArray}
+                                            center={this.state.center}></MapBoxComponent>
+                                {/* { <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray}
+                                            center={this.state.center} showMarkerOnHoverObj={this.state.mapItinCardHoverStates}/> } */}
+                            </div>
+
+                            {/* ITINERARY CONTENT */}
+                            <main className={itinContent.join(' ')}>
+                                <div>
+                                    {this.state.loading === true ?
+                                        ' ' :
+                                        <div>
+                                            <div className={onlyItin.join(' ')}>
+                                                <div className="itinEvents clearfix">
+                                                    <div className="itinSummary">
+                                                        {this.state.loading === false ?
+                                                            itinerarySummaryComponent : ''}
+                                                    </div>
+                                                    {indents}
+                                                </div>
+
+                                            </div>
+
+                                        </div>}
+                                </div>
+
+                            </main>
+                        </div>
+                    </div>
+                    : false}
+                <div>
+                    {/*{<Footer />}*/}
+                </div>
+
+            </div>
 
         )
     }
@@ -2699,7 +2701,7 @@ function calcItineraryDistancesFromLocation2Location(resultsArray_in) {
             lat: 0.0,
             lng: 0.0,
         };
-        for (var i = 0; i <len; i++) {
+        for (var i = 0; i < len; i++) {
 
             if (firstLocationFlag) {
                 if (resultsArray_in[i].origin.localeCompare(CONSTANTS.ORIGINS_EB) !== 0 &&

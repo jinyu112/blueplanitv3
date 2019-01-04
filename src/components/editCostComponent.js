@@ -8,13 +8,18 @@ export class EditCostComponent extends Component {
         super(props);
         this.handleBlur = this.handleBlur.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
+        this.submitHandler = this.submitHandler.bind(this);
+    }
+
+    submitHandler(e) {
+        e.preventDefault(); //prevents form submission when "enter" is pressed, this fixes the page refresh issue when the "enter" button is pressed
     }
 
     handleKeyUp(event) {
-        if (event.keyCode) {
-            if (event.keyCode === 13) { // the "enter" button
+        if (event.keyCode || event.which) {
+            if (event.keyCode === 13 || event.which === 13) { // the "enter" button           
                 this.handleBlur(event);
-                return;
+                return false;
             }
         }
     }
@@ -40,10 +45,10 @@ export class EditCostComponent extends Component {
         }
         if (eventOrigin.localeCompare(CONSTANTS.ORIGINS_NONE) !== 0) { //if not a "none item" itinerary slot, show the price
             // editCostComponentArray.push(<span key={this.props.name + "editCostSpan"}>$</span>);
-            editCostComponentArray.push(<input type="text" className="text-succes form-control editCostStyle" min="0"
+            editCostComponentArray.push(<form onSubmit={this.submitHandler}><input type="text" className="text-succes form-control editCostStyle" min="0"
                 defaultValue={'$ ' + cost} onBlur={this.handleBlur} onKeyUp={this.handleKeyUp}
                 ref="edittedEventCost"
-                key={this.props.name + "editCostInput"}/>);
+                key={this.props.name + "editCostInput"}/></form>);
         }
 
         return (
