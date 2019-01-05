@@ -243,6 +243,13 @@
     text-align: left;
 }
 
+.extended-search-input {
+    position: absolute;
+    z-index: 99999;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1) !important;
+    padding: 1em;
+}
+
 .filter {
     text-align: right;
 }
@@ -331,15 +338,6 @@ tbody:hover {
     margin-right: 8px;
 }
 
-/*.inputsRow {*/
-    /*padding: 0px;*/
-    /*margin: auto!important;*/
-    /*display: grid;*/
-    /*grid-template-columns: repeat(5, 1fr);*/
-    /*grid-gap: 20px;*/
-    /*color: #484848!important;*/
-/*}*/
-
 .loader {
     position: absolute;
     width: 100%;
@@ -347,7 +345,7 @@ tbody:hover {
     left: 0;
     height: 100vh;
     background-color: rgba(0,102,210, 1);
-    z-index: 200;
+    z-index: 9000;
     text-align: center;
 }
 
@@ -360,7 +358,16 @@ tbody:hover {
 .loader h5 {
     color: white;
     margin-top: 50px;
+    margin-top: 50px;
     font-weight: 700;
+}
+
+.loader.results-loader {
+    background-color: rgba(255,255,255, 0.6);
+}
+
+.loader.results-loader h5 {
+    color: black;
 }
 
 #nav-tab {
@@ -459,8 +466,8 @@ tbody:hover {
     font-size: .65rem!important;
 }
 *:focus {
-    outline: none!important;
-}
+     outline: none!important;
+ }
 .moreInfoRow {
     border-bottom: 1px solid #f3f1f1;
 }
@@ -1069,14 +1076,14 @@ button.close {
 
 .banner {
     flex-grow: 1;
-    padding: 1em 1.5em;
+    padding: 0.6em 1.5em;
 }
 
 .fixedBanner {
-    height: 80px !important;
+    height: 70px !important;
     text-align: left;
     position: fixed;
-    z-index: 99999;
+    z-index: 1000;
     background-color: white;
     width: 100%;
     border-bottom: 1px solid #ececec;
@@ -1138,6 +1145,11 @@ input:-webkit-autofill:active {
 }
 .nav-bar-logo {
     font-weight: 700;
+    font-size: 0.8em;
+}
+
+.nav-bar-logo2 {
+    font-size: 0.8em;
 }
 
 .MuiToolbar-gutters-49 {

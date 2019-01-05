@@ -14,19 +14,18 @@ import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
 import MoreOptions from './moreOptions';
 import MapBoxComponent from './mapBoxComponent';
+import Message from './message.js';
 import misc from '../miscfuncs/misc.js'
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import '../maps.css';
+import EmailModal from './emailModal.js';
 import Footer from './footer.js';
 import TooltipMat from '@material-ui/core/Tooltip';
 import AppBar from '@material-ui/core/AppBar';
-import AppBarCollapsed from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import DistanceFilter from './distanceFilter.js';
 import ApiFilter from './apiFilter.js';
 import TimeFilter from './timeFilter.js';
@@ -38,6 +37,7 @@ import meetup_logo from '../images/meetup_logo.png';
 import eventbrite_logo from '../images/eventbrite_logo.png';
 import seatgeek_logo from '../images/seatgeek_logo.png';
 
+
 import CONSTANTS from '../constants.js';
 import DescDialog from './descDialog.js'
 import Icon from "@material-ui/core/Icon/Icon";
@@ -45,7 +45,6 @@ import Icon from "@material-ui/core/Icon/Icon";
 //https://developers.google.com/maps/documentation/geocoding/usage-and-billing
 //0-100k queries = $5 per 1k queries
 var geocoder = require('geocoder');
-
 
 class Userinput extends Component {
     constructor(props) {
@@ -104,9 +103,11 @@ class Userinput extends Component {
             descDialogOpen: [false, false, false, false, false, false, false],
 
             //Homepage Form -- revisit
-            homepageFormClasses: ['extendedForm'],
-            homepageInputClasses: ['homepage', 'homepageLocInput'],
-            searchIconClasses: ['searchIcon'],
+            homepageFormClasses: ['homepageForm', 'extended-search-input', 'fade'],
+
+            //mouse click
+            clickedDiv: '',
+            searchInputWidth: 0,
         };
         this.apiService = new ApiService();
         this.handleChange = this.handleChange.bind(this);
@@ -142,11 +143,30 @@ class Userinput extends Component {
         this.handleShowMap = this.handleShowMap.bind(this);
         this.handleMoveItinItemUp = this.handleMoveItinItemUp.bind(this);
         this.handleMoveItinItemDown = this.handleMoveItinItemDown.bind(this);
-        this.handleSearchInputClick = this.handleSearchInputClick(this);
         this.handleItinCardMouseEnter = this.handleItinCardMouseEnter.bind(this);
         this.handleItinCardMouseLeave = this.handleItinCardMouseLeave.bind(this);
+        this.handleMouseClick = this.handleMouseClick.bind(this);
+        this.updateDimensions = this.updateDimensions.bind(this);
+        this.handleOutsideClick = this.handleOutsideClick.bind(this);
     }
 
+    //updates width of extended search bar form when resizing page
+    updateDimensions() {
+        var width = this.searchIconNode.clientWidth + this.searchInputNode.clientWidth;
+        this.setState({searchInputWidth: width});
+        console.log(this.state.resultsArray);
+    }
+
+    //listens to click on search input on fixed nav
+    handleMouseClick(event) {
+        if(this.node.contains(event.target)) {
+            return;
+        } else {
+            this.handleOutsideClick();
+        }
+    }
+
+    //handles what happens when mouse enters itin card
     handleItinCardMouseEnter(e) {
         e = parseInt(e, 10)
         var tempObj = {
@@ -158,6 +178,7 @@ class Userinput extends Component {
         });
     }
 
+    //handles what happens when mouse leaves itin card
     handleItinCardMouseLeave(e) {
         e = parseInt(e, 10)
         var tempObj = {
@@ -169,6 +190,17 @@ class Userinput extends Component {
         });
     }
 
+    //handles click outside of fixed nav search bar
+    handleOutsideClick() {
+        var homepageClasses = this.state.homepageFormClasses;
+        var index = homepageClasses.indexOf('show');
+        if(index !== -1) {
+            homepageClasses.splice(index, 1);
+            this.setState({
+                homepageFormClasses: homepageClasses,
+            });
+        }
+    }
     handleTabState(e) {
         this.setState({
             tabState: e.target.id, // Sets tabState to string (ie CONSTANTS.NAV_EVENT_TAB_ID)
@@ -1051,8 +1083,9 @@ class Userinput extends Component {
             //do nothing
         }
         //revisit
-        this.setState({ resultsArray: [] });
+        // this.setState({ resultsArray: [] });
         console.clear();
+        this.handleOutsideClick();
         // Handle empty budget inputs
         if (!this.state.budgetmax || isNaN(this.state.budgetmax) || this.state.budgetmax === undefined) {
             this.setState({
@@ -1087,13 +1120,16 @@ class Userinput extends Component {
 
         var insideBudget = true;
         if (this.state.resultsArray.length > 1) {
-            var arrayOfCosts = [this.state.resultsArray[0].cost,
-            this.state.resultsArray[1].cost,
-            this.state.resultsArray[2].cost,
-            this.state.resultsArray[3].cost,
-            this.state.resultsArray[4].cost,
-            this.state.resultsArray[5].cost,
-            this.state.resultsArray[6].cost]
+            var arrayOfCosts = [
+                this.state.resultsArray[0].cost,
+                this.state.resultsArray[1].cost,
+                this.state.resultsArray[2].cost,
+                this.state.resultsArray[3].cost,
+                this.state.resultsArray[4].cost,
+                this.state.resultsArray[5].cost,
+                this.state.resultsArray[6].cost,
+            ];
+
             var maxCostIndex = misc.findMaxValueInArray(arrayOfCosts);
 
             if (this.state.checked[maxCostIndex] === 1) {
@@ -1112,9 +1148,6 @@ class Userinput extends Component {
             }
         }
 
-        this.setState({
-            loading: true
-        });
         var myStorage = window.localStorage;
         var doAPICallsFlag = true;
         var indexDBcompat = window.indexedDB;
@@ -1179,7 +1212,9 @@ class Userinput extends Component {
                                         var doAPICallsObj = determineAPICallBool(myStorage, this.state.startDate, today, locationLatLong, this.state.searchRadius, this.state.eventType);
 
                                         if (doAPICallsObj.doApiCallsFlag || clearApiData || !indexDBcompat) {
-
+                                            this.setState({
+                                                loading: true
+                                            });
                                             // Reset filters
                                             this.state.filterRadius = this.state.searchRadiusForFilterCompare;
                                             this.setState({
@@ -1538,11 +1573,37 @@ class Userinput extends Component {
         this.setState({ descDialogOpen: dialogStates })
     }
 
-    handleSearchInputClick() {
+    //clicking into fixed nav search input
+    handleFocusSearchInput() {
+        var width = this.searchIconNode.clientWidth + this.searchInputNode.clientWidth;
+        this.setState({searchInputWidth: width});
 
+        window.addEventListener("resize", this.updateDimensions);
+
+        var homepageClasses = this.state.homepageFormClasses;
+        homepageClasses.push('show');
+        this.setState({
+            homepageFormClasses: homepageClasses,
+        });
+    }
+
+    //clicking out of fixed nav search input
+    handleBlurSearchInput() {
+        if(this.state.homepageFormClasses.indexOf('show') !== -1) {
+            document.addEventListener('mousedown', this.handleMouseClick);
+        }
     }
 
     render() {
+
+        // Map
+        const mapClasses = ['maps', 'hidden'];
+
+        if (this.state.mapOrResultsState === 'maps') {
+            if (this.state.resultsArray.length > 0) {
+                mapClasses.pop();
+            }
+        };
         // console.log("userinput render function!")
         var formStyles = ['form-body'];
         var optionStyles = ['more-options', 'form-body'];
@@ -1873,131 +1934,211 @@ class Userinput extends Component {
 
         //Home Page Form -- revisit
         var homepageFormClasses = this.state.homepageFormClasses;
-        var homepageInputClasses = this.state.homepageInputClasses;
-        var searchIconClasses = this.state.searchIconClasses;
-
-        return (
-            <div className="Userinput">
-                {this.state.loading === true ?
-                    <div className="loader">
-                        <Loader type="spinningBubbles" color="#fff" height="150px" width="150px"></Loader>
-                        <h5>Planning your trip...</h5>
-                    </div> : false
-                }
-                <div className={banner.join(' ')}>
-                    {
-                        this.state.resultsArray.length === 0 ?
-                            <AppBar position="static">
-                                <div className="topNavBar">
-                                    <span className="nav-bar-logo">Blue</span> Planit
+    return (
+      <div className="Userinput">
+          {this.state.loading === true && this.state.resultsArray.length == 0 ?
+              <div className="loader">
+                  <Loader type="spinningBubbles" color="#fff" height="150px" width="150px"></Loader>
+                  <h5>Planning your trip...</h5>
+              </div> : false
+          }
+          <div className={banner.join(' ')}>
+              {
+                  this.state.resultsArray.length === 0 ?
+                  <AppBar position="static">
+                        <div className="topNavBar">
+                            <span className="nav-bar-logo">Blue</span>
+                            <span className="nav-bar-logo2">Planit</span>
                         </div>
-                                {/*<div className="headerText">*/}
-                                {/*<h1>{CONSTANTS.BANNER_TEXT.FIRST}</h1>*/}
-                                {/*<h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>*/}
-                                {/*</div>*/}
-                                <Toolbar className="toolbar">
-                                    <form className="homepageForm" autoComplete="off" onSubmit={this.handleSubmit}>
-                                        <div className="formCopy">
-                                            <h3>Let us plan<br /> so you don't have to.</h3>
-                                        </div>
-                                        <div className="inputsRow">
-                                            <div className="inputContainers">
-                                                <div>
-                                                    <label className="inputLabel" for="location">WHERE</label>
-                                                    <div className="homepageIcon">
-                                                        <Icon>search</Icon>
-                                                    </div>
-                                                    <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                                        <input required id="location" className="fixedTextInput homepageInputs" type="text" name="location" onChange={this.handleChange} autoComplete="address-level2" />
-                                                    </TooltipMat>
-                                                </div>
-                                            </div>
-                                            <div className="inputContainers">
-                                                <label className="inputLabel" htmlFor="datePicker">WHEN</label>
-                                                <div className="form-group mb-2 datePickerWrapper">
-                                                    {/*<div className={searchIconClasses.join(' ')}>*/}
-                                                    {/*<Icon>date_range</Icon>*/}
-                                                    {/*</div>*/}
-                                                    <DatePicker required id="datePicker" placeholderText="mm/dd/yyyy" className="textInput fixedTextInput homepageInputs textInputLeft" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE} />
-                                                </div>
-                                            </div>
-                                            <div className="inputContainers misc-params">
-                                                {
-                                                    // <div className="form-group mb-2">
-                                                    // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
-                                                    // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
-                                                    // </TooltipMat>
-                                                    // </div>
-                                                }
+                        {/*<div className="headerText">*/}
+                            {/*<h1>{CONSTANTS.BANNER_TEXT.FIRST}</h1>*/}
+                            {/*<h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>*/}
+                        {/*</div>*/}
+                        <Toolbar className="toolbar">
+                              <form className="homepageForm" autoComplete="off" onSubmit={this.handleSubmit}>
+                                  <div className="formCopy">
+                                      <h3>Let us plan<br/> so you don't have to.</h3>
+                                  </div>
+                                  <div className="inputsRow">
+                                      <div className="inputContainers">
+                                          <div>
+                                              <label className="inputLabel" for="location">WHERE</label>
+                                              <div className="homepageIcon">
+                                                  <Icon>search</Icon>
+                                              </div>
+                                              <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
+                                                  <input required id="location" className="fixedTextInput homepageInputs" type="text" name="location" onChange={this.handleChange} autoComplete="address-level2" />
+                                              </TooltipMat>
+                                          </div>
+                                      </div>
+                                      <div className="inputContainers">
+                                          <label className="inputLabel" htmlFor="datePicker">WHEN</label>
+                                          <div className="form-group mb-2 datePickerWrapper">
+                                              {/*<div className={searchIconClasses.join(' ')}>*/}
+                                                  {/*<Icon>date_range</Icon>*/}
+                                              {/*</div>*/}
+                                              <DatePicker required id="datePicker"   placeholderText="mm/dd/yyyy" className="textInput fixedTextInput homepageInputs textInputLeft" selected={this.state.startDate} onChange={this.handleDateChange} minDate={CONSTANTS.TODAYDATE}  />
+                                          </div>
+                                      </div>
+                                      <div className="inputContainers misc-params">
+                                          {
+                                              // <div className="form-group mb-2">
+                                              // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
+                                              // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                                              // </TooltipMat>
+                                              // </div>
+                                          }
 
 
-                                                <div className="form-group mb-2">
-                                                    <label className="inputLabel" htmlFor="budgetmax">TRIP BUDGET</label>
-                                                    <div className="homepageIcon">
-                                                        <Icon>credit_card</Icon>
-                                                    </div>
-                                                    <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
-                                                        <input /*required*/ className="fixedTextInput homepageInputs" min="0" type="number" name="budgetmax" placeholder="$1000" /*value={budgetmax}*/ onChange={this.handleChange} />
-                                                    </TooltipMat>
-                                                </div>
-                                                <div className="form-group mb-2">
-                                                    <label className="inputLabel" htmlFor="searchRadius">{CONSTANTS.HEADER_RADIUS_STR}</label>
-                                                    <div className="homepageIcon">
-                                                        <Icon>360</Icon>
-                                                    </div>
-                                                    <input /*required*/ className="fixedTextInput homepageInputs" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
-                                                </div>
-                                            </div>
-                                            <div className="search-btn">
-                                                <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
-                                                    <Button variant="contained" color="secondary" type="submit">
-                                                        {CONSTANTS.SEARCH_BUTTON_STR}
-                                                    </Button>
-                                                </TooltipMat>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </Toolbar>
-                            </AppBar>
-                            :
-                            <div className="row topNavBar fixedNav">
-                                <div className="col-md-2">
-                                    <span className="nav-bar-logo">Blue</span> Planit
+                                          <div className="form-group mb-2">
+                                              <label className="inputLabel" htmlFor="budgetmax">TRIP BUDGET</label>
+                                              <div className="homepageIcon">
+                                                  <Icon>credit_card</Icon>
+                                              </div>
+                                              <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
+                                                  <input /*required*/ className="fixedTextInput homepageInputs" min="0" type="number" name="budgetmax" placeholder="$1000" /*value={budgetmax}*/ onChange={this.handleChange} />
+                                              </TooltipMat>
+                                          </div>
+                                          <div className="form-group mb-2">
+                                              <label className="inputLabel" htmlFor="searchRadius">{CONSTANTS.HEADER_RADIUS_STR}</label>
+                                              <div className="homepageIcon">
+                                                  <Icon>360</Icon>
+                                              </div>
+                                              <input /*required*/ className="fixedTextInput homepageInputs" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
+                                          </div>
+                                      </div>
+                                      <div className="search-btn">
+                                          <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
+                                              <Button variant="contained" color="secondary" type="submit">
+                                              {CONSTANTS.SEARCH_BUTTON_STR}
+                                              </Button>
+                                          </TooltipMat>
+                                      </div>
+                                  </div>
+                              </form>
+                        </Toolbar>
+                  </AppBar>
+                      :
+                  <div className="row topNavBar fixedNav">
+                      <div className="col-md-2">
+                          <span className="nav-bar-logo">Blue </span>
+                          <span className="nav-bar-logo2">Planit</span>
                       </div>
-                                <div className="col-md-6">
-                                    <div>
-                                        <div className="searchIcon">
-                                            <Icon>search</Icon>
-                                        </div>
-                                        <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                            <input required id="location" onClick={this.handleSearchInputClick} className="fixedTextInput search-input" type="text" name="location" value={this.state.cityName} onChange={this.handleChange} autoComplete="address-level2" />
-                                        </TooltipMat>
-                                    </div>
+                      <div ref={node => this.node = node} className="col-md-6">
+                          <div>
+                              <div ref={node => this.searchIconNode = node} className="searchIcon">
+                                  <Icon>search</Icon>
+                              </div>
+                              <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
+                                  <input ref={node => this.searchInputNode = node} required id="location"
+                                         className="fixedTextInput search-input"
+                                         type="text"
+                                         name="location"
+                                         onFocus={() => this.handleFocusSearchInput()}
+                                         onBlur={(e) => this.handleBlurSearchInput(e)}
+                                         //value={this.state.cityName}
+                                         placeholder={this.state.cityName}
+                                         onChange={this.handleChange}
+                                         autoComplete="off"
+                                  />
+                              </TooltipMat>
+                          </div>
+                          <form style={{width: this.state.searchInputWidth}}
+                                className={homepageFormClasses.join(' ')}
+                                autoComplete="off"
+                                onSubmit={this.handleSubmit}
+                          >
+                              <div className="inputs-cont">
+                                  <div className="inputContainers">
+                                      <label className="inputLabel" htmlFor="datePicker">WHEN</label>
+                                      <div className="form-group mb-2 datePickerWrapper">
+                                          {/*<div className={searchIconClasses.join(' ')}>*/}
+                                          {/*<Icon>date_range</Icon>*/}
+                                          {/*</div>*/}
+                                          <DatePicker required id="datePicker"
+                                                      placeholderText="mm/dd/yyyy"
+                                                      className="textInput fixedTextInput homepageInputs textInputLeft"
+                                                      selected={this.state.startDate}
+                                                      onChange={this.handleDateChange}
+                                                      minDate={CONSTANTS.TODAYDATE}
+                                          />
+                                      </div>
+                                  </div>
+                                  <div className="inputContainers misc-params">
+                                      {
+                                          // <div className="form-group mb-2">
+                                          // <TooltipMat placement="bottom" title={CONSTANTS.MIN_TOOLTIP_STR}>
+                                          // <input /*required*/ className="textInput" type="number" min="0" name="budgetmin" /*value={budgetmin}*/ onChange={this.handleChange} placeholder="$ Min" />
+                                          // </TooltipMat>
+                                          // </div>
+                                      }
 
-                                </div>
-                                {this.state.resultsArray.length > 0 ?
-                                    <div className="col-md-4 mapAndResultsActions" key="toggleItin">
-                                        <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
-                                        <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
-                                    </div> : ''
-                                }
-                            </div>
-                    }
-                </div>
-                {this.state.resultsArray.length > 0 ?
-                    <div className="content-parent-div clearfix">
-                        <div className="wrapper eventsCont apidata">
-                            <div className={mapAndResultsDiv.join(' ')}>
-                                <div className={mapAndResultsContent.join(' ')}>
-                                    <div className="filters-div">
-                                        <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
-                                            setDistance={this.handleFilterRadius}></DistanceFilter>
-                                        <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
-                                        {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
-                                            <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
-                                            <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
-                                        <PriceFilter setPriceRange={this.handlePriceFilter}></PriceFilter>
-                                    </div>
+
+                                      <div className="form-group mb-2">
+                                          <label className="inputLabel" htmlFor="budgetmax">TRIP BUDGET</label>
+                                          <div className="homepageIcon">
+                                              <Icon>credit_card</Icon>
+                                          </div>
+                                          <TooltipMat placement="bottom" title={CONSTANTS.MAX_TOOLTIP_STR}>
+                                              <input /*required*/ className="fixedTextInput homepageInputs" min="0"
+                                                                  type="number" name="budgetmax"
+                                                                  placeholder="$1000" /*value={budgetmax}*/
+                                                                  onChange={this.handleChange}/>
+                                          </TooltipMat>
+                                      </div>
+                                      <div className="form-group mb-2">
+                                          <label className="inputLabel"
+                                                 htmlFor="searchRadius">{CONSTANTS.HEADER_RADIUS_STR}</label>
+                                          <div className="homepageIcon">
+                                              <Icon>360</Icon>
+                                          </div>
+                                          <input /*required*/ className="fixedTextInput homepageInputs" type="number"
+                                                              min="0" name="searchRadius" /*value={50}*/
+                                                              onChange={this.handleSearchRadius}
+                                                              placeholder="Search Radius (mi)"/>
+                                      </div>
+                                  </div>
+                                  <div className="search-btn">
+                                      <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
+                                          <Button variant="contained" color="secondary" type="submit">
+                                              {CONSTANTS.SEARCH_BUTTON_STR}
+                                          </Button>
+                                      </TooltipMat>
+                                  </div>
+                              </div>
+                          </form>
+
+                      </div>
+                      {this.state.resultsArray.length > 0 ?
+                          <div className="col-md-4 mapAndResultsActions" key="toggleItin">
+                              <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
+                              <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
+                          </div> : ''
+                      }
+                  </div>
+              }
+          </div>
+          {this.state.resultsArray.length > 0 ?
+              <div className="content-parent-div clearfix">
+                  <div className="wrapper eventsCont apidata">
+                      {
+                          this.state.loading === true ?
+                          <div className="loader results-loader">
+                              <Loader type="spinningBubbles" color="#000" height="75px" width="75px"></Loader>
+                              <h5>Planning your trip...</h5>
+                          </div> : false
+                      }
+                      <div className={mapAndResultsDiv.join(' ')}>
+                          <div className={mapAndResultsContent.join(' ')}>
+                              <div className="filters-div">
+                                  <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
+                                                  setDistance={this.handleFilterRadius}></DistanceFilter>
+                                  <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
+                                  {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
+                                      <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
+                                      <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
+                                  <PriceFilter setPriceRange={this.handlePriceFilter}></PriceFilter>
+                              </div>
 
 
                                     {/* All data gets shown here (api data, and user added data) */}
@@ -2056,10 +2197,14 @@ class Userinput extends Component {
                                             currentEventCost={this.state.userEventCost} />}
                                     </div>
                                 </div>
-                                <MapBoxComponent show={this.state.mapOrResultsState} results={this.state.resultsArray}
-                                            center={this.state.center}></MapBoxComponent>
-                                {/* { <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray}
-                                            center={this.state.center} showMarkerOnHoverObj={this.state.mapItinCardHoverStates}/> } */}
+                          {/*<div id="mapBoxID" className={mapClasses.join(' ')} >*/}
+                                {/*<MapBoxComponent show={this.state.mapOrResultsState}*/}
+                                                 {/*results={this.state.resultsArray}*/}
+                                                 {/*center={this.state.center}>*/}
+                                {/*</MapBoxComponent>*/}
+                          {/*</div>*/}
+                                { <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray}
+                                            center={this.state.center} showMarkerOnHoverObj={this.state.mapItinCardHoverStates}/> }
                             </div>
 
                             {/* ITINERARY CONTENT */}
