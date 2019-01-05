@@ -137,6 +137,7 @@ class Userinput extends Component {
         this.handleMoveItinItemUp = this.handleMoveItinItemUp.bind(this);
         this.handleMouseClick = this.handleMouseClick.bind(this);
         this.updateDimensions = this.updateDimensions.bind(this);
+        this.handleOutsideClick = this.handleOutsideClick.bind(this);
     }
 
     updateDimensions() {
@@ -149,15 +150,18 @@ class Userinput extends Component {
         if(this.node.contains(event.target)) {
             return;
         } else {
-            var homepageClasses = this.state.homepageFormClasses;
-            var index = homepageClasses.indexOf('show');
-            if(index !== -1) {
-                homepageClasses.splice(index, 1);
-                this.setState({
-                    homepageFormClasses: homepageClasses,
-                });
-            }
+            this.handleOutsideClick();
+        }
+    }
 
+    handleOutsideClick() {
+        var homepageClasses = this.state.homepageFormClasses;
+        var index = homepageClasses.indexOf('show');
+        if(index !== -1) {
+            homepageClasses.splice(index, 1);
+            this.setState({
+                homepageFormClasses: homepageClasses,
+            });
         }
     }
     handleTabState(e) {
@@ -1048,7 +1052,7 @@ class Userinput extends Component {
         }
 
         console.clear();
-
+        this.handleOutsideClick();
         // Handle empty budget inputs
         if (!this.state.budgetmax || isNaN(this.state.budgetmax) || this.state.budgetmax === undefined) {
             this.setState({
@@ -2005,8 +2009,8 @@ class Userinput extends Component {
                           <span className="nav-bar-logo">Blue </span>
                           <span className="nav-bar-logo2">Planit</span>
                       </div>
-                      <div className="col-md-6">
-                          <div ref={node => this.node = node}>
+                      <div ref={node => this.node = node} className="col-md-6">
+                          <div>
                               <div ref={node => this.searchIconNode = node} className="searchIcon">
                                   <Icon>search</Icon>
                               </div>
