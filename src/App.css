@@ -795,7 +795,7 @@ button.close {
     display: grid;
     /* grid-gap: 2em; */
     width: 100%; /*70%*/
-    margin-left: 1%;
+    margin-left: 3%;
     margin-right: auto;
     max-width: 800px;
     min-width: 620px;

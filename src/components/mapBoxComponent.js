@@ -12,6 +12,12 @@ export class MapBoxComponent extends Component {
             zoom: CONSTANTS.GMAPS_DEFAULT_ZOOM,
         }
 
+        this.onClick = this.onClick.bind(this);
+    }
+
+    onClick(e) {
+        console.log("marker onclick")
+        console.log(e)
     }
 
 
@@ -32,6 +38,8 @@ export class MapBoxComponent extends Component {
         var coordinates = [];
         if (resultsArray) {
             if (resultsArray.length > 0) {
+
+                //https://www.mapbox.com/help/custom-markers-gl-js/ to implement custom markers
                 for (var i = 0; i < this.props.results.length; i++) {
                     coordinates = [resultsArray[i].location.lng, resultsArray[i].location.lat];
                     
@@ -44,7 +52,8 @@ export class MapBoxComponent extends Component {
                     var marker = new mapboxgl.Marker()
                     .setLngLat(coordinates)
                     .setPopup(popup)
-                    .addTo(this.map);
+                    .addTo(this.map)
+                    .on('click',this.onClick);
 
                     markers.push(marker);
                 }
