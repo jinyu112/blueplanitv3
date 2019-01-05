@@ -348,6 +348,7 @@ tbody:hover {
 .loader h5 {
     color: white;
     margin-top: 50px;
+    margin-top: 50px;
     font-weight: 700;
 }
 
@@ -455,8 +456,8 @@ tbody:hover {
     font-size: .65rem!important;
 }
 *:focus {
-    outline: none!important;
-}
+     outline: none!important;
+ }
 .moreInfoRow {
     border-bottom: 1px solid #f3f1f1;
 }

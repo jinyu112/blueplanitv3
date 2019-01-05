@@ -95,9 +95,11 @@ class Userinput extends Component {
             descDialogOpen: [false, false, false, false, false, false, false],
 
             //Homepage Form -- revisit
-            homepageFormClasses: ['extendedForm'],
-            homepageInputClasses: ['homepage', 'homepageLocInput'],
-            searchIconClasses: ['searchIcon'],
+            homepageFormClasses: ['homepageForm', 'extended-search-input', 'fade'],
+
+            //mouse click
+            clickedDiv: '',
+            searchInputWidth: 0,
         };
         this.apiService = new ApiService();
         this.handleChange = this.handleChange.bind(this);
@@ -133,11 +135,31 @@ class Userinput extends Component {
         this.handleShowItin = this.handleShowItin.bind(this);
         this.handleShowMap = this.handleShowMap.bind(this);
         this.handleMoveItinItemUp = this.handleMoveItinItemUp.bind(this);
-        this.handleMoveItinItemDown = this.handleMoveItinItemDown.bind(this);
-        this.handleSearchInputClick = this.handleSearchInputClick(this);
+        this.handleMouseClick = this.handleMouseClick.bind(this);
+        this.updateDimensions = this.updateDimensions.bind(this);
     }
 
+    updateDimensions() {
+        var width = this.searchIconNode.clientWidth + this.searchInputNode.clientWidth;
+        this.setState({searchInputWidth: width});
+        console.log(this.state.resultsArray);
+    }
 
+    handleMouseClick(event) {
+        if(this.node.contains(event.target)) {
+            return;
+        } else {
+            var homepageClasses = this.state.homepageFormClasses;
+            var index = homepageClasses.indexOf('show');
+            if(index !== -1) {
+                homepageClasses.splice(index, 1);
+                this.setState({
+                    homepageFormClasses: homepageClasses,
+                });
+            }
+
+        }
+    }
     handleTabState(e) {
         this.setState({
             tabState: e.target.id, // Sets tabState to string (ie CONSTANTS.NAV_EVENT_TAB_ID)
@@ -1026,7 +1048,6 @@ class Userinput extends Component {
         }
 
         console.clear();
-        console.log(this.state.loading);
 
         // Handle empty budget inputs
         if (!this.state.budgetmax || isNaN(this.state.budgetmax) || this.state.budgetmax === undefined) {
@@ -1515,8 +1536,23 @@ class Userinput extends Component {
         this.setState({ descDialogOpen: dialogStates })
     }
 
-    handleSearchInputClick() {
+    handleFocusSearchInput() {
+        var width = this.searchIconNode.clientWidth + this.searchInputNode.clientWidth;
+        this.setState({searchInputWidth: width});
 
+        window.addEventListener("resize", this.updateDimensions);
+
+        var homepageClasses = this.state.homepageFormClasses;
+        homepageClasses.push('show');
+        this.setState({
+            homepageFormClasses: homepageClasses,
+        });
+    }
+
+    handleBlurSearchInput() {
+        if(this.state.homepageFormClasses.indexOf('show') !== -1) {
+            document.addEventListener('mousedown', this.handleMouseClick);
+        }
     }
 
     render() {
@@ -1878,8 +1914,6 @@ class Userinput extends Component {
 
         //Home Page Form -- revisit
         var homepageFormClasses = this.state.homepageFormClasses;
-        var homepageInputClasses = this.state.homepageInputClasses;
-        var searchIconClasses = this.state.searchIconClasses;
 
     return (
       <div className="Userinput">
@@ -1972,15 +2006,28 @@ class Userinput extends Component {
                           <span className="nav-bar-logo2">Planit</span>
                       </div>
                       <div className="col-md-6">
-                          <div>
-                              <div className="searchIcon">
+                          <div ref={node => this.node = node}>
+                              <div ref={node => this.searchIconNode = node} className="searchIcon">
                                   <Icon>search</Icon>
                               </div>
                               <TooltipMat placement="bottom" title={CONSTANTS.LOCATION_TOOLTIP_STR}>
-                                  <input required id="location" onClick={this.handleSearchInputClick} className="fixedTextInput search-input" type="text" name="location" value={this.state.cityName} onChange={this.handleChange} autoComplete="address-level2" />
+                                  <input ref={node => this.searchInputNode = node} required id="location"
+                                         className="fixedTextInput search-input"
+                                         type="text"
+                                         name="location"
+                                         onFocus={() => this.handleFocusSearchInput()}
+                                         onBlur={(e) => this.handleBlurSearchInput(e)}
+                                         placeholder={this.state.cityName}
+                                         onChange={this.handleChange}
+                                         autoComplete="off"
+                                  />
                               </TooltipMat>
                           </div>
-                          <form className="homepageForm extended-search-input" autoComplete="off" onSubmit={this.handleSubmit}>
+                          <form style={{width: this.state.searchInputWidth}}
+                                className={homepageFormClasses.join(' ')}
+                                autoComplete="off"
+                                onSubmit={this.handleSubmit}
+                          >
                               <div className="inputs-cont">
                                   <div className="inputContainers">
                                       <label className="inputLabel" htmlFor="datePicker">WHEN</label>
@@ -1988,10 +2035,13 @@ class Userinput extends Component {
                                           {/*<div className={searchIconClasses.join(' ')}>*/}
                                           {/*<Icon>date_range</Icon>*/}
                                           {/*</div>*/}
-                                          <DatePicker required id="datePicker" placeholderText="mm/dd/yyyy"
+                                          <DatePicker required id="datePicker"
+                                                      placeholderText="mm/dd/yyyy"
                                                       className="textInput fixedTextInput homepageInputs textInputLeft"
-                                                      selected={this.state.startDate} onChange={this.handleDateChange}
-                                                      minDate={CONSTANTS.TODAYDATE}/>
+                                                      selected={this.state.startDate}
+                                                      onChange={this.handleDateChange}
+                                                      minDate={CONSTANTS.TODAYDATE}
+                                          />
                                       </div>
                                   </div>
                                   <div className="inputContainers misc-params">
