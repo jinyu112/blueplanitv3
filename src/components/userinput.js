@@ -2121,6 +2121,26 @@ class Userinput extends Component {
           {this.state.resultsArray.length > 0 ?
               <div className="content-parent-div clearfix">
                   <div className="wrapper eventsCont apidata">
+                      <main className={itinContent.join(' ')}>
+                          <div>
+                              {this.state.loading === true ?
+                                  ' ' :
+                                  <div>
+                                      <div className={onlyItin.join(' ')}>
+                                          <div className="itinEvents clearfix">
+                                              <div className="itinSummary">
+                                                  {this.state.loading === false ?
+                                                      itinerarySummaryComponent : ''}
+                                              </div>
+                                              {indents}
+                                          </div>
+
+                                      </div>
+
+                                  </div>}
+                          </div>
+
+                      </main>
                       {
                           this.state.loading === true ?
                           <div className="loader results-loader">
@@ -2141,7 +2161,7 @@ class Userinput extends Component {
                               </div>
 
 
-                                    {/* All data gets shown here (api data, and user added data) */}
+                                    {/* All data gets shown here (api data, a nd user added data) */}
                                     <div className="nav nav-tabs" id="nav-tab" role="tablist">
                                         <a onClick={this.handleTabState} className={eventsLinkClass.join(' ')}
                                             id={CONSTANTS.NAV_EVENT_TAB_ID} data-toggle="tab" href="#nav-events" role="tab"
@@ -2208,26 +2228,6 @@ class Userinput extends Component {
                             </div>
 
                             {/* ITINERARY CONTENT */}
-                            <main className={itinContent.join(' ')}>
-                                <div>
-                                    {this.state.loading === true ?
-                                        ' ' :
-                                        <div>
-                                            <div className={onlyItin.join(' ')}>
-                                                <div className="itinEvents clearfix">
-                                                    <div className="itinSummary">
-                                                        {this.state.loading === false ?
-                                                            itinerarySummaryComponent : ''}
-                                                    </div>
-                                                    {indents}
-                                                </div>
-
-                                            </div>
-
-                                        </div>}
-                                </div>
-
-                            </main>
                         </div>
                     </div>
                     : false}
