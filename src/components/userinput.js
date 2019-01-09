@@ -1268,7 +1268,10 @@ class Userinput extends Component {
                                                 data.data = updateAllEventCosts(this.state.userEventCost, data.data);
 
                                                 // Do optimization to find locally "best" itinerary
-                                                var optimItinerary = genAlgo.doGA(dataForGA, this.state.budgetmax, this.state.budgetmin, eliminatedEvents);
+                                                var optimItinerary = genAlgo.doGA(dataForGA, 
+                                                    this.state.budgetmax, 
+                                                    this.state.budgetmin, 
+                                                    eliminatedEvents);
 
                                                 // Construct output for display (array of objects in correct itinerary order)
                                                 var resultsArrayOutput = [dataForGA[0].Event1[optimItinerary.bestItineraryIndices[0]], //Event 1
@@ -1306,6 +1309,7 @@ class Userinput extends Component {
                                                         foodPageNumber: 1,
                                                         cityName: cityName,
                                                     });
+                                                    this.handleData([], [], mapCenter);
                                                 }
                                                 else { // GA produced an optimal itinerary. Display results
                                                     // create array for the time to be displayed for each itinerary item
@@ -1438,7 +1442,10 @@ class Userinput extends Component {
                                                     }
 
                                                     // Do optimization to find locally "best" itinerary
-                                                    var optimItinerary = genAlgo.doGA(dataForGA, this.state.budgetmax, this.state.budgetmin, eliminatedEvents);
+                                                    var optimItinerary = genAlgo.doGA(dataForGA,
+                                                        this.state.budgetmax,
+                                                        this.state.budgetmin,
+                                                        eliminatedEvents);
 
                                                     // Construct output for display (aray of objects in correct itinerary order)
                                                     var resultsArrayOutput = [dataForGA[0].Event1[optimItinerary.bestItineraryIndices[0]], //Event 1
@@ -1474,6 +1481,8 @@ class Userinput extends Component {
                                                             allApiData: val,
                                                             cityName: cityName,
                                                         });
+
+                                                        this.handleData([], [], mapCenter);
                                                     }
                                                     else { // GA produced an optimal itinerary. Display results
                                                         // Save the user saved events into persistent memory client side
@@ -1623,7 +1632,7 @@ class Userinput extends Component {
         const { term, budgetmax, budgetmin, location } = this.state;
         var indents = [];
 
-        if (this.state.resultsArray.length > 0) {
+        if (this.state.resultsArray.length > 1) {
             // Calculate distances between locations in itinerary
             var distances = calcItineraryDistancesFromLocation2Location(this.state.resultsArray);
             var iFirstValidLocation = 0; // index of first itinerary item that has a valid lat long location
@@ -1744,14 +1753,16 @@ class Userinput extends Component {
             var totalCostDisplayed;
             if (this.state.totalCost > this.state.budgetmax) {
                 messageObject = {
-                    textArray: CONSTANTS.EXCEEDED_BUDGET_TEXT,
+                    textArray: [CONSTANTS.EXCEEDED_BUDGET_TEXT + " of $" + this.state.budgetmax 
+                    + " by $" + misc.round2NearestHundredth(this.state.totalCost - this.state.budgetmax) + "!"],
                     boldIndex: 0,
                 };
                 totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
             }
             else if (this.state.totalCost < this.state.budgetmin) {
                 messageObject = {
-                    textArray: CONSTANTS.LESS_THAN_MINBUDGET_TEXT,
+                    textArray: [CONSTANTS.LESS_THAN_MINBUDGET_TEXT + " of $" + this.state.budgetmax 
+                    + " by $" + misc.round2NearestHundredth(this.state.budgetmin - this.state.totalCost) + "!"],
                     boldIndex: 0,
                 };
                 totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
@@ -1763,19 +1774,37 @@ class Userinput extends Component {
 
             // Itinerary summary info like total cost and buttons
             var itinerarySummaryComponent = [];
-            if (this.state.resultsArray.length > 0) {
-                itinerarySummaryComponent.push(
-                    <ItinerarySummary
-                        totalCostDisplayed={totalCostDisplayed}
-                        message={this.state.message}
-                        messageObject={messageObject}
-                        location={this.state.location}
-                        totalCost={this.state.totalCost}
-                        resultsArray={this.state.resultsArray}
-                        handleSubmit={this.handleSubmit}
-                        itinHeadStr={itinHeadStr}
-                    />);
-            }
+            itinerarySummaryComponent.push(
+                <ItinerarySummary
+                    totalCostDisplayed={totalCostDisplayed}
+                    message={this.state.message}
+                    messageObject={messageObject}
+                    location={this.state.location}
+                    totalCost={this.state.totalCost}
+                    resultsArray={this.state.resultsArray}
+                    handleSubmit={this.handleSubmit}
+                    itinHeadStr={itinHeadStr}
+                />);
+        }
+        else if (this.state.resultsArray.length === 1) { // no itinerary was found
+            // The Total cost display
+            var messageObject;
+            var totalCostDisplayed;
+            messageObject = this.state.message;
+            totalCostDisplayed = "";
+            // Itinerary summary info like total cost and buttons
+            var itinerarySummaryComponent = [];
+            itinerarySummaryComponent.push(
+                <ItinerarySummary
+                    totalCostDisplayed={totalCostDisplayed}
+                    message={this.state.message}
+                    messageObject={messageObject}
+                    location={this.state.location}
+                    totalCost={this.state.totalCost}
+                    resultsArray={this.state.resultsArray}
+                    handleSubmit={this.handleSubmit}
+                    itinHeadStr={itinHeadStr}
+                />);
         }
 
         var userevents = [];

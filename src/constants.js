@@ -36,11 +36,11 @@ module.exports = {
         'Tourism',
         'Arts/Museums/Music',
     ],
-    NUM_RESULTS_PER_PAGE: 6,
+    NUM_RESULTS_PER_PAGE: 10,
     NONE_ITEM_EVENT: {
         name: "None/Free Itinerary Slot",
         cost: 0,
-        rating: 10.4,
+        rating: 10.0,
         time: "9999",
         location: {},
         origin: 'noneitem',
@@ -49,7 +49,7 @@ module.exports = {
     NONE_ITEM: {
         name: "None/Free Itinerary Slot",
         cost: 0,
-        rating: 4.0,
+        rating: 3.5,
         time: "9999",
         location: {},
         origin: 'noneitem',
@@ -75,9 +75,9 @@ module.exports = {
         location: {},
         cost: 0,
       },
-      NO_ITINERARIES_FOUND_TEXT: ["Oops! No itinerary was found with these inputs."],
-      EXCEEDED_BUDGET_TEXT: ["The total cost exceeds your max budget!"],
-      LESS_THAN_MINBUDGET_TEXT: ["The total cost is less than your minimum budget!"],
+      NO_ITINERARIES_FOUND_TEXT: ["Oops! No itinerary was found with these inputs. Try increasing your budget."],
+      EXCEEDED_BUDGET_TEXT: ["The total cost exceeds your max budget"],
+      LESS_THAN_MINBUDGET_TEXT: ["The total cost is less than your minimum budget"],
       LOCKED_EVENT_EXCEEDS_BUDGET: ["At least one of your locked events exceeds your max budget!"],
       NUM_EVENT_APIS: 4, // in userinput for filtering results on event api
       FILTER_NAMES: ["Meetup", "Eventbrite", "Seatgeek", "Local Parks"],
@@ -176,4 +176,6 @@ module.exports = {
     APPROX_COST_STR: "Approx. Total Trip Cost: ",
     EMAIL_ITINERARY_STR: "Send Me This Itinerary",
     READ_MORE_BUTTON: "Read More",
+    RESULTS_COST_HELPER_TEXT: "Default cost. Event may cost more.",
+    RESULTS_FOOD_COST_HELPER_TEXT: "Default food budget.",
 }

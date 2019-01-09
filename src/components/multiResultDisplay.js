@@ -154,8 +154,11 @@ export class MultiResultDisplay extends Component {
                                 }
 
                                 // construct SingleResult component array
-                                apiDataShownToUser.push(<SingleResult key={runningEventCnt} itinObj={tempItineraryObj}
-                                    AddEvent={this.handleAddEvent} eventKey={iItinerary} />);
+                                apiDataShownToUser.push(<SingleResult 
+                                    key={runningEventCnt} 
+                                    itinItemObj={tempItineraryObj}
+                                    AddEvent={this.handleAddEvent} 
+                                    eventKey={iItinerary} />);
                                 runningEventCnt = runningEventCnt + 1;
 
                                 if (runningEventCnt >= CONSTANTS.NUM_RESULTS_PER_PAGE) {

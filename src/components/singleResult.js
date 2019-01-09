@@ -3,99 +3,56 @@ import React, { Component } from 'react';
 import CONSTANTS from '../constants.js';
 import misc from '../miscfuncs/misc.js';
 import placeholder from '../images/placeholder.png';
-import ApproxCostToolTip from './approxCostToolTip.js';
 import TooltipMat from '@material-ui/core/Tooltip';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import red from '@material-ui/core/colors/red';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import renderHTML from 'react-render-html';
+import DescDialog from './descDialog.js'
 import Checkbox from '@material-ui/core/Checkbox';
-import{Alert, AlertContainer} from 'react-bs-notifier';
-
-const styles = theme => ({
-    card: {
-      maxWidth: 400,
-      float: 'left',
-    },
-    media: {
-      height: 0,
-      paddingTop: '56.25%', // 16:9
-    },
-    actions: {
-      display: 'flex',
-    },
-    expand: {
-      transform: 'rotate(0deg)',
-      transition: theme.transitions.create('transform', {
-        duration: theme.transitions.duration.shortest,
-      }),
-      marginLeft: 'auto',
-      [theme.breakpoints.up('sm')]: {
-        marginRight: -8,
-      },
-      float: 'left',
-    },
-    expandOpen: {
-      transform: 'rotate(180deg)',
-    },
-    avatar: {
-      backgroundColor: red[500],
-    },
-  });
-
-  const alerts = [{
-	id: 1,
-	type: "info",
-	message: "Hello, world"
-}]
+import { Alert, AlertContainer } from 'react-bs-notifier';
+import Button from '@material-ui/core/Button';
+import Icon from "@material-ui/core/Icon/Icon";
+import yelp_logo from '../images/yelp_burst.png';
+import google_logo from '../images/google_places.png';
+import meetup_logo from '../images/meetup_logo.png';
+import eventbrite_logo from '../images/eventbrite_logo.png';
+import seatgeek_logo from '../images/seatgeek_logo.png';
 
 // This component constructs a single result that is displayed to the user from the api data
 export class SingleResult extends Component {
     constructor(props) {
         super(props);
-        this.state ={
+        this.state = {
             expanded: false,
             checked: true,
             isShowingInfoAlert: false,
         }
+        this.handleClickDescOpen = this.handleClickDescOpen.bind(this);
+        this.handleClickDescClose = this.handleClickDescClose.bind(this);
     }
 
     handleCheckBox = name => event => {
-      this.setState({ [name]: event.target.checked });
+        this.setState({ [name]: event.target.checked });
     };
-    //
+
     handleAddEvent = (e) => {
         // if (e.target.checked) {
-            var tempObj = this.props.itinObj;
-            tempObj["other"]=this.props.eventKey;
-            this.props.AddEvent(tempObj);            
+        var tempObj = this.props.itinItemObj;
+        tempObj["other"] = this.props.eventKey;
+        this.props.AddEvent(tempObj);
         // }
+        this.onAlertToggle("isShowingInfoAlert");
     }
 
-    truncateText = (string) => {
-        if (string.length > 50) {
-            string = string.substring(0, string.length - (string.length - 60));
-            string = string + ' ...';
-            return string;
-        } else {
-            return string;
-        }
-    }
-
-    handleExpandClick = () => {
+    handleClickDescOpen = () => {
         this.setState(state => ({ expanded: !state.expanded }));
-      };
+    };
 
-      onAlertToggle(type) {
+    handleClickDescClose() {
+        this.setState({
+            expanded: false,
+        })
+    }
+
+    onAlertToggle(type) {        
 		this.setState({
 			[type]: !this.state[type]
 		});
@@ -108,103 +65,161 @@ export class SingleResult extends Component {
     }
 
     render() {
-        var titleStr = this.truncateText(this.props.itinObj.name);
-        var urlStr = this.props.itinObj.url;
-        var imgUrlStr = this.props.itinObj.thumbnail ? this.props.itinObj.thumbnail : placeholder;
-        var timeStr = misc.convertMilTime(this.props.itinObj.time);
-        var costStr = this.props.itinObj.cost;
-        var approxCostFlag = this.props.itinObj.approximateFee;
-        var desc = this.props.itinObj.description;
-        var origin = this.props.itinObj.origin;
-        var subHeaderTxt="";
-        if (origin === CONSTANTS.ORIGINS_EB) {
-            subHeaderTxt = "EVENTBRITE.COM";            
+        var origin = this.props.itinItemObj.origin;
+        var showImages = true;
+        var key = this.props.key;
+        var time = this.props.itinItemObj.time;
+        var add_icon = <Icon onClick={this.handleAddEvent}>add</Icon>;
+        var url = this.props.itinItemObj.url;
+        var thumbnailUrl = this.props.itinItemObj.thumbnail;
+        if (thumbnailUrl.localeCompare("") === 0) {
+            thumbnailUrl = placeholder;
         }
-        else if (origin === CONSTANTS.ORIGINS_GP) {
-            subHeaderTxt = "GOOGLE PLACES";
+        let truncate_name = 0;
+        var name = this.props.itinItemObj.name;
+        if (name) {
+            var num_words_name = name.split(/\W+/).length;
+            if (num_words_name > 9) {
+                let result = name.split(/\W+/).slice(0, 10).join(" ");
+                truncate_name = result + '...';
+                truncate_name = <TooltipMat placement="top" title={name}><span>{truncate_name}</span></TooltipMat>
+            }
         }
-        else if (origin === CONSTANTS.ORIGINS_MU) {
-            subHeaderTxt = "MEETUP.COM"
+        var description = this.props.itinItemObj.description;
+        description = misc.capFirstLetter(description);
+        var shortenedDesc = description;
+        var isShortDescHTML = false;
+        var num_words_desc = 0;
+        var descDialog = null;
+        if (description) {
+            shortenedDesc = shortenedDesc.substring(0, CONSTANTS.ITIN_CARD_DESC_STR_LENGTH) + '...';
+            if (shortenedDesc.substring(0, 1).localeCompare('<') === 0) {
+                isShortDescHTML = true;
+            }
+            num_words_desc = description.split(/\W+/).length;
+            if (num_words_desc > 10) {
+                descDialog = <DescDialog eventname={name}
+                    open={this.state.expanded}
+                    eventDesc={description}
+                    handleClose={this.handleClickDescClose}></DescDialog>;
+            }
         }
-        else if (origin === CONSTANTS.ORIGINS_SG) {
-            subHeaderTxt = "SEATGEEK.COM"
+
+        var cost = this.props.itinItemObj.cost;
+        var editCostHelperText = "";
+        if (this.props.itinItemObj.time.localeCompare(CONSTANTS.FOODTIME_STR) === 0) {
+            editCostHelperText = CONSTANTS.RESULTS_FOOD_COST_HELPER_TEXT;
         }
-        else if (origin === CONSTANTS.ORIGINS_YELP) {
-            subHeaderTxt = "YELP.COM";
+        else {
+            if (this.props.itinItemObj.origin.localeCompare(CONSTANTS.ORIGINS_NONE) === 0) {
+                editCostHelperText = "";
+            }
+            else {
+                editCostHelperText = CONSTANTS.RESULTS_COST_HELPER_TEXT;
+            }
         }
- 
-      if (!this.state.expanded) {
-        var moreInfoIcon = (
-          <TooltipMat placement="top" title={CONSTANTS.MOREINFO_TOOLTIP_STR}>
-          <IconButton
-            onClick={this.handleExpandClick}
-            aria-expanded={this.state.expanded}
-            aria-label="Show more"
-          >
-            <ExpandMoreIcon/>
-          </IconButton>
-          </TooltipMat>
-        );
-      }
-      else {
-        var moreInfoIcon = (
-          <TooltipMat placement="top" title={CONSTANTS.LESSINFO_TOOLTIP_STR}>
-          <IconButton
-            onClick={this.handleExpandClick}
-            aria-expanded={this.state.expanded}
-            aria-label="Show more"
-          >
-            <ExpandLessIcon/>
-          </IconButton>
-          </TooltipMat>
-        );
-      }
+
+        var mealStr = CONSTANTS.EVENTKEYS[this.props.itinItemObj.original_itin_pos];
+        var origins = {
+            yelp: yelp_logo,
+            places: google_logo,
+            meetup: meetup_logo,
+            eventbrite: eventbrite_logo,
+            seatgeek: seatgeek_logo
+        };
+
         return (
+            <div>
+                <AlertContainer position="bottom-left">
+                    {this.state.isShowingInfoAlert ? (<Alert type="success" showIcon={false} timeout={CONSTANTS.NOTIF_DISMISS_TIME_MS} onDismiss={this.dismissAlert.bind(this)}>
+                        Added to Itinerary Slot {this.props.eventKey + 1}</Alert>) : null}
+                </AlertContainer>
 
-<Card>
-    <AlertContainer position="bottom-left">
-    {this.state.isShowingInfoAlert ? (<Alert type="success" showIcon={false} timeout={CONSTANTS.NOTIF_DISMISS_TIME_MS} onDismiss={this.dismissAlert.bind(this)}>
-    Added to Itinerary Slot {this.props.eventKey+1}</Alert>): null}
-    </AlertContainer>
-        <CardHeader
-          title={<a href={urlStr} target='_blank'>{titleStr}</a>}
-          subheader={subHeaderTxt}
-        />
-        <CardMedia
-        className="singleResultImg"
-          image={imgUrlStr}
-        />
-        <CardActions  style={{justifyContent: 'center'}}>
-        <TooltipMat placement="top" title={CONSTANTS.ADDTOITIN_TOOLTIP_STR}>
-          <IconButton aria-label="Add to favorites"  onClick={this.handleAddEvent}>
-            <FavoriteIcon onClick={() => this.onAlertToggle("isShowingInfoAlert")}/>
-          </IconButton>
-          </TooltipMat>
+                <div className="itinCardContainerDiv">
+                    <div className="resultsCard">
+                        <div className="resultsActions">
+                            <div className="actionButtonDiv">
+                                <Button className="elim-button" variant="contained" color="secondary">
+                                    <label className="takeSpace">
+                                        <TooltipMat placement="top" title={CONSTANTS.ADDTOITIN_TOOLTIP_STR}>
+                                            {add_icon}
+                                        </TooltipMat>
+                                    </label>
+                                    <input className="elim_checkbox"/> 
+                                </Button>
+                            </div>
+                        </div>
+                        {thumbnailUrl.localeCompare("") === 0 && showImages ? "" : <div className="resultsImgContainer"><a href={url} target='_blank'><img src={thumbnailUrl} /></a></div>}
 
-          <Typography>
-          {timeStr}
-            </Typography>
-            <Typography> 
-          ${costStr}<ApproxCostToolTip approxCostFlag={approxCostFlag} origin={origin}/>
-            </Typography>
-            {moreInfoIcon}
-            <Checkbox
-          checked={this.state.checked}
-          onChange={this.handleCheckBox('checked')}
-          value="checked"
-        />
-        </CardActions>
-        <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
-          <CardContent>
-            <Typography paragraph variant="body2">
-              Description:
-            </Typography>
-            <Typography paragraph>
-            {renderHTML(desc)}
-            </Typography>
-          </CardContent>
-        </Collapse>
-      </Card>
+                        <div className="resultsRowContent">
+                            <div className="resultsName icon-name itinEventCol3">
+                                <div>
+                                    <span className="align">
+                                        {url === "" ? <strong>{truncate_name ? truncate_name : name}</strong> :
+                                            <strong><a href={url} target='_blank'>{truncate_name ? truncate_name : name}</a></strong>}
+                                    </span>
+                                    <div>
+                                        <span>
+                                            {time == 'Food' ?
+                                                <div className="displayInline">
+                                                    <strong>{mealStr}</strong><br />
+                                                    <i className="fas fa-utensils"></i>
+                                                </div>
+                                                :
+                                                <div className="displayInline">
+                                                    <strong>{misc.convertMilTime(time)}</strong>
+                                                </div>
+                                            }
+                                            {
+                                                num_words_desc > 10 ? '' : (description === 0 || !description) ? '' : ' ' + description
+                                            }
+                                            {
+                                                <div className="resultShortDesc">
+                                                    {
+                                                        ((origin.localeCompare(CONSTANTS.ORIGINS_EB) === 0 ||
+                                                            origin.localeCompare(CONSTANTS.ORIGINS_MU) === 0) && !isShortDescHTML) ? shortenedDesc : ''
+                                                    }
+
+                                                </div>
+                                            }
+
+                                            {
+                                                num_words_desc > 10 ?
+                                                    <div id={'open-results-desc' + key} className="resultsBtn" onClick={this.handleClickDescOpen}>
+                                                        <Button id={'readMoreButtonSingleResult'} className="descBtn" variant="contained" color="primary">
+                                                            <span id={'readMoreSpanSingleResult'}>Read More</span>
+                                                        </Button>
+                                                    </div> : ''
+                                            }
+                                        </span>
+                                        {descDialog}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="itinEventCol4 edit-cost text-warning">
+                                <div className="costPanel">
+                                    <div className="resultsCostDisplay">
+                                        <strong>${cost}</strong>
+                                    </div>
+                                    <div className="EditCostHelperText">
+                                        {editCostHelperText}
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div className="resultsCardBottomDiv">
+                                <div className="justify-end">
+                                    <a href={url} >
+                                        <img className="origin-logo" alt="" src={origins[origin]} />
+                                    </a>
+                                </div>
+                            </div>                        
+                    </div>
+
+                </div>
+            </div>
         )
     }
 }

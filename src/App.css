@@ -488,15 +488,13 @@ tbody:hover {
     font-weight: 700;
 }
 
-.resultsImgContainer {
+.itinCardImgContainer {
     width: 100%;
     height: 125px;
     overflow: hidden;
-    /* margin: 10px; */
-    /*margin-top: 10px;*/
     position: relative;
 }
-.resultsImgContainer img {
+.itinCardImgContainer img {
     position: absolute;
     margin: auto; 
     min-height: 100%;
@@ -623,8 +621,8 @@ img{
 
 .ApiDataDisplay {
    display: grid;
-   grid-template-columns: repeat(2, 1fr);
-grid-gap: 10px;
+   grid-template-columns: repeat(1, 1fr);
+    grid-gap: 30px;
 }
 
 /* for react-simple-dropdown package*/
@@ -815,6 +813,8 @@ button.close {
 .itinSummary {
     width:100%;
     margin: auto;
+    /* max-width: 250px;
+    min-width: 120px; */
     max-width: 800px;
     min-width: 620px;
 }
@@ -874,9 +874,9 @@ button.close {
     text-align: right!important;
 }
 
-/* .itinShortDesc {
-    font-size: .6em;
-} */
+.resultShortDesc {
+    font-size: .7em;
+}
 
 .itinEventCol1 img {
     object-fit: cover;
@@ -1243,4 +1243,68 @@ input:-webkit-autofill:active {
 }
 .mapboxgl-popup {
     max-width: 200px;
+}
+
+/* results display */
+.resultsCard { /* itinerary card class*/
+    overflow: visible!important;
+    color: #666!important;
+    transition: all .25s linear;
+    /*box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.3);*/
+    border-radius: 3px!important;
+    position: relative; /* added for the actions class so that the buttons can use position: absolute and be placed "outside" of the showActions div*/
+    border: 1px solid #354e72 !important;
+    width:75%;
+    margin :auto;
+}
+
+.resultsActions {
+    position: absolute; 
+    right: -11px;
+    top: -20px;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 1em;
+    margin-right: -10px;   
+}
+
+.resultsRowContent {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5em 1.5em;
+    padding-bottom: .1em;
+    display: inline-flex;
+    overflow-y: hidden;
+}
+
+.resultsImgContainer {
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    position: relative;
+}
+.resultsImgContainer img {
+    position: absolute;
+    margin: auto; 
+    min-height: 100%;
+    min-width: 100%;
+    left: -100%;
+    right: -100%;
+    top: -150%;
+    bottom: -100%;
+}
+
+.resultsBtn {
+    font-size: .8em;
+}
+
+.resultsCardBottomDiv {
+    padding-top: 0em;
+}
+
+.resultsCostDisplay {
+    color: #666;
+    font-size: 1.3em;
 }
