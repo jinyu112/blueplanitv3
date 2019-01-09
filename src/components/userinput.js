@@ -2195,7 +2195,8 @@ class Userinput extends Component {
                                             eventFilterFlags={this.state.eventFilterFlags}
                                             filterRadius={this.state.filterRadius}
                                             maxRadius={this.state.searchRadiusForFilterCompare}
-                                            tabState={this.state.tabState} />}
+                                            tabState={this.state.tabState}
+                                            userEventCost={this.state.userEventCost} />}
                                         {pages}
 
                                     </div>
@@ -2212,7 +2213,8 @@ class Userinput extends Component {
                                             eventFilterFlags={this.state.eventFilterFlags}
                                             filterRadius={this.state.filterRadius}
                                             maxRadius={this.state.searchRadiusForFilterCompare}
-                                            tabState={this.state.tabState} />}
+                                            tabState={this.state.tabState} 
+                                            userEventCost={this.state.userEventCost} />}
                                         {foodPages}
                                     </div>
 

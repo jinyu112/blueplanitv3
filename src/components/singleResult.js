@@ -114,8 +114,16 @@ export class SingleResult extends Component {
             if (this.props.itinItemObj.origin.localeCompare(CONSTANTS.ORIGINS_NONE) === 0) {
                 editCostHelperText = "";
             }
+            else if (!this.props.itinItemObj.approximateFee) {
+                editCostHelperText = CONSTANTS.RESULTS_COST_HELPER_TEXT_EVENTSPEC;
+            }
             else {
-                editCostHelperText = CONSTANTS.RESULTS_COST_HELPER_TEXT;
+                if (this.props.userAddedEventCostFlag) {
+                    editCostHelperText = CONSTANTS.RESULTS_COST_HELPER_TEXT_YOURS;
+                }
+                else {
+                    editCostHelperText = CONSTANTS.RESULTS_COST_HELPER_TEXT;
+                }
             }
         }
 

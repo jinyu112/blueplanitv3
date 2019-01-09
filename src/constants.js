@@ -177,5 +177,7 @@ module.exports = {
     EMAIL_ITINERARY_STR: "Send Me This Itinerary",
     READ_MORE_BUTTON: "Read More",
     RESULTS_COST_HELPER_TEXT: "Default cost. Event may cost more.",
-    RESULTS_FOOD_COST_HELPER_TEXT: "Default food budget.",
+    RESULTS_FOOD_COST_HELPER_TEXT: "Budget for this meal",
+    RESULTS_COST_HELPER_TEXT_EVENTSPEC: "Event specified cost",
+    RESULTS_COST_HELPER_TEXT_YOURS: "Budget for this event",
 }

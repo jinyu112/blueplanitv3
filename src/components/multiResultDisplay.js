@@ -42,6 +42,10 @@ export class MultiResultDisplay extends Component {
         var minPrice = parseFloat(priceFilterRange[0]);
         var filterRadius = this.props.filterRadius;
         var maxRadius = this.props.maxRadius;
+        var userAddedEventCostFlag = false;
+        if (this.props.userEventCost !== 0) {
+            userAddedEventCostFlag = true;
+        }
 
         var numArrays = apiData.length;
         var runningEventCnt = 0;
@@ -158,7 +162,8 @@ export class MultiResultDisplay extends Component {
                                     key={runningEventCnt} 
                                     itinItemObj={tempItineraryObj}
                                     AddEvent={this.handleAddEvent} 
-                                    eventKey={iItinerary} />);
+                                    eventKey={iItinerary} 
+                                    userAddedEventCostFlag={userAddedEventCostFlag}/>);
                                 runningEventCnt = runningEventCnt + 1;
 
                                 if (runningEventCnt >= CONSTANTS.NUM_RESULTS_PER_PAGE) {
