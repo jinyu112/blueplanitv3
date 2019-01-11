@@ -183,74 +183,69 @@ class ClickAway extends React.Component {
 
         return (
             <div ref={this.setWrapperRef}>
-                <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>SOURCES</Button>
-                {open ? (
-                    <Paper className={classes.paper}>
-                        <Typography id="label">Include events & places from: </Typography>
-                        <FormControl component="fieldset">
-                            <FormGroup>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={this.state.all}
-                                            onChange={this.handleAllChange('all')}
-                                            value="all"
-                                            color="primary"
-                                        />
-                                    }
-                                    label="Select All"
+                <Typography id="label">Include events & places from: </Typography>
+                <FormControl component="fieldset">
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={this.state.all}
+                                    onChange={this.handleAllChange('all')}
+                                    value="all"
+                                    color="primary"
                                 />
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={this.state.eb}
-                                            onChange={this.handleChange('eb')}
-                                            value="eb"
-                                            color="primary"
-                                        />
-                                    }
-                                    label="Eventbrite"
+                            }
+                            label="Select All"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={this.state.eb}
+                                    onChange={this.handleChange('eb')}
+                                    value="eb"
+                                    color="primary"
                                 />
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={this.state.mu}
-                                            onChange={this.handleChange('mu')}
-                                            value="mu"
-                                            color="primary"
-                                        />
-                                    }
-                                    label="Meetup"
+                            }
+                            label="Eventbrite"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={this.state.mu}
+                                    onChange={this.handleChange('mu')}
+                                    value="mu"
+                                    color="primary"
                                 />
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={this.state.gp}
-                                            onChange={this.handleChange('gp')}
-                                            value="gp"
-                                            color="primary"
-                                        />
-                                    }
-                                    label="Google Places"
+                            }
+                            label="Meetup"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={this.state.gp}
+                                    onChange={this.handleChange('gp')}
+                                    value="gp"
+                                    color="primary"
                                 />
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={this.state.sg}
-                                            onChange={this.handleChange('sg')}
-                                            value="sg"
-                                            color="primary"
-                                        />
-                                    }
-                                    label="SeatGeek"
+                            }
+                            label="Google Places"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={this.state.sg}
+                                    onChange={this.handleChange('sg')}
+                                    value="sg"
+                                    color="primary"
                                 />
-                            </FormGroup>
-                        </FormControl>
-                        <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
-                            Apply
-            </Button>
-                    </Paper>
-                ) : null}
+                            }
+                            label="SeatGeek"
+                        />
+                    </FormGroup>
+                </FormControl>
+                <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
+                    Apply
+                </Button>
             </div>
         );
     }

@@ -93,10 +93,7 @@
  }
 
 .search-input {
-    font-size: 16px;
     color: #222222!important;
-    font-weight: 700;
-    width: 75%;
 }
 
 .homepageIcon {
@@ -251,7 +248,13 @@
 }
 
 .filter {
-    text-align: right;
+
+}
+
+.filter-header p {
+    font-size: 14px;
+    text-align: left;
+    margin-bottom: 8px;
 }
 
 .results {
@@ -722,10 +725,11 @@ button.close {
 
 .filters-div {
     display: grid;
-    grid-template-columns: repeat(9, 1fr);
     grid-gap: 15px;
-    padding: 1.5em 2.1em;
-    max-width: 1080px;
+    padding: 0 1em 0 2em;
+    position: absolute;
+    top: 90px;
+    width: 288px;
 }
 
 .filters-div > button {
@@ -1007,6 +1011,9 @@ button.close {
     width:100%;
 }
 
+.fade:not(.show) {
+    visibility: hidden;
+}
 
 .costPanel label {
     margin-bottom: 0px!important;
@@ -1080,13 +1087,14 @@ button.close {
 }
 
 .fixedBanner {
-    height: 70px !important;
+    height: 50px !important;
     text-align: left;
     position: fixed;
     z-index: 1000;
     background-color: white;
     width: 100%;
     border-bottom: 1px solid #ececec;
+    padding: 0.4em 1.5em;
 }
 
 header {
@@ -1139,7 +1147,7 @@ input:-webkit-autofill:active {
 
 .topNavBar {
     text-transform: uppercase;
-    font-size: 1.8em;
+    font-size: 1.2em;
     text-align: left;
     display: inline;
 }
@@ -1158,6 +1166,26 @@ input:-webkit-autofill:active {
 
 .fixedNav {
     background-color: white;
+}
+
+.fixedNav .fixedTextInput {
+    height: 36px!important;
+    box-shadow: none!important;
+    padding: 0;
+}
+
+.fixedNav .searchIcon, .fixedNav .homepageIcon {
+    height: 36px!important;
+    box-shadow: none!important;
+    padding: 0.4em;
+}
+
+.fixedNav .date-input {
+    padding: 0.4em;
+}
+
+.fixedNav .material-icons {
+    font-size: 22px!important;
 }
 
 .footer ul {
@@ -1221,6 +1249,7 @@ input:-webkit-autofill:active {
 .main {
     width: calc(100%/ (7/12));
     height: 100vh;
+    margin-left: 288px;
 }
 
 .sidebar {
@@ -1243,4 +1272,11 @@ input:-webkit-autofill:active {
 }
 .mapboxgl-popup {
     max-width: 200px;
+}
+
+.price-slider {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    grid-gap: 10px;
+    align-items: center;
 }

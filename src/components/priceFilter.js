@@ -2,10 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import ReactDOM from 'react-dom';
 import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+
 import 'rc-slider/assets/index.css';
 import CONSTANTS from '../constants';
 
@@ -30,11 +28,10 @@ const styles = theme => ({
         zIndex: '9999',
     },
     header: {
-        marginBottom: '2em',
+        marginBottom: '10px',
         fontSize: '1em',
     },
     span: {
-        float: 'right',
         color: CONSTANTS.PRIMARY_COLOR,
     },
     actions: {
@@ -52,7 +49,7 @@ class PriceSlider extends React.Component {
         super(props);
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
-        this.handleClickOutside = this.handleClickOutside.bind(this);
+        //this.handleClickOutside = this.handleClickOutside.bind(this);
     }
 
     state = {
@@ -76,31 +73,17 @@ class PriceSlider extends React.Component {
         this.wrapperRef = node;
     }
 
-    /**
-     * Alert if clicked on outside of element
-     */
-    handleClickOutside(event) {
-        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
-            this.setState({ 
-                open: false,
-                value: [this.state.prevMin, this.state.prevMax],
-            });
-        }
-    }
-
-    handleClick = (filter_state) => {
-        var objectState = {};
-        var currentState = this.state[filter_state];
-        objectState[filter_state] = !currentState;
-        this.setState(objectState);
-    };
-
-    handleClickAway = (props) => {
-        this.setState({
-            open: false,
-            value: [this.state.prevMin, this.state.prevMax],
-        });
-    };
+    // /**
+    //  * Alert if clicked on outside of element
+    //  */
+    // handleClickOutside(event) {
+    //     if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+    //         this.setState({
+    //             open: false,
+    //             value: [this.state.prevMin, this.state.prevMax],
+    //         });
+    //     }
+    // }
 
     onSliderChange = (value) => {
         this.setState({
@@ -130,12 +113,6 @@ class PriceSlider extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { open } = this.state;
-        var disabled = this.props.resultsPresent;
-
-        var buttonClasses = ['apiBtn'];
-
-        (this.state.value[0] != 0 || this.state.value[1] != 500) ? buttonClasses.push('activeStatebtn') : buttonClasses = ['apiBtn'];
 
         if (this.props.apiCalls) {
             this.props.handleResetFilter();
@@ -154,27 +131,27 @@ class PriceSlider extends React.Component {
 
 
         return (
-            <div ref={this.setWrapperRef}>
-                <Button disabled={disabled} className={buttonClasses.join(' ')} variant="outlined" onClick={(e) => this.handleClick('open')}>PRICE</Button>
-                {open ? (
-                    <Paper className={classes.paper}>
-                        <Typography className={classes.header}>Price <span className={classes.span}>${this.state.value[0]} - ${this.state.value[1]}</span></Typography>
-                        <Range allowCross={false} value={this.state.value} defaultValue={[CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX]}
-                            min={CONSTANTS.DEFAULT_PRICEFILTER_MIN} max={CONSTANTS.DEFAULT_PRICEFILTER_MAX}
-                            step={CONSTANTS.PRICE_FILTER_STEP}
-                            onChange={this.onSliderChange} tipFormatter={value => `$${value}.00`} />
-
-                        <div className={classes.actions}>
-                            <Button href="#text-buttons" className={classes.button} onClick={this.handleClear}>
-                                Clear
-                            </Button>
-                            <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
-                                Apply
-                            </Button>
-                        </div>
-
-                    </Paper>
-                ) : null}
+            <div className="filter" ref={this.setWrapperRef}>
+                <div className="filter-header">
+                    <p>Event Price?</p>
+                </div>
+                <div className="price-slider">
+                    <span>${this.state.value[0]}</span>
+                    <Range allowCross={false} value={this.state.value} defaultValue={[CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX]}
+                        min={CONSTANTS.DEFAULT_PRICEFILTER_MIN} max={CONSTANTS.DEFAULT_PRICEFILTER_MAX}
+                        step={CONSTANTS.PRICE_FILTER_STEP}
+                        onChange={this.onSliderChange} tipFormatter={value => `$${value}.00`}
+                    />
+                    <span className={classes.span}>${this.state.value[1]}</span>
+                </div>
+                {/*<div className={classes.actions}>*/}
+                    {/*<Button href="#text-buttons" className={classes.button} onClick={this.handleClear}>*/}
+                        {/*Clear*/}
+                    {/*</Button>*/}
+                    {/*<Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>*/}
+                        {/*Apply*/}
+                    {/*</Button>*/}
+                {/*</div>*/}
             </div>
         );
     }

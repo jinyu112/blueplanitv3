@@ -2024,7 +2024,7 @@ class Userinput extends Component {
                           <span className="nav-bar-logo">Blue </span>
                           <span className="nav-bar-logo2">Planit</span>
                       </div>
-                      <div ref={node => this.node = node} className="col-md-6">
+                      <div ref={node => this.node = node} className="col-md-5">
                           <div>
                               <div ref={node => this.searchIconNode = node} className="searchIcon">
                                   <Icon>search</Icon>
@@ -2057,7 +2057,7 @@ class Userinput extends Component {
                                           {/*</div>*/}
                                           <DatePicker required id="datePicker"
                                                       placeholderText="mm/dd/yyyy"
-                                                      className="textInput fixedTextInput homepageInputs textInputLeft"
+                                                      className="textInput fixedTextInput homepageInputs textInputLeft date-input"
                                                       selected={this.state.startDate}
                                                       onChange={this.handleDateChange}
                                                       minDate={CONSTANTS.TODAYDATE}
@@ -2121,6 +2121,16 @@ class Userinput extends Component {
           {this.state.resultsArray.length > 0 ?
               <div className="content-parent-div clearfix">
                   <div className="wrapper eventsCont apidata">
+                      <div className="filters-div">
+                          <PriceFilter setPriceRange={this.handlePriceFilter}></PriceFilter>
+                          <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
+                                          setDistance={this.handleFilterRadius}></DistanceFilter>
+                          <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
+                          {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
+                              <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
+                              <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
+
+                      </div>
                       <main className={itinContent.join(' ')}>
                           <div>
                               {this.state.loading === true ?
@@ -2139,7 +2149,6 @@ class Userinput extends Component {
 
                                   </div>}
                           </div>
-
                       </main>
                       {
                           this.state.loading === true ?
@@ -2150,17 +2159,6 @@ class Userinput extends Component {
                       }
                       <div className={mapAndResultsDiv.join(' ')}>
                           <div className={mapAndResultsContent.join(' ')}>
-                              <div className="filters-div">
-                                  <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
-                                                  setDistance={this.handleFilterRadius}></DistanceFilter>
-                                  <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
-                                  {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
-                                      <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
-                                      <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
-                                  <PriceFilter setPriceRange={this.handlePriceFilter}></PriceFilter>
-                              </div>
-
-
                                     {/* All data gets shown here (api data, a nd user added data) */}
                                     <div className="nav nav-tabs" id="nav-tab" role="tablist">
                                         <a onClick={this.handleTabState} className={eventsLinkClass.join(' ')}
