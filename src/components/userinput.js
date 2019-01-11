@@ -148,6 +148,10 @@ class Userinput extends Component {
         this.handleMouseClick = this.handleMouseClick.bind(this);
         this.updateDimensions = this.updateDimensions.bind(this);
         this.handleOutsideClick = this.handleOutsideClick.bind(this);
+
+        //global variables
+        this.locationCheckResult = 0; // only set by misc.checkIfValidLocation function,
+                                      // 0 = valid location, 1 = invalid location (outside of supported countries), 2 = invalid location input
     }
 
     //updates width of extended search bar form when resizing page
@@ -1149,8 +1153,8 @@ class Userinput extends Component {
         }
 
         var myStorage = window.localStorage;
-        var doAPICallsFlag = true;
         var indexDBcompat = window.indexedDB;
+        this.locationCheckResult = -1;
 
         // Determine if the API data needs to be cleared locally (every 24 hours)
         var clearApiData = clearLocallyStoredAPIData(myStorage);
@@ -1175,7 +1179,9 @@ class Userinput extends Component {
                 // Geocoding to convert user location input into lat/lon
                 geocoder.geocode(this.state.location, function (err, data_latlon) {
                     var cityName = '';
-                    if (data_latlon) {
+                    var validLocationObj = misc.checkIfValidLocation(data_latlon);
+                    this.locationCheckResult = validLocationObj.returnOption;
+                    if (validLocationObj.validFlag) {
                         if (data_latlon.results && data_latlon.results.length > 0 && insideBudget) {
 
                             // Construct lat/long string from geocoder from user input
@@ -1535,9 +1541,8 @@ class Userinput extends Component {
                                     }
                                 }
                             }.bind(this), { key: process.env.REACT_APP_GOOGLE_API_KEY })
-
                         }
-                        else {
+                        else {//invalid location
                             this.setState({
                                 loading: false,
                             });
@@ -1545,11 +1550,11 @@ class Userinput extends Component {
                             console.log("invalid location input!")
                         } // end if (data_latlon.results)
                     }
-                    else {
+                    else { //invalid location
                         this.setState({
                             loading: false,
                         });
-                    }
+                    } //end if (data_latlon && ...)
                 }.bind(this), { key: process.env.REACT_APP_GOOGLE_API_KEY })
             }
         }
@@ -1632,6 +1637,20 @@ class Userinput extends Component {
         const { term, budgetmax, budgetmin, location } = this.state;
         var indents = [];
 
+        // valid/invalid location input error message
+        var locationErrorMessage = null;
+        if (this.locationCheckResult === 1) {
+            locationErrorMessage = <DescDialog eventname={"Outside of supported countries"}
+            open={true}/>;
+            console.log("outside of supported countries!!!!!!!!!!!")
+        }
+        else if (this.locationCheckResult === 2) {
+            locationErrorMessage = <DescDialog eventname={"Outside of supported countries"}
+            open={true}/>;
+            console.log("invalid location input!!!!!!!!!!!!!!!!")
+        }
+
+        // Itinerary info logic
         if (this.state.resultsArray.length > 1) {
             // Calculate distances between locations in itinerary
             var distances = calcItineraryDistancesFromLocation2Location(this.state.resultsArray);
@@ -1975,6 +1994,7 @@ class Userinput extends Component {
               {
                   this.state.resultsArray.length === 0 ?
                   <AppBar position="static">
+                  {locationErrorMessage}
                         <div className="topNavBar">
                             <span className="nav-bar-logo">Blue</span>
                             <span className="nav-bar-logo2">Planit</span>
