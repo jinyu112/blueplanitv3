@@ -40,6 +40,7 @@ import seatgeek_logo from '../images/seatgeek_logo.png';
 
 import CONSTANTS from '../constants.js';
 import DescDialog from './descDialog.js'
+import LocationErrorDialog from './locationErrorDialog.js'
 import Icon from "@material-ui/core/Icon/Icon";
 
 //https://developers.google.com/maps/documentation/geocoding/usage-and-billing
@@ -1640,14 +1641,14 @@ class Userinput extends Component {
         // valid/invalid location input error message
         var locationErrorMessage = null;
         if (this.locationCheckResult === 1) {
-            locationErrorMessage = <DescDialog eventname={"Outside of supported countries"}
+            locationErrorMessage = <LocationErrorDialog title={CONSTANTS.LOCATION_INPUT_ERROR_OUTSIDE_TITLE}
+            desc={CONSTANTS.LOCATION_INPUT_ERROR_OUTSIDE_DESC}
             open={true}/>;
-            console.log("outside of supported countries!!!!!!!!!!!")
         }
         else if (this.locationCheckResult === 2) {
-            locationErrorMessage = <DescDialog eventname={"Outside of supported countries"}
+            locationErrorMessage = <LocationErrorDialog title={CONSTANTS.LOCATION_INPUT_ERROR_INVALID_TITLE}
+            desc={CONSTANTS.LOCATION_INPUT_ERROR_INVALID_DESC}
             open={true}/>;
-            console.log("invalid location input!!!!!!!!!!!!!!!!")
         }
 
         // Itinerary info logic
@@ -1993,16 +1994,12 @@ class Userinput extends Component {
           <div className={banner.join(' ')}>
               {
                   this.state.resultsArray.length === 0 ?
-                  <AppBar position="static">
-                  {locationErrorMessage}
+                  <AppBar position="static">                  
                         <div className="topNavBar">
                             <span className="nav-bar-logo">Blue</span>
                             <span className="nav-bar-logo2">Planit</span>
                         </div>
-                        {/*<div className="headerText">*/}
-                            {/*<h1>{CONSTANTS.BANNER_TEXT.FIRST}</h1>*/}
-                            {/*<h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>*/}
-                        {/*</div>*/}
+                        {locationErrorMessage}
                         <Toolbar className="toolbar">
                               <form className="homepageForm" autoComplete="off" onSubmit={this.handleSubmit}>
                                   <div className="formCopy">
@@ -2072,6 +2069,7 @@ class Userinput extends Component {
                       <div className="col-md-2">
                           <span className="nav-bar-logo">Blue </span>
                           <span className="nav-bar-logo2">Planit</span>
+                          {locationErrorMessage}
                       </div>
                       <div ref={node => this.node = node} className="col-md-6">
                           <div>
@@ -2188,8 +2186,6 @@ class Userinput extends Component {
                                       <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
                                   <PriceFilter setPriceRange={this.handlePriceFilter}></PriceFilter>
                               </div>
-
-
                                     {/* All data gets shown here (api data, and user added data) */}
                                     <div className="nav nav-tabs" id="nav-tab" role="tablist">
                                         <a onClick={this.handleTabState} className={eventsLinkClass.join(' ')}
@@ -2263,7 +2259,7 @@ class Userinput extends Component {
                                 <div>
                                     {this.state.loading === true ?
                                         ' ' :
-                                        <div>
+                                        <div>                                            
                                             <div className={onlyItin.join(' ')}>
                                                 <div className="itinEvents clearfix">
                                                     <div className="itinSummary">

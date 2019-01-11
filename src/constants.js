@@ -180,4 +180,8 @@ module.exports = {
     RESULTS_FOOD_COST_HELPER_TEXT: "Budget for this meal",
     RESULTS_COST_HELPER_TEXT_EVENTSPEC: "Event specified cost",
     RESULTS_COST_HELPER_TEXT_YOURS: "Budget for this event",
+    LOCATION_INPUT_ERROR_OUTSIDE_TITLE: "Invalid location.",
+    LOCATION_INPUT_ERROR_OUTSIDE_DESC: "The only countries currently supported by the app are the US, Canada, Australia, and select countries in Europe. Please change your input location or be more specific by including the country (i.e. Tampa, FL, USA).",
+    LOCATION_INPUT_ERROR_INVALID_TITLE: "Invalid input location",
+    LOCATION_INPUT_ERROR_INVALID_DESC: "The location you are searching for is not valid. Please try again.",
 }
