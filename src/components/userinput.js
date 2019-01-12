@@ -1609,8 +1609,7 @@ class Userinput extends Component {
         }
     }
 
-    render() {
-
+    render() {        
         // Map
         const mapClasses = ['maps', 'hidden'];
 
@@ -2244,14 +2243,15 @@ class Userinput extends Component {
                                             currentEventCost={this.state.userEventCost} />}
                                     </div>
                                 </div>
-                          {/*<div id="mapBoxID" className={mapClasses.join(' ')} >*/}
-                                {/*<MapBoxComponent show={this.state.mapOrResultsState}*/}
-                                                 {/*results={this.state.resultsArray}*/}
-                                                 {/*center={this.state.center}>*/}
-                                {/*</MapBoxComponent>*/}
-                          {/*</div>*/}
-                                { <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray}
-                                            center={this.state.center} showMarkerOnHoverObj={this.state.mapItinCardHoverStates}/> }
+                          <div id="mapBoxID" className={mapClasses.join(' ')} >
+                                <MapBoxComponent show={this.state.mapOrResultsState}
+                                                 results={this.state.resultsArray}
+                                                 center={this.state.center}
+                                                 markerHoverStates={this.state.mapItinCardHoverStates}>
+                                </MapBoxComponent>
+                          </div>
+                                {/* { <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray}
+                                            center={this.state.center} showMarkerOnHoverObj={this.state.mapItinCardHoverStates}/> } */}
                             </div>
 
                             {/* ITINERARY CONTENT */}
