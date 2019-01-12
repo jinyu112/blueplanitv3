@@ -9,6 +9,7 @@ import GoogleApiWrapper from './googlemaps.js';
 import Loader from './reactloading.js';
 import DeleteUserEvent from './deleteUserEvent.js';
 import ItineraryCard from './itineraryCard.js';
+import MiniItineraryCard from './miniItineraryCard.js';
 import ItinerarySummary from './itinerarySummary.js';
 import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
@@ -76,6 +77,7 @@ class Userinput extends Component {
             showModal: false,
             tabState: CONSTANTS.NAV_EVENT_TAB_ID,
             cityName: '',
+            showDetailedItinerary: true,
 
             //Map states
             center: {},
@@ -149,6 +151,7 @@ class Userinput extends Component {
         this.handleMouseClick = this.handleMouseClick.bind(this);
         this.updateDimensions = this.updateDimensions.bind(this);
         this.handleOutsideClick = this.handleOutsideClick.bind(this);
+        this.handleToggleItinerary = this.handleToggleItinerary.bind(this);
 
         //global variables
         this.locationCheckResult = 0; // only set by misc.checkIfValidLocation function,
@@ -160,6 +163,14 @@ class Userinput extends Component {
         var width = this.searchIconNode.clientWidth + this.searchInputNode.clientWidth;
         this.setState({searchInputWidth: width});
         console.log(this.state.resultsArray);
+    }
+
+    handleToggleItinerary() {
+        console.clear()
+        console.log("handletoggleitin")
+        this.setState({
+            showDetailedItinerary: !this.state.showDetailedItinerary,
+        })
     }
 
     //listens to click on search input on fixed nav
@@ -1726,7 +1737,23 @@ class Userinput extends Component {
                 }
 
                 var dataNumAttribute = i + 1;
-
+                if (!this.state.showDetailedItinerary) {
+                indents.push(
+                    <MiniItineraryCard
+                        key={key}
+                        cardIndex={i}
+                        itineraryCardId={id}                        
+                        dataNumAttribute={dataNumAttribute}
+                        truncate_name={truncate_name}
+                        itinTime={this.state.itinTimes[i]}
+                        resultsArray={this.state.resultsArray}
+                        origins={origins}
+                        handleItinCardMouseEnter={this.handleItinCardMouseEnter}
+                        handleItinCardMouseLeave={this.handleItinCardMouseLeave}
+                    />
+                );
+                }
+                else {
                 indents.push(
                     <ItineraryCard
                         key={key}
@@ -1765,6 +1792,7 @@ class Userinput extends Component {
                         iFirstValidLocation={iFirstValidLocation}
                     />
                 );
+                }
             }
 
             // The Total cost display
@@ -1802,6 +1830,8 @@ class Userinput extends Component {
                     totalCost={this.state.totalCost}
                     resultsArray={this.state.resultsArray}
                     handleSubmit={this.handleSubmit}
+                    handleToggleItinerary={this.handleToggleItinerary}
+                    showDetailedItinerary={this.state.showDetailedItinerary}
                     itinHeadStr={itinHeadStr}
                 />);
         }

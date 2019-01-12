@@ -184,4 +184,6 @@ module.exports = {
     LOCATION_INPUT_ERROR_OUTSIDE_DESC: "The only countries currently supported by the app are the US, Canada, Australia, and select countries in Europe. Please change your input location or be more specific by including the country (i.e. Tampa, FL, USA).",
     LOCATION_INPUT_ERROR_INVALID_TITLE: "Invalid input location",
     LOCATION_INPUT_ERROR_INVALID_DESC: "The location you are searching for is not valid. Please try again.",
+    COLLAPSE_TO_MINI_ITIN_DIPLAY_STR: "Collapse itinerary.",
+    EXPAND_TO_FULL_ITIN_DIPLAY_STR: "Expand itinerary.",
 }

@@ -6,6 +6,7 @@ import Message from './message.js';
 import EmailModal from './emailModal.js';
 import misc from '../miscfuncs/misc.js'
 import Icon from "@material-ui/core/Icon/Icon";
+import { IconButton } from '@material-ui/core';
 
 class ItinerarySummary extends Component {
     constructor(props) {
@@ -33,6 +34,7 @@ class ItinerarySummary extends Component {
         var itinHeadStr = this.props.itinHeadStr;
 
         return (
+            <div>
             <div className="itinerarySumInfoContainer" >
                 <div className="itinHeader">
                     {itinHeadStr}
@@ -61,7 +63,25 @@ class ItinerarySummary extends Component {
                         </TooltipMat>
                     </div>
                 </div>
+
+                <div className="detailedItinButton">
+                
+                <Button onClick={this.props.handleToggleItinerary}>
+                {this.props.showDetailedItinerary ? 
+                    <TooltipMat placement="bottom" title={CONSTANTS.COLLAPSE_TO_MINI_ITIN_DIPLAY_STR}>
+                        <Icon>expand_less</Icon>
+                    </TooltipMat> 
+                : <TooltipMat placement="bottom" title={CONSTANTS.EXPAND_TO_FULL_ITIN_DIPLAY_STR}>
+                    <Icon>expand_more</Icon>
+                </TooltipMat>}            
+                </Button>
+                
+                
+                </div>
             </div >
+            {this.props.showDetailedItinerary ? <div className="itinSpacer"></div>
+            :<div className="miniItinSpacer"></div>}
+            </div>
         );
     }
 }
