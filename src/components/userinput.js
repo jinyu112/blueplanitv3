@@ -240,11 +240,12 @@ class Userinput extends Component {
 
     handleFilterRadius(distance) {
         distance = parseFloat(distance);
+        console.log('distance passed in', distance);
         this.setState({
             filterRadius: distance, // max radius [miles]
             pageNumber: 1,
             foodPageNumber: 1,
-        });
+        },console.log('i am the radisu', this.state.filterRadius));
     }
 
     // Returned filter data from the api filter

@@ -35,14 +35,6 @@ class ClickAway extends React.Component {
         prevDoApiCallState: true,
     };
 
-    componentDidMount() {
-        document.addEventListener('mousedown', this.handleClickOutside);
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener('mousedown', this.handleClickOutside);
-    }
-
     setWrapperRef(node) {
         this.wrapperRef = node;
     }
@@ -62,9 +54,17 @@ class ClickAway extends React.Component {
     // };
 
     handleChange = (event) => {
-        this.setState({ value: event.target.value },console.log(this.state));
+        if(event.target.checked) {
+            console.log(this.ref);
+            console.log('i am chcked');
 
-        //change result display here
+            this.props.setDistance(event.target.value);
+            this.setState({
+                prevRadius: this.state.value,
+            })
+            //change result display here
+        }
+
     };
 
     handleApply = (props) => {
@@ -80,7 +80,6 @@ class ClickAway extends React.Component {
         const { value } = this.state;
 
         this.state.maxDistanceValue = this.props.maxDistance;
-        var displayValue = this.state.value;
 
         if (this.props.apiCalls) {
             this.props.handleResetFilter();
@@ -88,7 +87,6 @@ class ClickAway extends React.Component {
 
         if (this.state.prevMaxDistanceValue !== this.state.maxDistanceValue ||
             this.props.apiCalls) {
-            displayValue = this.state.maxDistanceValue;
             this.state.value = this.state.maxDistanceValue;
             this.state.prevMaxDistanceValue = this.state.maxDistanceValue;                     
         }
@@ -99,14 +97,15 @@ class ClickAway extends React.Component {
                     <p>{CONSTANTS.RADIUS_FILTER_STR}</p>
                 </div>
                 <div className="distance-checkboxes">
-                    <input type="checkbox" value="5" onClick={this.handleChange}/> 5
-                    <input type="checkbox" value="10" onClick={this.handleChange}/> 10
-                    <input type="checkbox" value="15" onClick={this.handleChange}/>15
-                    <input type="checkbox" value="25" onClick={this.handleChange}/>25
+                    {[5,10,15,25].map((item,i) => {
+                        return (
+                            <input type="checkbox" value={item}  ref={'ref_' + i} onClick={this.handleChange}/>
+                        )
+                    })}
                 </div>
-                <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
-                    Apply
-                </Button>
+                {/*<Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>*/}
+                    {/*Apply*/}
+                {/*</Button>*/}
             </div>
         );
     }
