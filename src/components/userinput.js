@@ -9,6 +9,7 @@ import GoogleApiWrapper from './googlemaps.js';
 import Loader from './reactloading.js';
 import DeleteUserEvent from './deleteUserEvent.js';
 import ItineraryCard from './itineraryCard.js';
+import MiniItineraryCard from './miniItineraryCard.js';
 import ItinerarySummary from './itinerarySummary.js';
 import PaginationLink from './paginationLink.js'
 import MultiResultDisplay from './multiResultDisplay.js';
@@ -40,6 +41,7 @@ import seatgeek_logo from '../images/seatgeek_logo.png';
 
 import CONSTANTS from '../constants.js';
 import DescDialog from './descDialog.js'
+import LocationErrorDialog from './locationErrorDialog.js'
 import Icon from "@material-ui/core/Icon/Icon";
 
 //https://developers.google.com/maps/documentation/geocoding/usage-and-billing
@@ -75,6 +77,7 @@ class Userinput extends Component {
             showModal: false,
             tabState: CONSTANTS.NAV_EVENT_TAB_ID,
             cityName: '',
+            showDetailedItinerary: true,
 
             //Map states
             center: {},
@@ -148,6 +151,11 @@ class Userinput extends Component {
         this.handleMouseClick = this.handleMouseClick.bind(this);
         this.updateDimensions = this.updateDimensions.bind(this);
         this.handleOutsideClick = this.handleOutsideClick.bind(this);
+        this.handleToggleItinerary = this.handleToggleItinerary.bind(this);
+
+        //global variables
+        this.locationCheckResult = 0; // only set by misc.checkIfValidLocation function,
+                                      // 0 = valid location, 1 = invalid location (outside of supported countries), 2 = invalid location input
     }
 
     //updates width of extended search bar form when resizing page
@@ -155,6 +163,14 @@ class Userinput extends Component {
         var width = this.searchIconNode.clientWidth + this.searchInputNode.clientWidth;
         this.setState({searchInputWidth: width});
         console.log(this.state.resultsArray);
+    }
+
+    handleToggleItinerary() {
+        console.clear()
+        console.log("handletoggleitin")
+        this.setState({
+            showDetailedItinerary: !this.state.showDetailedItinerary,
+        })
     }
 
     //listens to click on search input on fixed nav
@@ -1150,8 +1166,8 @@ class Userinput extends Component {
         }
 
         var myStorage = window.localStorage;
-        var doAPICallsFlag = true;
         var indexDBcompat = window.indexedDB;
+        this.locationCheckResult = -1;
 
         // Determine if the API data needs to be cleared locally (every 24 hours)
         var clearApiData = clearLocallyStoredAPIData(myStorage);
@@ -1176,7 +1192,9 @@ class Userinput extends Component {
                 // Geocoding to convert user location input into lat/lon
                 geocoder.geocode(this.state.location, function (err, data_latlon) {
                     var cityName = '';
-                    if (data_latlon) {
+                    var validLocationObj = misc.checkIfValidLocation(data_latlon);
+                    this.locationCheckResult = validLocationObj.returnOption;
+                    if (validLocationObj.validFlag) {
                         if (data_latlon.results && data_latlon.results.length > 0 && insideBudget) {
 
                             // Construct lat/long string from geocoder from user input
@@ -1269,7 +1287,10 @@ class Userinput extends Component {
                                                 data.data = updateAllEventCosts(this.state.userEventCost, data.data);
 
                                                 // Do optimization to find locally "best" itinerary
-                                                var optimItinerary = genAlgo.doGA(dataForGA, this.state.budgetmax, this.state.budgetmin, eliminatedEvents);
+                                                var optimItinerary = genAlgo.doGA(dataForGA,
+                                                    this.state.budgetmax,
+                                                    this.state.budgetmin,
+                                                    eliminatedEvents);
 
                                                 // Construct output for display (array of objects in correct itinerary order)
                                                 var resultsArrayOutput = [dataForGA[0].Event1[optimItinerary.bestItineraryIndices[0]], //Event 1
@@ -1307,6 +1328,7 @@ class Userinput extends Component {
                                                         foodPageNumber: 1,
                                                         cityName: cityName,
                                                     });
+                                                    this.handleData([], [], mapCenter);
                                                 }
                                                 else { // GA produced an optimal itinerary. Display results
                                                     // create array for the time to be displayed for each itinerary item
@@ -1439,7 +1461,10 @@ class Userinput extends Component {
                                                     }
 
                                                     // Do optimization to find locally "best" itinerary
-                                                    var optimItinerary = genAlgo.doGA(dataForGA, this.state.budgetmax, this.state.budgetmin, eliminatedEvents);
+                                                    var optimItinerary = genAlgo.doGA(dataForGA,
+                                                        this.state.budgetmax,
+                                                        this.state.budgetmin,
+                                                        eliminatedEvents);
 
                                                     // Construct output for display (aray of objects in correct itinerary order)
                                                     var resultsArrayOutput = [dataForGA[0].Event1[optimItinerary.bestItineraryIndices[0]], //Event 1
@@ -1475,6 +1500,8 @@ class Userinput extends Component {
                                                             allApiData: val,
                                                             cityName: cityName,
                                                         });
+
+                                                        this.handleData([], [], mapCenter);
                                                     }
                                                     else { // GA produced an optimal itinerary. Display results
                                                         // Save the user saved events into persistent memory client side
@@ -1527,9 +1554,8 @@ class Userinput extends Component {
                                     }
                                 }
                             }.bind(this), { key: process.env.REACT_APP_GOOGLE_API_KEY })
-
                         }
-                        else {
+                        else {//invalid location
                             this.setState({
                                 loading: false,
                             });
@@ -1537,11 +1563,11 @@ class Userinput extends Component {
                             console.log("invalid location input!")
                         } // end if (data_latlon.results)
                     }
-                    else {
+                    else { //invalid location
                         this.setState({
                             loading: false,
                         });
-                    }
+                    } //end if (data_latlon && ...)
                 }.bind(this), { key: process.env.REACT_APP_GOOGLE_API_KEY })
             }
         }
@@ -1596,7 +1622,6 @@ class Userinput extends Component {
     }
 
     render() {
-
         // Map
         const mapClasses = ['maps', 'hidden'];
 
@@ -1624,7 +1649,21 @@ class Userinput extends Component {
         const { term, budgetmax, budgetmin, location } = this.state;
         var indents = [];
 
-        if (this.state.resultsArray.length > 0) {
+        // valid/invalid location input error message
+        var locationErrorMessage = null;
+        if (this.locationCheckResult === 1) {
+            locationErrorMessage = <LocationErrorDialog title={CONSTANTS.LOCATION_INPUT_ERROR_OUTSIDE_TITLE}
+            desc={CONSTANTS.LOCATION_INPUT_ERROR_OUTSIDE_DESC}
+            open={true}/>;
+        }
+        else if (this.locationCheckResult === 2) {
+            locationErrorMessage = <LocationErrorDialog title={CONSTANTS.LOCATION_INPUT_ERROR_INVALID_TITLE}
+            desc={CONSTANTS.LOCATION_INPUT_ERROR_INVALID_DESC}
+            open={true}/>;
+        }
+
+        // Itinerary info logic
+        if (this.state.resultsArray.length > 1) {
             // Calculate distances between locations in itinerary
             var distances = calcItineraryDistancesFromLocation2Location(this.state.resultsArray);
             var iFirstValidLocation = 0; // index of first itinerary item that has a valid lat long location
@@ -1699,7 +1738,23 @@ class Userinput extends Component {
                 }
 
                 var dataNumAttribute = i + 1;
-
+                if (!this.state.showDetailedItinerary) {
+                indents.push(
+                    <MiniItineraryCard
+                        key={key}
+                        cardIndex={i}
+                        itineraryCardId={id}
+                        dataNumAttribute={dataNumAttribute}
+                        truncate_name={truncate_name}
+                        itinTime={this.state.itinTimes[i]}
+                        resultsArray={this.state.resultsArray}
+                        origins={origins}
+                        handleItinCardMouseEnter={this.handleItinCardMouseEnter}
+                        handleItinCardMouseLeave={this.handleItinCardMouseLeave}
+                    />
+                );
+                }
+                else {
                 indents.push(
                     <ItineraryCard
                         key={key}
@@ -1738,6 +1793,7 @@ class Userinput extends Component {
                         iFirstValidLocation={iFirstValidLocation}
                     />
                 );
+                }
             }
 
             // The Total cost display
@@ -1745,14 +1801,16 @@ class Userinput extends Component {
             var totalCostDisplayed;
             if (this.state.totalCost > this.state.budgetmax) {
                 messageObject = {
-                    textArray: CONSTANTS.EXCEEDED_BUDGET_TEXT,
+                    textArray: [CONSTANTS.EXCEEDED_BUDGET_TEXT + " of $" + this.state.budgetmax
+                    + " by $" + misc.round2NearestHundredth(this.state.totalCost - this.state.budgetmax) + "!"],
                     boldIndex: 0,
                 };
                 totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
             }
             else if (this.state.totalCost < this.state.budgetmin) {
                 messageObject = {
-                    textArray: CONSTANTS.LESS_THAN_MINBUDGET_TEXT,
+                    textArray: [CONSTANTS.LESS_THAN_MINBUDGET_TEXT + " of $" + this.state.budgetmax
+                    + " by $" + misc.round2NearestHundredth(this.state.budgetmin - this.state.totalCost) + "!"],
                     boldIndex: 0,
                 };
                 totalCostDisplayed = <font color="red"><b>${this.state.totalCost}</b></font>;
@@ -1764,19 +1822,39 @@ class Userinput extends Component {
 
             // Itinerary summary info like total cost and buttons
             var itinerarySummaryComponent = [];
-            if (this.state.resultsArray.length > 0) {
-                itinerarySummaryComponent.push(
-                    <ItinerarySummary
-                        totalCostDisplayed={totalCostDisplayed}
-                        message={this.state.message}
-                        messageObject={messageObject}
-                        location={this.state.location}
-                        totalCost={this.state.totalCost}
-                        resultsArray={this.state.resultsArray}
-                        handleSubmit={this.handleSubmit}
-                        itinHeadStr={itinHeadStr}
-                    />);
-            }
+            itinerarySummaryComponent.push(
+                <ItinerarySummary
+                    totalCostDisplayed={totalCostDisplayed}
+                    message={this.state.message}
+                    messageObject={messageObject}
+                    location={this.state.location}
+                    totalCost={this.state.totalCost}
+                    resultsArray={this.state.resultsArray}
+                    handleSubmit={this.handleSubmit}
+                    handleToggleItinerary={this.handleToggleItinerary}
+                    showDetailedItinerary={this.state.showDetailedItinerary}
+                    itinHeadStr={itinHeadStr}
+                />);
+        }
+        else if (this.state.resultsArray.length === 1) { // no itinerary was found
+            // The Total cost display
+            var messageObject;
+            var totalCostDisplayed;
+            messageObject = this.state.message;
+            totalCostDisplayed = "";
+            // Itinerary summary info like total cost and buttons
+            var itinerarySummaryComponent = [];
+            itinerarySummaryComponent.push(
+                <ItinerarySummary
+                    totalCostDisplayed={totalCostDisplayed}
+                    message={this.state.message}
+                    messageObject={messageObject}
+                    location={this.state.location}
+                    totalCost={this.state.totalCost}
+                    resultsArray={this.state.resultsArray}
+                    handleSubmit={this.handleSubmit}
+                    itinHeadStr={itinHeadStr}
+                />);
         }
 
         var userevents = [];
@@ -1951,10 +2029,7 @@ class Userinput extends Component {
                             <span className="nav-bar-logo">Blue</span>
                             <span className="nav-bar-logo2">Planit</span>
                         </div>
-                        {/*<div className="headerText">*/}
-                            {/*<h1>{CONSTANTS.BANNER_TEXT.FIRST}</h1>*/}
-                            {/*<h1>{CONSTANTS.BANNER_TEXT.LAST}</h1>*/}
-                        {/*</div>*/}
+                        {locationErrorMessage}
                         <Toolbar className="toolbar">
                               <form className="homepageForm" autoComplete="off" onSubmit={this.handleSubmit}>
                                   <div className="formCopy">
@@ -2024,6 +2099,7 @@ class Userinput extends Component {
                       <div className="col-md-2">
                           <span className="nav-bar-logo">Blue </span>
                           <span className="nav-bar-logo2">Planit</span>
+                          {locationErrorMessage}
                       </div>
                       <div ref={node => this.node = node} className="col-md-5">
                           <div>
@@ -2185,7 +2261,8 @@ class Userinput extends Component {
                                             eventFilterFlags={this.state.eventFilterFlags}
                                             filterRadius={this.state.filterRadius}
                                             maxRadius={this.state.searchRadiusForFilterCompare}
-                                            tabState={this.state.tabState} />}
+                                            tabState={this.state.tabState}
+                                            userEventCost={this.state.userEventCost} />}
                                         {pages}
 
                                     </div>
@@ -2202,7 +2279,8 @@ class Userinput extends Component {
                                             eventFilterFlags={this.state.eventFilterFlags}
                                             filterRadius={this.state.filterRadius}
                                             maxRadius={this.state.searchRadiusForFilterCompare}
-                                            tabState={this.state.tabState} />}
+                                            tabState={this.state.tabState}
+                                            userEventCost={this.state.userEventCost} />}
                                         {foodPages}
                                     </div>
 
@@ -2216,17 +2294,16 @@ class Userinput extends Component {
                                             currentEventCost={this.state.userEventCost} />}
                                     </div>
                                 </div>
-                          {/*<div id="mapBoxID" className={mapClasses.join(' ')} >*/}
-                                {/*<MapBoxComponent show={this.state.mapOrResultsState}*/}
-                                                 {/*results={this.state.resultsArray}*/}
-                                                 {/*center={this.state.center}>*/}
-                                {/*</MapBoxComponent>*/}
-                          {/*</div>*/}
-                                { <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray}
-                                            center={this.state.center} showMarkerOnHoverObj={this.state.mapItinCardHoverStates}/> }
+                          <div id="mapBoxID" className={mapClasses.join(' ')} >
+                                <MapBoxComponent show={this.state.mapOrResultsState}
+                                                 results={this.state.resultsArray}
+                                                 center={this.state.center}
+                                                 markerHoverStates={this.state.mapItinCardHoverStates}>
+                                </MapBoxComponent>
+                          </div>
+                                {/* { <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray}
+                                            center={this.state.center} showMarkerOnHoverObj={this.state.mapItinCardHoverStates}/> } */}
                             </div>
-
-                            {/* ITINERARY CONTENT */}
                         </div>
                     </div>
                     : false}

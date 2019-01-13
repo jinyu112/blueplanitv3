@@ -83,14 +83,21 @@ class ItineraryCard extends Component {
         if (nextValidLocation !== -999) {
             if (i !== distances.length) {
                 timeDifference = misc.getTimeDifference(resultsArray[i].time,resultsArray[nextValidLocation].time)                
-                timeDifferenceStr = misc.msToTime(timeDifference);
-                nextItinItemName = resultsArray[nextValidLocation].name;
-                var num_words_name = nextItinItemName.split(/\W+/).length;
-                if (num_words_name > 3) {
-                    nextItinItemName = resultsArray[nextValidLocation].name.split(/\W+/).slice(0, 4).join(" ");
-                    nextItinItemName = nextItinItemName + '...';
+                if (timeDifference !== NaN) {
+                    timeDifferenceStr = misc.msToTime(timeDifference);
+                    nextItinItemName = resultsArray[nextValidLocation].name;
+                    var num_words_name = nextItinItemName.split(/\W+/).length;
+                    if (num_words_name > 3) {
+                        nextItinItemName = resultsArray[nextValidLocation].name.split(/\W+/).slice(0, 4).join(" ");
+                        nextItinItemName = nextItinItemName + '...';
+                    }
+                    timeDifferenceStr = timeDifferenceStr + " until ";
                 }
-                timeDifferenceStr = timeDifferenceStr + " until ";
+                else {
+                    timeDifferenceStr = '';
+                    startStr = '';
+                    timeDifference = '';
+                }
             }
         }
         else {
@@ -229,7 +236,7 @@ class ItineraryCard extends Component {
                             </Button>
                         </div>
                     </div>
-                    {thumbnailUrl.localeCompare("") === 0 && showImages ? "" : <div className="resultsImgContainer"><a href={url} target='_blank'><img src={thumbnailUrl}/></a></div>}
+                    {thumbnailUrl.localeCompare("") === 0 && showImages ? "" : <div className="itinCardImgContainer"><a href={url} target='_blank'><img src={thumbnailUrl}/></a></div>}
 
                     <div className="itinRowContent" data-number={dataNumAttribute}>
 

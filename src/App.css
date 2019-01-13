@@ -491,15 +491,13 @@ tbody:hover {
     font-weight: 700;
 }
 
-.resultsImgContainer {
+.itinCardImgContainer {
     width: 100%;
     height: 125px;
     overflow: hidden;
-    /* margin: 10px; */
-    /*margin-top: 10px;*/
     position: relative;
 }
-.resultsImgContainer img {
+.itinCardImgContainer img {
     position: absolute;
     margin: auto; 
     min-height: 100%;
@@ -536,6 +534,10 @@ tbody:hover {
 
 .fade.in {
     opacity: 1!important;
+}
+
+.fade:not(.show) {
+    visibility: hidden;
 }
 
 .modal-backdrop.fade.in {
@@ -626,8 +628,8 @@ img{
 
 .ApiDataDisplay {
    display: grid;
-   grid-template-columns: repeat(2, 1fr);
-grid-gap: 10px;
+   grid-template-columns: repeat(1, 1fr);
+   grid-gap: 30px;
 }
 
 /* for react-simple-dropdown package*/
@@ -830,7 +832,7 @@ button.close {
     margin-left: 3.75em;
     border: 1px solid #354e72 !important;
     border-radius: 3px!important;
-    margin-bottom: 3em;
+    /* margin-bottom: 3em; */
     padding-left: 20px;
     padding-right: 20px;
 }
@@ -878,9 +880,9 @@ button.close {
     text-align: right!important;
 }
 
-/* .itinShortDesc {
-    font-size: .6em;
-} */
+.resultShortDesc {
+    font-size: .7em;
+}
 
 .itinEventCol1 img {
     object-fit: cover;
@@ -1009,10 +1011,6 @@ button.close {
     position: relative; /* added for the actions class so that the buttons can use position: absolute and be placed "outside" of the showActions div*/
     border: 1px solid #354e72 !important;
     width:100%;
-}
-
-.fade:not(.show) {
-    visibility: hidden;
 }
 
 .costPanel label {
@@ -1270,6 +1268,7 @@ input:-webkit-autofill:active {
 .mapboxgl-marker {
     cursor: pointer!important;
 }
+
 .mapboxgl-popup {
     max-width: 200px;
 }
@@ -1279,4 +1278,120 @@ input:-webkit-autofill:active {
     grid-template-columns: 1fr 3fr 1fr;
     grid-gap: 10px;
     align-items: center;
+}
+
+.mapboxComponentContainer {
+    text-align: -webkit-auto;
+}
+
+/* results display */
+.resultsCard { /* itinerary card class*/
+    overflow: visible!important;
+    color: #666!important;
+    transition: all .25s linear;
+    /*box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.3);*/
+    border-radius: 3px!important;
+    position: relative; /* added for the actions class so that the buttons can use position: absolute and be placed "outside" of the showActions div*/
+    border: 1px solid #354e72 !important;
+    width:75%;
+    margin :auto;
+}
+
+.resultsActions {
+    position: absolute;
+    right: -11px;
+    top: -20px;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 1em;
+    margin-right: -10px;
+}
+
+.resultsRowContent {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5em 1.5em;
+    padding-bottom: .1em;
+    display: inline-flex;
+    overflow-y: hidden;
+}
+
+.resultsImgContainer {
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    position: relative;
+}
+.resultsImgContainer img {
+    position: absolute;
+    margin: auto;
+    min-height: 100%;
+    min-width: 100%;
+    left: -100%;
+    right: -100%;
+    top: -150%;
+    bottom: -100%;
+}
+
+.resultsBtn {
+    font-size: .8em;
+}
+
+.resultsCardBottomDiv {
+    padding-top: 0em;
+}
+
+.resultsCostDisplay {
+    color: #666;
+    font-size: 1.3em;
+}
+
+.miniItinCardsSpace {
+    padding-top: 1em;
+}
+
+.miniItinRowContent {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 1.5em;
+    display: inline-flex;
+}
+.miniItinSpacer {
+    width:100%;
+    padding-bottom: 1em;
+}
+.itinSpacer {
+    width:100%;
+    padding-bottom: 3em;
+}
+.miniItinRowContent::after { /* circle and number left of the itinerary item */
+    width: 23px;
+    height: 23px;
+    margin-left: -7.675rem;
+    margin-top: 3px;
+    background-color: #ffffff;
+    position: absolute;
+    z-index: 3;
+    content: attr(data-number);
+    display: block;
+    color: #0066d2;
+    text-align: center;
+    border: 1px solid #0066d2;
+    border-radius: 12px;
+    transition: all .25s linear;
+}
+
+.mini-justify-end {
+    float: right;
+    padding-right: 1em;
+}
+
+.detailedItinButton {
+    float:right;
+    text-align: right;
+    width: 100%;
+    padding-bottom: 10px;
 }
