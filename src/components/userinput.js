@@ -37,6 +37,7 @@ import google_logo from '../images/google_places.png';
 import meetup_logo from '../images/meetup_logo.png';
 import eventbrite_logo from '../images/eventbrite_logo.png';
 import seatgeek_logo from '../images/seatgeek_logo.png';
+import AllFilters from './allFilters';
 
 
 import CONSTANTS from '../constants.js';
@@ -111,6 +112,9 @@ class Userinput extends Component {
             //mouse click
             clickedDiv: '',
             searchInputWidth: 0,
+
+            //Filters
+            openFilters: false,
         };
         this.apiService = new ApiService();
         this.handleChange = this.handleChange.bind(this);
@@ -152,7 +156,8 @@ class Userinput extends Component {
         this.updateDimensions = this.updateDimensions.bind(this);
         this.handleOutsideClick = this.handleOutsideClick.bind(this);
         this.handleToggleItinerary = this.handleToggleItinerary.bind(this);
-
+        this.handleOpenFilters = this.handleOpenFilters.bind(this);
+        this.handleCloseFilters = this.handleCloseFilters.bind(this);
         //global variables
         this.locationCheckResult = 0; // only set by misc.checkIfValidLocation function,
                                       // 0 = valid location, 1 = invalid location (outside of supported countries), 2 = invalid location input
@@ -1582,6 +1587,20 @@ class Userinput extends Component {
         this.setState({ mapOrResultsState: 'maps' })
     }
 
+    handleOpenFilters() {
+        this.setState({
+            openFilters: true,
+        });
+    }
+
+    handleCloseFilters() {
+        this.setState({
+            openFilters: false,
+        });
+    }
+
+
+
     handleClickDescOpen(e) {
         var button_id = e.target.id;
         var eventNum = button_id.substr(button_id.length - 1);
@@ -1608,7 +1627,10 @@ class Userinput extends Component {
         window.addEventListener("resize", this.updateDimensions);
 
         var homepageClasses = this.state.homepageFormClasses;
-        homepageClasses.push('show');
+        if(homepageClasses.indexOf('show') === -1) {
+            homepageClasses.push('show');
+        }
+
         this.setState({
             homepageFormClasses: homepageClasses,
         });
@@ -2075,13 +2097,6 @@ class Userinput extends Component {
                                                   <input /*required*/ className="fixedTextInput homepageInputs" min="0" type="number" name="budgetmax" placeholder="$1000" /*value={budgetmax}*/ onChange={this.handleChange} />
                                               </TooltipMat>
                                           </div>
-                                          <div className="form-group mb-2">
-                                              <label className="inputLabel" htmlFor="searchRadius">{CONSTANTS.HEADER_RADIUS_STR}</label>
-                                              <div className="homepageIcon">
-                                                  <Icon>360</Icon>
-                                              </div>
-                                              <input /*required*/ className="fixedTextInput homepageInputs" type="number" min="0" name="searchRadius" /*value={50}*/ onChange={this.handleSearchRadius} placeholder="Search Radius (mi)" />
-                                          </div>
                                       </div>
                                       <div className="search-btn">
                                           <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
@@ -2163,17 +2178,6 @@ class Userinput extends Component {
                                                                   onChange={this.handleChange}/>
                                           </TooltipMat>
                                       </div>
-                                      <div className="form-group mb-2">
-                                          <label className="inputLabel"
-                                                 htmlFor="searchRadius">{CONSTANTS.HEADER_RADIUS_STR}</label>
-                                          <div className="homepageIcon">
-                                              <Icon>360</Icon>
-                                          </div>
-                                          <input /*required*/ className="fixedTextInput homepageInputs" type="number"
-                                                              min="0" name="searchRadius" /*value={50}*/
-                                                              onChange={this.handleSearchRadius}
-                                                              placeholder="Search Radius (mi)"/>
-                                      </div>
                                   </div>
                                   <div className="search-btn">
                                       <TooltipMat placement="bottom" title={CONSTANTS.GO_TOOLTIP_STR}>
@@ -2197,17 +2201,23 @@ class Userinput extends Component {
           </div>
           {this.state.resultsArray.length > 0 ?
               <div className="content-parent-div clearfix">
-                  <div className="wrapper eventsCont apidata">
-                      <div className="filters-div">
-                          <PriceFilter setPriceRange={this.handlePriceFilter}></PriceFilter>
-                          <DistanceFilter maxDistance={this.state.searchRadiusForFilterCompare}
-                                          setDistance={this.handleFilterRadius}></DistanceFilter>
-                          <ApiFilter setApiFilterFlags={this.handleApiFilter}></ApiFilter>
-                          {this.state.tabState == CONSTANTS.NAV_EVENT_TAB_ID ?
-                              <TimeFilter setTimeRange={this.handleTimeFilter}></TimeFilter> :
-                              <MealFilter setMealFilterFlags={this.handleMealFilter}></MealFilter>}
-
+                  <div className="row">
+                      <div className="col-md-12">
+                          <Button onClick={this.handleOpenFilters}>Filters</Button>
+                          <AllFilters
+                              closeFilters={this.handleCloseFilters}
+                              open={this.state.openFilters}
+                              handlePriceFilter={this.handlePriceFilter}
+                              searchRadiusForFilterCompare={this.state.searchRadiusForFilterCompare}
+                              setDistance={this.handleFilterRadius}
+                              handleApiFilter={this.handleApiFilter}
+                              tabState={this.state.tabState}
+                              handleTimeFilter={this.handleTimeFilter}
+                              handleMealFilter={this.handleMealFilter}
+                          />
                       </div>
+                  </div>
+                  <div className="wrapper eventsCont apidata">
                       <main className={itinContent.join(' ')}>
                           <div>
                               {this.state.loading === true ?

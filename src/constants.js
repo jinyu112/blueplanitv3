@@ -105,7 +105,7 @@ module.exports = {
     TODAYDATE: new Date(Date.now()),
     MAX_BUDGET_DEFAULT: 9999.0,
     MIN_BUDGET_DEFAULT: 0.0,
-    DEFAULT_SEARCH_RADIUS_MI: 5, //miles
+    DEFAULT_SEARCH_RADIUS_MI: 50, //miles
     APPROX_EVENT_COST_STR: "Default cost. Check event link for actual cost.",
     APPROX_YELPRESTAURANT_COST_STR: "Default meal cost. Enter desired price.",
     LOCATION_TOOLTIP_STR: "Enter an city, address, or zip code that you want to explore!",
