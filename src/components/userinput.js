@@ -2186,12 +2186,6 @@ class Userinput extends Component {
                           </form>
 
                       </div>
-                      {this.state.resultsArray.length > 0 ?
-                          <div className="col-md-4 mapAndResultsActions" key="toggleItin">
-                              <Button onClick={this.handleShowItin} variant="outlined" color="primary" >Results</Button>
-                              <Button onClick={this.handleShowMap} variant="outlined" color="primary" >Map</Button>
-                          </div> : ''
-                      }
                   </div>
               }
           </div>
