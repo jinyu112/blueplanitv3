@@ -302,8 +302,14 @@ td {
 }
 
 .maps {
-    top: 90px;
-    width: 100%!important;
+
+    margin-left: 1rem;
+    margin-right: .5rem;
+
+    /* position:fixed; */
+    /* left:75%; */
+    /* width: 200px; */
+    width: 50%!important;
     height: 100%;
     display: inline-flex;
 }
@@ -628,7 +634,7 @@ img{
 
 .ApiDataDisplay {
    display: grid;
-   grid-template-columns: repeat(1, 1fr);
+   /* grid-template-columns: repeat(1, 1fr); */
    grid-gap: 30px;
 }
 
@@ -762,7 +768,6 @@ button.close {
 /* itinDiv is temporary*/
 .itinDiv {
     position:relative;
-    top:90px;
 }
 
 .itinHeaderContainer{
@@ -808,11 +813,11 @@ button.close {
     display: grid;
     /* grid-gap: 2em; */
     width: 100%; /*70%*/
-    margin-left: 3%;
+    /* margin-left: 5%; */
     margin-right: auto;
-    max-width: 800px;
-    min-width: 620px;
-    padding-right: 8rem;
+    max-width: 600px;
+    min-width: 500px;
+    padding-right: .5rem;
     /* dotted line for left side of itinerary */
     padding-left: 1.5rem;
     border-left: 4px dotted #0066d2;
@@ -821,14 +826,15 @@ button.close {
 .itinSummary {
     width:100%;
     margin: auto;
-    max-width: 800px;
-    min-width: 620px;
+    max-width: 600px;
+    min-width: 500px;
 }
 
 .itinerarySumInfoContainer {
     display: inline-block;
-    width: 90.5%;
-    max-width: 800px;
+    /* width: 90.5%; */
+    max-width: 600px;
+    min-width: 500px;
     margin-left: 3.75em;
     border: 1px solid #354e72 !important;
     border-radius: 3px!important;
@@ -1234,9 +1240,7 @@ input:-webkit-autofill:active {
 }
 
 .mapAndResultsDiv {
-    position: fixed;
-    top: 500px;
-    width: calc(100% / 3);
+
 }
 
 .wrapper {
@@ -1252,16 +1256,19 @@ input:-webkit-autofill:active {
 .sidebar {
     width: calc(100%/ (5/12));
     /* height: 50vh; */
-    position: -webkit-sticky;
-    position: sticky;
+    /* position: -webkit-sticky;
+    position: sticky; */
+    position: relative;
+    display: flex;
     top: 0;
 }
 
 .mapAndResults {
     height: 100vh;
     overflow-y: auto;
-    position: absolute;
-    top: 100px;
+    width: 50%;
+    /* position: absolute; */
+    /* top: 100px; */
 }
 
 .mapboxgl-marker {
@@ -1292,7 +1299,7 @@ input:-webkit-autofill:active {
     border-radius: 3px!important;
     position: relative; /* added for the actions class so that the buttons can use position: absolute and be placed "outside" of the showActions div*/
     border: 1px solid #354e72 !important;
-    width:75%;
+    width:87.5%;
     margin :auto;
 }
 

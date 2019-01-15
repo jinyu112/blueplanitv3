@@ -1991,11 +1991,7 @@ class Userinput extends Component {
             banner.push('fixedBanner');
         }
 
-        // Handle switching views between the results and the map
-        var mapAndResultsContent = ['mapAndResults', 'clearfix', 'hidden'];
-        if (this.state.mapOrResultsState.localeCompare('results') === 0 && this.state.resultsArray.length > 0) {
-            mapAndResultsContent.pop();
-        }
+        var mapAndResultsContent = ['mapAndResults', 'clearfix'];
 
         // Itinerary div css classes
         var onlyItin = ['itinDiv', 'clearfix'];
