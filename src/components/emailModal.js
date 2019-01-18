@@ -4,6 +4,7 @@ import emailService from './emailService.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import Loader from './reactloading.js';
+import SimpleSnackbar from './snackbars';
 
 class EmailModal extends Component {
 
@@ -14,6 +15,7 @@ class EmailModal extends Component {
             modalIsOpen: false,
             email: '',
             loading:  false,
+            snackbar_show: false,
         };
         this.emailService = new emailService();
         this.openModal = this.openModal.bind(this);
@@ -74,8 +76,9 @@ class EmailModal extends Component {
 
             this.emailService.sendEmail(data).then((sent) => {
                 this.setState({ loading: false });
+                console.log(sent);
                 if(sent.status == 200) {
-                    alert('email sent');
+                    <SimpleSnackbar open={this.state.snackbar_show} handleClose={this.handleClose}/>
                 } else {
                     alert('email could not be sent');
                 };

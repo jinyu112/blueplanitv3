@@ -21,17 +21,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import '../maps.css';
-import EmailModal from './emailModal.js';
 import Footer from './footer.js';
 import TooltipMat from '@material-ui/core/Tooltip';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import DistanceFilter from './distanceFilter.js';
-import ApiFilter from './apiFilter.js';
-import TimeFilter from './timeFilter.js';
-import PriceFilter from './priceFilter.js';
-import MealFilter from './mealFilter.js';
 import yelp_logo from '../images/yelp_burst.png';
 import google_logo from '../images/google_places.png';
 import meetup_logo from '../images/meetup_logo.png';
@@ -39,11 +33,11 @@ import eventbrite_logo from '../images/eventbrite_logo.png';
 import seatgeek_logo from '../images/seatgeek_logo.png';
 import AllFilters from './allFilters';
 
-
 import CONSTANTS from '../constants.js';
 import DescDialog from './descDialog.js'
 import LocationErrorDialog from './locationErrorDialog.js'
 import Icon from "@material-ui/core/Icon/Icon";
+import EmailModal from "./emailModal";
 
 //https://developers.google.com/maps/documentation/geocoding/usage-and-billing
 //0-100k queries = $5 per 1k queries
