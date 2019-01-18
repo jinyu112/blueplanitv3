@@ -1644,14 +1644,6 @@ class Userinput extends Component {
     }
 
     render() {
-        // Map
-        const mapClasses = ['maps', 'hidden'];
-
-        if (this.state.mapOrResultsState === 'maps') {
-            if (this.state.resultsArray.length > 0) {
-                mapClasses.pop();
-            }
-        };
         // console.log("userinput render function!")
         var formStyles = ['form-body'];
         var optionStyles = ['more-options', 'form-body'];
@@ -1977,7 +1969,7 @@ class Userinput extends Component {
         const { classes, theme } = this.props;
 
         // Handling itinerary div width when results presented
-        var itinContent = ['main', 'mapsfix', 'itinerary'];
+        var itinContent = ['main', 'mapsfix', 'itinerary','col-md-4'];
         // if (this.state.resultsArray.length > 0) { //if there are itinerary results set the div width to 8 columns
         //     itinContent.push('col-md-7');
         // }
@@ -1995,7 +1987,7 @@ class Userinput extends Component {
 
         // Itinerary div css classes
         var onlyItin = ['itinDiv', 'clearfix'];
-        var mapAndResultsDiv = ['clearfix', 'mapAndResultsDiv', 'sidebar', 'hidden'];
+        var mapAndResultsDiv = ['clearfix', 'mapAndResultsDiv', 'sidebar','col-md-4', 'hidden'];
         if (this.state.resultsArray.length > 0) {
             mapAndResultsDiv.pop();
         } else {
@@ -2207,8 +2199,8 @@ class Userinput extends Component {
                           />
                       </div>
                   </div>
-                  <div className="wrapper eventsCont apidata">
-                      <main className={itinContent.join(' ')}>
+                  <div className="row row-height wrapper eventsCont apidata">
+                      <main className="col-md-4 scroll-column">
                           <div>
                               {this.state.loading === true ?
                                   ' ' :
@@ -2234,8 +2226,8 @@ class Userinput extends Component {
                               <h5>Planning your trip...</h5>
                           </div> : false
                       }
-                      <div className={mapAndResultsDiv.join(' ')}>
-                          <div className={mapAndResultsContent.join(' ')}>
+                      <div className="col-md-4 scroll-column">
+                          <div>
                                     {/* All data gets shown here (api data, a nd user added data) */}
                                     <div className="nav nav-tabs" id="nav-tab" role="tablist">
                                         <a onClick={this.handleTabState} className={eventsLinkClass.join(' ')}
@@ -2294,15 +2286,15 @@ class Userinput extends Component {
                                             currentEventCost={this.state.userEventCost} />}
                                     </div>
                                 </div>
-                          <div id="mapBoxID" className={mapClasses.join(' ')} >
-                                <MapBoxComponent show={this.state.mapOrResultsState}
-                                                 results={this.state.resultsArray}
-                                                 center={this.state.center}
-                                                 markerHoverStates={this.state.mapItinCardHoverStates}>
-                                </MapBoxComponent>
-                          </div>
                                 {/* { <GoogleApiWrapper show={this.state.mapOrResultsState} results={this.state.resultsArray}
                                             center={this.state.center} showMarkerOnHoverObj={this.state.mapItinCardHoverStates}/> } */}
+                            </div>
+                            <div id="mapBoxID" className="col-md-4 scroll-column">
+                                  <MapBoxComponent show={this.state.mapOrResultsState}
+                                                   results={this.state.resultsArray}
+                                                   center={this.state.center}
+                                                   markerHoverStates={this.state.mapItinCardHoverStates}>
+                                  </MapBoxComponent>
                             </div>
                         </div>
                     </div>

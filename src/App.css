@@ -1248,19 +1248,16 @@ input:-webkit-autofill:active {
     justify-content: space-between;
 }
 
-.main {
-    width: calc(100%/ (7/12));
+.scroll-column {
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.row-height {
     height: 100vh;
 }
 
 .sidebar {
-    width: calc(100%/ (5/12));
-    /* height: 50vh; */
-    /* position: -webkit-sticky;
-    position: sticky; */
-    position: relative;
-    display: flex;
-    top: 0;
 }
 
 .mapAndResults {
@@ -1269,6 +1266,24 @@ input:-webkit-autofill:active {
     width: 50%;
     /* position: absolute; */
     /* top: 100px; */
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+* {
+    -ms-overflow-style: none !important;
+}
+
+#mapBoxID {
+    padding: 0px;
+    margin: 0px;
+}
+
+mapBoxID > div {
+    width: 100%;
 }
 
 .mapboxgl-marker {
