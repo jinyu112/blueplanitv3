@@ -78,7 +78,8 @@ class EmailModal extends Component {
                 this.setState({ loading: false });
                 console.log(sent);
                 if(sent.status == 200) {
-                    <SimpleSnackbar open={this.state.snackbar_show} handleClose={this.handleClose}/>
+                    alert(sent.data);
+                   // <SimpleSnackbar open={this.state.snackbar_show} handleClose={this.handleClose}/>
                 } else {
                     alert('email could not be sent');
                 };
