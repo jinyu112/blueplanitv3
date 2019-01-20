@@ -1283,7 +1283,7 @@ input:-webkit-autofill:active {
 }
 
 #mapBoxID > div {
-    width: 100%;
+    width: 100%!important;
 }
 
 .mapboxgl-marker {
