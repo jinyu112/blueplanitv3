@@ -5,7 +5,7 @@ import axios from 'axios';
 class ApiService extends Component {
 
   getData(eventType, latlon, city, date, string_date,search_radius_miles) {
-      return axios.post('http://localhost:4200/api', {
+      return axios.post(process.env.REACT_APP_BACKEND_API_CALL_IPPORT, {
           eventType: eventType,
           latlon: latlon,
           city: city,
