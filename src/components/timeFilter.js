@@ -10,6 +10,10 @@ import CONSTANTS from '../constants';
 import 'rc-slider/assets/index.css';
 
 import Slider from 'rc-slider';
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 
@@ -197,25 +201,41 @@ class TimeSlider extends React.Component {
         }
 
         return (
-            <div ref={this.setWrapperRef}>
-                <Typography className={classes.header}>Time <span className={classes.span}>{this.state.timeRange[0]} - {this.state.timeRange[1]}</span></Typography>
-                <Range allowCross={false}  value={this.state.value} className={classes.slider}
-                    defaultValue={[CONSTANTS.DEFAULT_TIMEFILTER_MIN, CONSTANTS.DEFAULT_TIMEFILTER_MAX]}
-                    min={this.state.min} max={this.state.max}
-                    step={CONSTANTS.TIME_FILTER_STEP}
-                    onChange={this.onSliderChange}
-                    tipFormatter={this.handleDisplay}
-                />
+            <Dialog
+                open={this.props.open}
+                onClose={this.handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        <div ref={this.setWrapperRef}>
+                            <Typography className={classes.header}>Time <span className={classes.span}>{this.state.timeRange[0]} - {this.state.timeRange[1]}</span></Typography>
+                            <Range allowCross={false}  value={this.state.value} className={classes.slider}
+                                defaultValue={[CONSTANTS.DEFAULT_TIMEFILTER_MIN, CONSTANTS.DEFAULT_TIMEFILTER_MAX]}
+                                min={this.state.min} max={this.state.max}
+                                step={CONSTANTS.TIME_FILTER_STEP}
+                                onChange={this.onSliderChange}
+                                tipFormatter={this.handleDisplay}
+                            />
 
-                <div className={classes.actions}>
-                    <Button href="#text-buttons" className={classes.button} onClick={this.handleClear}>
-                        Clear
+                            <div className={classes.actions}>
+                                <Button href="#text-buttons" className={classes.button} onClick={this.handleClear}>
+                                    Clear
+                                </Button>
+                                <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
+                                    Apply
+                                </Button>
+                            </div>
+                        </div>
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.props.close} color="primary">
+                        Close
                     </Button>
-                    <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
-                        Apply
-                    </Button>
-                </div>
-            </div>
+                </DialogActions>
+            </Dialog>
         );
     }
 }

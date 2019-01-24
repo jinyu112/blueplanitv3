@@ -150,8 +150,6 @@ class Userinput extends Component {
         this.updateDimensions = this.updateDimensions.bind(this);
         this.handleOutsideClick = this.handleOutsideClick.bind(this);
         this.handleToggleItinerary = this.handleToggleItinerary.bind(this);
-        this.handleOpenFilters = this.handleOpenFilters.bind(this);
-        this.handleCloseFilters = this.handleCloseFilters.bind(this);
         //global variables
         this.locationCheckResult = 0; // only set by misc.checkIfValidLocation function,
                                       // 0 = valid location, 1 = invalid location (outside of supported countries), 2 = invalid location input
@@ -1581,19 +1579,6 @@ class Userinput extends Component {
         this.setState({ mapOrResultsState: 'maps' })
     }
 
-    handleOpenFilters() {
-        this.setState({
-            openFilters: true,
-        });
-    }
-
-    handleCloseFilters() {
-        this.setState({
-            openFilters: false,
-        });
-    }
-
-
 
     handleClickDescOpen(e) {
         var button_id = e.target.id;
@@ -2179,10 +2164,7 @@ class Userinput extends Component {
               <div className="content-parent-div clearfix">
                   <div className="row">
                       <div className="col-md-12">
-                          <Button onClick={this.handleOpenFilters}>Filters</Button>
                           <AllFilters
-                              closeFilters={this.handleCloseFilters}
-                              open={this.state.openFilters}
                               handlePriceFilter={this.handlePriceFilter}
                               searchRadiusForFilterCompare={this.state.searchRadiusForFilterCompare}
                               setDistance={this.handleFilterRadius}

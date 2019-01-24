@@ -8,6 +8,11 @@ import 'rc-slider/assets/index.css';
 import CONSTANTS from '../constants';
 
 import Slider from 'rc-slider';
+import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 
@@ -59,6 +64,7 @@ class PriceSlider extends React.Component {
         prevMin: CONSTANTS.DEFAULT_PRICEFILTER_MIN,
         prevMax: CONSTANTS.DEFAULT_PRICEFILTER_MAX,
         value: [CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX,],
+
     };
 
     componentDidMount() {
@@ -131,28 +137,41 @@ class PriceSlider extends React.Component {
 
 
         return (
-            <div className="filter" ref={this.setWrapperRef}>
-                <div className="filter-header">
-                    <p>Event Price?</p>
-                </div>
-                <div className="price-slider">
-                    <span>${this.state.value[0]}</span>
-                    <Range allowCross={false} value={this.state.value} defaultValue={[CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX]}
-                        min={CONSTANTS.DEFAULT_PRICEFILTER_MIN} max={CONSTANTS.DEFAULT_PRICEFILTER_MAX}
-                        step={CONSTANTS.PRICE_FILTER_STEP}
-                        onChange={this.onSliderChange} tipFormatter={value => `$${value}.00`}
-                    />
-                    <span className={classes.span}>${this.state.value[1]}</span>
-                </div>
-                {/*<div className={classes.actions}>*/}
-                    {/*<Button href="#text-buttons" className={classes.button} onClick={this.handleClear}>*/}
-                        {/*Clear*/}
-                    {/*</Button>*/}
-                    {/*<Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>*/}
-                        {/*Apply*/}
-                    {/*</Button>*/}
-                {/*</div>*/}
-            </div>
+            <Dialog
+                open={this.props.open}
+                onClose={this.handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        <div ref={this.setWrapperRef}>
+                            <div className="price-slider">
+                                <span>${this.state.value[0]}</span>
+                                <Range allowCross={false} value={this.state.value} defaultValue={[CONSTANTS.DEFAULT_PRICEFILTER_MIN, CONSTANTS.DEFAULT_PRICEFILTER_MAX]}
+                                    min={CONSTANTS.DEFAULT_PRICEFILTER_MIN} max={CONSTANTS.DEFAULT_PRICEFILTER_MAX}
+                                    step={CONSTANTS.PRICE_FILTER_STEP}
+                                    onChange={this.onSliderChange} tipFormatter={value => `$${value}.00`}
+                                />
+                                <span className={classes.span}>${this.state.value[1]}</span>
+                            </div>
+                            <div className={classes.actions}>
+                                <Button href="#text-buttons" className={classes.button} onClick={this.handleClear}>
+                                    Clear
+                                </Button>
+                                <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
+                                    Apply
+                                </Button>
+                            </div>
+                        </div>
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.props.close} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
         );
     }
 }

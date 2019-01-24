@@ -731,15 +731,6 @@ button.close {
   grid-gap: 20px;
 }
 
-.filters-div {
-    display: grid;
-    grid-gap: 15px;
-    padding: 0 1em 0 2em;
-    position: absolute;
-    top: 90px;
-    width: 288px;
-}
-
 .filters-div > button {
     min-width: 100px;
     max-width: 120px;

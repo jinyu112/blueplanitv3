@@ -5,6 +5,10 @@ import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/lab/Slider';
 import Typography from '@material-ui/core/Typography';
 import CONSTANTS from '../constants.js'
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 
 const styles = theme => ({
     root: {
@@ -49,6 +53,7 @@ class ClickAway extends React.Component {
         })
     };
 
+
     render() {
         const { classes } = this.props;
         const { value } = this.state;
@@ -66,13 +71,29 @@ class ClickAway extends React.Component {
         }
 
         return (
-            <div>
-                <Typography id="label">{CONSTANTS.RADIUS_FILTER_STR}</Typography>
-                <Slider value={value} min={0} max={this.props.maxDistance} step={1} onChange={this.handleChange} ref={distanceSlider => this.distanceSlider = distanceSlider} />
-                <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
-                    Apply
-                </Button>
-            </div>
+            <Dialog
+                open={this.props.openDistance}
+                onClose={this.handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        <div>
+                            <Typography id="label">{CONSTANTS.RADIUS_FILTER_STR}</Typography>
+                            <Slider value={value} min={0} max={this.props.maxDistance} step={1} onChange={this.handleChange} ref={distanceSlider => this.distanceSlider = distanceSlider} />
+                            <Button href="#text-buttons" className={classes.button} onClick={this.handleApply}>
+                                Apply
+                            </Button>
+                        </div>
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.props.close} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
         );
     }
 }
