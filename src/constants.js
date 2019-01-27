@@ -186,4 +186,7 @@ module.exports = {
     LOCATION_INPUT_ERROR_INVALID_DESC: "The location you are searching for is not valid. Please try again.",
     COLLAPSE_TO_MINI_ITIN_DIPLAY_STR: "Collapse itinerary.",
     EXPAND_TO_FULL_ITIN_DIPLAY_STR: "Expand itinerary.",
+    EXPERIENCE_ID_PREFIX: 'experience',
+    COLUMN_ID_PREFIX:'col-',
+    DAY_2_MILLISECONDS: 86400000,
 }

@@ -196,6 +196,24 @@ module.exports = {
             validFlag: validFlag,
             returnOption: returnOption,
         }
+    },
+    // Check for a valid date from the user input
+    isDate: function(d) {
+    if (Object.prototype.toString.call(d) === "[object Date]") {
+        // it is a date
+        if (isNaN(d.getTime())) {  // d.valueOf() could also work
+            // date is not valid
+            return 0;
+        }
+        else {
+            // date is valid
+            return 1;
+        }
     }
+    else {
+        // not a date
+        return 0;
+    }
+}
 
 }
